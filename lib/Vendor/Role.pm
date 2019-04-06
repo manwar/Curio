@@ -19,6 +19,15 @@ Vendor::Role - Role for creating Vendor classes.
 
 use Vendor::Meta;
 use Scalar::Util qw( blessed );
+use Carp qw();
+
+sub croak {
+    local $Carp::Internal{'Vendor'} = 1;
+    local $Carp::Internal{'Vendor::Declare'} = 1;
+    local $Carp::Internal{'Vendor::Meta'} = 1;
+    local $Carp::Internal{'Vendor::Role'} = 1;
+    return Carp::croak( @_ );
+}
 
 use Moo::Role;
 use strictures 2;
@@ -58,7 +67,10 @@ sub vendor {
 
     $class = blessed( $class ) || $class;
 
-    return $metas{$class};
+    my $meta = $metas{$class};
+    croak 'Vendor not installed' if !$meta;
+
+    return $meta;
 }
 
 1;

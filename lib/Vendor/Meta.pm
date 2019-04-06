@@ -22,10 +22,6 @@ use Types::Common::String qw( NonEmptySimpleStr );
 use Class::Method::Modifiers qw( install_modifier );
 use Carp qw();
 
-use Moo;
-use strictures 2;
-use namespace::clean;
-
 sub croak {
     local $Carp::Internal{'Vendor'} = 1;
     local $Carp::Internal{'Vendor::Declare'} = 1;
@@ -33,6 +29,10 @@ sub croak {
     local $Carp::Internal{'Vendor::Role'} = 1;
     return Carp::croak( @_ );
 }
+
+use Moo;
+use strictures 2;
+use namespace::clean;
 
 =head1 REQUIRED ARGUMENTS
 
