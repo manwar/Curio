@@ -20,17 +20,13 @@ Vendor::Meta - Vendor class metadata and core functionality.
 use Types::Standard qw( Bool Map HashRef );
 use Types::Common::String qw( NonEmptySimpleStr );
 use Class::Method::Modifiers qw( install_modifier );
-use Carp qw();
+use Vendor::Util qw( croak );
 
-sub croak {
-    local $Carp::Internal{'Vendor'} = 1;
-    local $Carp::Internal{'Vendor::Declare'} = 1;
-    local $Carp::Internal{'Vendor::Meta'} = 1;
-    local $Carp::Internal{'Vendor::Role'} = 1;
-    return Carp::croak( @_ );
-}
+use Moo;
+use strictures 2;
+use namespace::clean;
 
-sub process_key_arg {
+sub _process_key_arg {
     my $self = shift;
 
     my $key;
@@ -57,9 +53,27 @@ sub process_key_arg {
     return $key;
 }
 
-use Moo;
-use strictures 2;
-use namespace::clean;
+has _cache => (
+    is       => 'ro',
+    init_arg => undef,
+    isa      => HashRef,
+    default  => sub{ {} },
+);
+
+my $undef_cache_key = '__UNDEF_KEY__';
+
+sub _cache_set {
+    my ($self, $key, $object) = @_;
+    $key = $undef_cache_key if !defined $key;
+    $self->_cache->{$key} = $object;
+    return;
+}
+
+sub _cache_get {
+    my ($self, $key) = @_;
+    $key = $undef_cache_key if !defined $key;
+    return $self->_cache->{$key};
+}
 
 =head1 REQUIRED ARGUMENTS
 
@@ -147,19 +161,6 @@ has key_argument => (
     isa => NonEmptySimpleStr,
 );
 
-=head1 ATTRIBUTES
-
-=head2 cache
-
-=cut
-
-has cache => (
-    is       => 'ro',
-    init_arg => undef,
-    isa      => HashRef,
-    default  => sub{ {} },
-);
-
 =head1 METHODS
 
 =head2 fetch
@@ -169,17 +170,17 @@ has cache => (
 sub fetch {
     my $self = shift;
 
-    my $key = process_key_arg( $self, @_ );
+    my $key = $self->_process_key_arg( @_ );
 
     if ($self->does_caching()) {
-        my $object = $self->cache->{$key};
+        my $object = $self->_cache_get( $key );
         return $object if $object;
     }
 
     my $object = $self->create( defined($key) ? $key : () );
 
     if ($self->does_caching()) {
-        $self->cache->{$key} = $object;
+        $self->_cache_set( $key, $object );
     }
 
     return $object;
@@ -192,7 +193,7 @@ sub fetch {
 sub create {
     my $self = shift;
 
-    my $key = process_key_arg( $self, @_ );
+    my $key = $self->_process_key_arg( @_ );
 
     my $args = $self->arguments( defined($key) ? $key : () );
 
@@ -208,7 +209,7 @@ sub create {
 sub arguments {
     my $self = shift;
 
-    my $key = process_key_arg( $self, @_ );
+    my $key = $self->_process_key_arg( @_ );
 
     return {} if !defined $key;
 

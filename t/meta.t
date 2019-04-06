@@ -42,6 +42,58 @@ subtest fetch_method => sub{
     };
 };
 
+subtest caching => sub{
+    subtest no_cache => sub{
+        my $meta = new_meta( 'no_cache' );
+        $meta->install();
+        my $object1 = $meta->fetch();
+        my $object2 = $meta->fetch();
+        ref_is_not( $object1, $object2, 'caching is disabled' );
+    };
+
+    subtest cache => sub{
+        my $meta = new_meta(
+            'cache',
+            does_caching => 1,
+        );
+        $meta->install();
+        my $object1 = $meta->fetch();
+        my $object2 = $meta->fetch();
+        ref_is( $object1, $object2, 'caching is enabled' );
+    };
+
+    subtest no_cache_with_keys => sub{
+        my $meta = new_meta(
+            'no_cache_with_keys',
+            does_keys => 1,
+        );
+        $meta->install();
+
+        my $object1 = $meta->fetch('key1');
+        my $object2 = $meta->fetch('key2');
+        my $object3 = $meta->fetch('key1');
+
+        ref_is_not( $object1, $object2, 'different keys' );
+        ref_is_not( $object1, $object3, 'caching is disabled' );
+    };
+
+    subtest cache_with_keys => sub{
+        my $meta = new_meta(
+            'cache_with_keys',
+            does_caching => 1,
+            does_keys    => 1,
+        );
+        $meta->install();
+
+        my $object1 = $meta->fetch('key1');
+        my $object2 = $meta->fetch('key2');
+        my $object3 = $meta->fetch('key1');
+
+        ref_is_not( $object1, $object2, 'different keys' );
+        ref_is( $object1, $object3, 'caching is enabled' );
+    };
+};
+
 done_testing;
 
 sub new_meta {
