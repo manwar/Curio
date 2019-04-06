@@ -24,11 +24,10 @@ use Exporter qw( import );
 our @EXPORT = qw(
     fetch_method
     does_caching
-    does_key_as_arg
-    does_key_to_args
-    requires_key
-    key_arg_name
-    key_args_is_optional
+    does_keys
+    requires_declared_key
+    default_key
+    key_argument
     has_key
     install
 );
@@ -57,53 +56,43 @@ sub does_caching (;$) {
     return;
 }
 
-=head2 does_key_as_arg
+=head2 does_keys
 
 =cut
 
-sub does_key_as_arg (;$) {
+sub does_keys (;$) {
     my $class = caller;
-    $meta_args{$class}->{does_key_as_arg} = @_ ? shift : 1;
+    $meta_args{$class}->{does_keys} = @_ ? shift : 1;
     return;
 }
 
-=head2 does_key_to_args
+=head2 requires_declared_key
 
 =cut
 
-sub does_key_to_args (;$) {
+sub requires_declared_key (;$) {
     my $class = caller;
-    $meta_args{$class}->{does_key_to_args} = @_ ? shift : 1;
+    $meta_args{$class}->{requires_declared_key} = @_ ? shift : 1;
     return;
 }
 
-=head2 requires_key
+=head2 default_key
 
 =cut
 
-sub requires_key (;$) {
+sub default_key ($) {
     my $class = caller;
-    $meta_args{$class}->{requires_key} = @_ ? shift : 1;
+    $meta_args{$class}->{default_key} = shift;
     return;
 }
 
-=head2 key_arg_name
+=head2 key_argument
 
 =cut
 
-sub key_arg_name ($) {
+sub key_argument ($) {
     my $class = caller;
-    $meta_args{$class}->{key_arg_name} = shift;
-    return;
-}
-
-=head2 key_args_is_optional
-
-=cut
-
-sub key_args_is_optional (;$) {
-    my $class = caller;
-    $meta_args{$class}->{requires_key_args} = @_ ? shift : 0;
+    $meta_args{$class}->{key_argument} = shift;
     return;
 }
 
@@ -114,7 +103,7 @@ sub key_args_is_optional (;$) {
 sub has_key ($;@) {
     my $class = caller;
     my $key = shift;
-    $meta_args{$class}->{key_args}->{$key} = { @_ };
+    $meta_args{$class}->{keys}->{$key} = { @_ };
     return;
 }
 
@@ -125,15 +114,7 @@ sub has_key ($;@) {
 sub install () {
     my $class = caller;
 
-    my $args = $meta_args{$class} ||= {};
-    my $key_args = $args->{key_args} ||= {};
-
-    if (%$key_args) {
-        $args->{does_key_to_args} = 1 if !defined $args->{does_key_to_args};
-        $args->{requires_key} = 1 if !defined $args->{requires_key};
-    }
-
-    $class->install_vendor( $args );
+    $class->install_vendor( $meta_args{$class} || {} );
 
     return;
 }

@@ -30,6 +30,33 @@ sub croak {
     return Carp::croak( @_ );
 }
 
+sub process_key_arg {
+    my $self = shift;
+
+    my $key;
+
+    if ($self->does_keys()) {
+        if (@_) {
+            $key = shift;
+            croak 'Invalid key' if !NonEmptySimpleStr->check( $key );
+        }
+        elsif (defined $self->default_key()) {
+            $key = $self->default_key();
+        }
+        else {
+            croak 'A key is required';
+        }
+
+        if ($self->requires_declared_key()) {
+            croak 'Key is not declared' if !$self->keys->{$key};
+        }
+    }
+
+    croak 'Too many arguments' if @_;
+
+    return $key;
+}
+
 use Moo;
 use strictures 2;
 use namespace::clean;
@@ -68,64 +95,56 @@ has does_caching => (
     default => 0,
 );
 
-=head2 does_key_as_arg
+=head2 does_keys
 
 =cut
 
-has does_key_as_arg => (
-    is      => 'ro',
+has does_keys => (
+    is      => 'lazy',
     isa     => Bool,
-    default => 0,
 );
+sub _build_does_keys {
+    my ($self) = @_;
+    return 1 if %{ $self->keys() };
+    return 0;
+}
 
-=head2 does_kay_to_args
+=head2 keys
 
 =cut
 
-has does_key_to_args => (
-    is      => 'ro',
-    isa     => Bool,
-    default => 0,
-);
-
-=head2 requires_key
-
-=cut
-
-has requires_key => (
-    is      => 'ro',
-    isa     => Bool,
-    default => 0,
-);
-
-=head2 key_arg_name
-
-=cut
-
-has key_arg_name => (
-    is      => 'ro',
-    isa     => NonEmptySimpleStr,
-    default => 'key',
-);
-
-=head2 requires_key_args
-
-=cut
-
-has requires_key_args => (
-    is      => 'ro',
-    isa     => Bool,
-    default => 1,
-);
-
-=head2 key_args
-
-=cut
-
-has key_args => (
+has keys => (
     is      => 'ro',
     isa     => Map[ NonEmptySimpleStr, HashRef ],
     default => sub{ {} },
+);
+
+=head2 requires_declared_key
+
+=cut
+
+has requires_declared_key => (
+    is      => 'ro',
+    isa     => Bool,
+    default => 0,
+);
+
+=head2 default_key
+
+=cut
+
+has default_key => (
+    is  => 'ro',
+    isa => NonEmptySimpleStr,
+);
+
+=head2 key_argument
+
+=cut
+
+has key_argument => (
+    is  => 'ro',
+    isa => NonEmptySimpleStr,
 );
 
 =head1 ATTRIBUTES
@@ -141,17 +160,6 @@ has cache => (
     default  => sub{ {} },
 );
 
-=head2 does_keys
-
-=cut
-
-sub does_keys {
-    my ($self) = @_;
-    return 1 if $self->does_key_as_arg();
-    return 1 if $self->does_key_to_args();
-    return 0;
-}
-
 =head1 METHODS
 
 =head2 fetch
@@ -161,16 +169,7 @@ sub does_keys {
 sub fetch {
     my $self = shift;
 
-    my $key;
-    if ($self->does_keys()) {
-        croak 'No key passed' if $self->requires_key() and !@_;
-        if (@_) {
-            $key = shift;
-            croak 'Key not defined' if !defined $key;
-        }
-    }
-
-    croak 'Too many arguments' if @_;
+    my $key = process_key_arg( $self, @_ );
 
     if ($self->does_caching()) {
         my $object = $self->cache->{$key};
@@ -193,46 +192,30 @@ sub fetch {
 sub create {
     my $self = shift;
 
-    my $key;
-    if ($self->does_keys()) {
-        croak 'A key is required' if $self->requires_key() and !@_;
-        if (@_) {
-            $key = shift;
-            croak 'Key not defined' if !defined $key;
-        }
-    }
+    my $key = process_key_arg( $self, @_ );
 
-    croak 'Too many arguments' if @_;
-
-    my $args = defined($key) ? $self->key_to_args( $key ) : {};
+    my $args = $self->arguments( defined($key) ? $key : () );
 
     my $object = $self->class->new( $args );
 
     return $object;
 }
 
-=head2 key_to_args
+=head2 arguments
 
 =cut
 
-sub key_to_args {
+sub arguments {
     my $self = shift;
 
-    croak 'No key passed' if !@_;
-    my $key = shift;
-    croak 'Key not defined' if !defined $key;
-    croak 'Too many arguments' if @_;
+    my $key = process_key_arg( $self, @_ );
 
-    my %args;
+    return {} if !defined $key;
 
-    if ($self->does_key_as_arg()) {
-        $args{ $self->key_arg_name() } = $key;
-    }
+    my %args = %{ $self->keys->{$key} || {} };
 
-    if ($self->does_key_to_args()) {
-        my $key_args = $self->key_args->{$key};
-        croak 'Unknown key' if $self->requires_key_args() and !$key_args;
-        %args = ( %args, %$key_args );
+    if (defined $self->key_argument()) {
+        $args{ $self->key_argument() } = $key;
     }
 
     return \%args;
