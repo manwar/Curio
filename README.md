@@ -19,7 +19,7 @@ Calling `use Vendor;` is the same as:
 ```perl
 use Vendor::Declare;
 
-use Moo::Role;
+use Moo;
 use strictures 2;
 use namespace::clean;
 

@@ -177,7 +177,7 @@ sub fetch {
         return $object if $object;
     }
 
-    my $object = $self->create( $key );
+    my $object = $self->create( defined($key) ? $key : () );
 
     if ($self->does_caching()) {
         $self->cache->{$key} = $object;

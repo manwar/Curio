@@ -3,7 +3,7 @@ our $VERSION = '0.01';
 
 use Import::Into;
 use Vendor::Declare qw();
-use Moo::Role qw();
+use Moo qw();
 
 use strictures;
 use namespace::clean;
@@ -20,7 +20,7 @@ sub import {
     Vendor::Declare->import::into( $class )
         if !$args->{no_declare};
 
-    Moo::Role->import::into( $class );
+    Moo->import::into( $class );
 
     strictures->import::into({
         level   => 1,
@@ -58,7 +58,7 @@ Calling C<use Vendor;> is the same as:
 
     use Vendor::Declare;
     
-    use Moo::Role;
+    use Moo;
     use strictures 2;
     use namespace::clean;
     
