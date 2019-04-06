@@ -42,7 +42,18 @@
       },
       "runtime" : {
          "requires" : {
-            "perl" : "5.008001"
+            "Carp" : "0",
+            "Class::Method::Modifiers" : "2.10",
+            "Exporter" : "0",
+            "Import::Into" : "1.002005",
+            "Moo" : "2.003000",
+            "Moo::Role" : "2.003000",
+            "Scalar::Util" : "0",
+            "Types::Common::String" : "1.002001",
+            "Types::Standard" : "1.002001",
+            "namespace::clean" : "0.27",
+            "perl" : "5.008001",
+            "strictures" : "2.000001"
          }
       },
       "test" : {

@@ -1,5 +1,4 @@
 package Vendor;
-use 5.008001;
 our $VERSION = '0.01';
 
 use Import::Into;

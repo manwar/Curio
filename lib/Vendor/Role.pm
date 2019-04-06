@@ -1,5 +1,4 @@
 package Vendor::Role;
-use 5.008001;
 our $VERSION = '0.01';
 
 =encoding utf8
