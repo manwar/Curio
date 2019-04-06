@@ -4,13 +4,37 @@ Vendor - Procurer of fine resources and services.
 
 # SYNOPSIS
 
-```
+```perl
+package MyApp::Service::Cache;
+
+use Vendor;
+
 ...
 ```
 
 # DESCRIPTION
 
-...
+Calling `use Vendor;` is the same as:
+
+```perl
+use Vendor::Declare;
+
+use Moo::Role;
+use strictures 2;
+use namespace::clean;
+
+with 'Vendor::Role';
+```
+
+This can be adjusted by setting import flags, as in:
+
+```perl
+use Vendor qw( no_strictures );
+```
+
+Available flags are `no_declare` which disables [Vendor::Declare](https://metacpan.org/pod/Vendor::Declare),
+`no_strictures` which disables [strictures](https://metacpan.org/pod/strictures), and `no_clean` which
+disables [namespace::clean](https://metacpan.org/pod/namespace::clean).
 
 # SUPPORT
 

@@ -52,6 +52,17 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/bluefeet/Vendor/issues"
+      },
+      "homepage" : "https://github.com/bluefeet/Vendor",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/bluefeet/Vendor.git",
+         "web" : "https://github.com/bluefeet/Vendor"
+      }
+   },
    "version" : "0.01",
    "x_authority" : "cpan:BLUEFEET",
    "x_serialization_backend" : "JSON::PP version 4.02",
