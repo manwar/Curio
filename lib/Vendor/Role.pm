@@ -25,8 +25,6 @@ use Moo::Role;
 use strictures 2;
 use namespace::clean;
 
-my %metas;
-
 =head1 CLASS METHODS
 
 =head2 install_vendor
@@ -45,24 +43,7 @@ sub install_vendor {
 
     $meta->install();
 
-    $metas{$class} = $meta;
-
     return;
-}
-
-=head2 vendor_meta
-
-=cut
-
-sub vendor_meta {
-    my $class = shift;
-
-    $class = blessed( $class ) || $class;
-
-    my $meta = $metas{$class};
-    croak 'Vendor not installed' if !$meta;
-
-    return $meta;
 }
 
 1;

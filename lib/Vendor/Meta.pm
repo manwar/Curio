@@ -252,6 +252,13 @@ sub install {
     install_modifier(
         $self->class(),
         'fresh',
+        'vendor_meta',
+        sub{ $self },
+    );
+
+    install_modifier(
+        $self->class(),
+        'fresh',
         $self->fetch_method_name(),
         \&_fetch_sub,
     );
