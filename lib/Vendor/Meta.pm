@@ -21,10 +21,27 @@ use Types::Standard qw( Bool Map HashRef );
 use Types::Common::String qw( NonEmptySimpleStr );
 use Class::Method::Modifiers qw( install_modifier );
 use Vendor::Util qw( croak );
+use Scalar::Util qw( weaken );
 
 use Moo;
 use strictures 2;
 use namespace::clean;
+
+my %class_to_meta;
+
+sub BUILD {
+    my ($self) = @_;
+
+    my $class = $self->class();
+
+    croak "A Vendor::Meta object already exists for $class"
+        if $class_to_meta{ $class };
+
+    $class_to_meta{ $class } = $self;
+    weaken $class_to_meta{ $class };
+
+    return;
+}
 
 sub _process_key_arg {
     my $self = shift;

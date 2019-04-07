@@ -258,6 +258,35 @@ subtest arguments => sub{
     };
 };
 
+subtest multi_meta_guard => sub{
+    isnt(
+        dies{
+            my $meta1 = Vendor::Meta->new( class=>'Vendor::TestGuard' );
+            my $meta2 = Vendor::Meta->new( class=>'Vendor::TestGuard' );
+        },
+        undef,
+        'two meta objects with the same class failed',
+    );
+
+    is(
+        dies{
+            my $meta1 = Vendor::Meta->new( class=>'Vendor::TestGuard1' );
+            my $meta2 = Vendor::Meta->new( class=>'Vendor::TestGuard2' );
+        },
+        undef,
+        'two meta objects with different classes worked',
+    );
+
+    is(
+        dies{
+            Vendor::Meta->new( class=>'Vendor::TestGuard' );
+            Vendor::Meta->new( class=>'Vendor::TestGuard' );
+        },
+        undef,
+        'meta objects were properly weakened',
+    );
+};
+
 done_testing;
 
 sub new_meta {
