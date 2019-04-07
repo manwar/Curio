@@ -1,6 +1,14 @@
 package Vendor::Util;
 our $VERSION = '0.01';
 
+=encoding utf8
+
+=head1 NAME
+
+Vendor::Util - Utilities used internally by Vendor modules.
+
+=cut
+
 use Carp qw();
 
 use Exporter qw( import );
@@ -8,6 +16,14 @@ use Exporter qw( import );
 our @EXPORT_OK = qw(
     croak
 );
+
+=head1 EXPORTABLE FUNCTIONS
+
+=head2 croak
+
+A custom L<Carp> C<croak()> which interalizes all Vendor modules.
+
+=cut
 
 sub croak {
     local $Carp::Internal{'Vendor'} = 1;
@@ -20,3 +36,19 @@ sub croak {
 }
 
 1;
+__END__
+
+=head1 SUPPORT
+
+See L<Vendor/SUPPORT>.
+
+=head1 AUTHORS
+
+See L<Vendor/AUTHORS>.
+
+=head1 LICENSE
+
+See L<Vendor/LICENSE>.
+
+=cut
+
