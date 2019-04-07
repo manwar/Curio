@@ -168,7 +168,6 @@ subtest requires_key_declaration => sub{
             'no_requires_declared_key',
             does_keys => 1,
             keys      => { foo=>{} },
-            requires_key_declaration => 0,
         );
 
         is( dies{ $meta->fetch('foo') }, undef, 'known key worked' );
@@ -180,6 +179,7 @@ subtest requires_key_declaration => sub{
             'requires_declared_key',
             does_keys => 1,
             keys      => { foo=>{} },
+            requires_key_declaration => 1,
         );
 
         is( dies{ $meta->fetch('foo') }, undef, 'known key worked' );

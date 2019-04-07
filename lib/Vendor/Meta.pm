@@ -114,14 +114,10 @@ has does_caching => (
 =cut
 
 has does_keys => (
-    is      => 'lazy',
+    is      => 'ro',
     isa     => Bool,
+    default => 0,
 );
-sub _build_does_keys {
-    my ($self) = @_;
-    return 1 if %{ $self->keys() };
-    return 0;
-}
 
 =head2 keys
 
@@ -138,14 +134,10 @@ has keys => (
 =cut
 
 has requires_key_declaration => (
-    is  => 'lazy',
-    isa => Bool,
+    is      => 'ro',
+    isa     => Bool,
+    default => 0,
 );
-sub _build_requires_key_declaration {
-    my ($self) = @_;
-    return 1 if %{ $self->keys() };
-    return 0;
-}
 
 =head2 default_key
 

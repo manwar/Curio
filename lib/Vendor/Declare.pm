@@ -114,7 +114,15 @@ sub has_key ($;@) {
 sub install () {
     my $class = caller;
 
-    $class->install_vendor( $meta_args{$class} || {} );
+    my $args = $meta_args{$class} ||= {};
+    my $keys = $args->{keys} ||= {};
+
+    if (%$keys) {
+        $args->{does_keys} = 1 if !defined $args->{does_keys};
+        $args->{requires_key_declaration} = 1 if !defined $args->{requires_key_declaration};
+    }
+
+    $class->install_vendor( $args );
 
     return;
 }
