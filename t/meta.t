@@ -8,8 +8,10 @@ use Moo qw();
 use Import::Into;
 use Scalar::Util qw( blessed );
 
+my $new_meta_counter = 0;
+
 subtest basic => sub{
-    my $meta = new_meta( 'basic' );
+    my $meta = new_meta();
     $meta->install();
 
     my $object = $meta->fetch();
@@ -23,7 +25,7 @@ subtest basic => sub{
 
 subtest fetch_method => sub{
     subtest default => sub{
-        my $meta = new_meta( 'default_fetch' );
+        my $meta = new_meta();
 
         ok( !$meta->class->can('fetch'), 'fetch not installed' );
 
@@ -34,7 +36,6 @@ subtest fetch_method => sub{
 
     subtest custom => sub{
         my $meta = new_meta(
-            'custom_fetch',
             fetch_method => 'connect',
         );
 
@@ -50,7 +51,7 @@ subtest fetch_method => sub{
 
 subtest does_caching => sub{
     subtest no_cache => sub{
-        my $meta = new_meta( 'no_cache' );
+        my $meta = new_meta();
         $meta->install();
 
         my $object1 = $meta->fetch();
@@ -61,7 +62,6 @@ subtest does_caching => sub{
 
     subtest cache => sub{
         my $meta = new_meta(
-            'cache',
             does_caching => 1,
         );
         $meta->install();
@@ -76,7 +76,6 @@ subtest does_caching => sub{
 
     subtest no_cache_with_keys => sub{
         my $meta = new_meta(
-            'no_cache_with_keys',
             does_keys => 1,
         );
         $meta->install();
@@ -91,9 +90,8 @@ subtest does_caching => sub{
 
     subtest cache_with_keys => sub{
         my $meta = new_meta(
-            'cache_with_keys',
             does_caching => 1,
-            does_keys    => 1,
+            does_keys => 1,
         );
         $meta->install();
 
@@ -110,7 +108,7 @@ subtest does_caching => sub{
 
 subtest does_keys => sub{
     subtest 'no_keys' => sub{
-        my $meta = new_meta( 'no_does_keys' );
+        my $meta = new_meta();
 
         foreach my $method (qw( fetch create arguments )) {
             is(
@@ -126,7 +124,6 @@ subtest does_keys => sub{
 
     subtest 'keys' => sub{
         my $meta = new_meta(
-            'does_keys',
             does_keys => 1,
         );
 
@@ -144,8 +141,7 @@ subtest does_keys => sub{
 
     subtest 'keys_with_default' => sub{
         my $meta = new_meta(
-            'does_keys_with_default',
-            does_keys   => 1,
+            does_keys => 1,
             default_key => 'foo',
         );
 
@@ -165,9 +161,8 @@ subtest does_keys => sub{
 subtest requires_key_declaration => sub{
     subtest no_requires => sub{
         my $meta = new_meta(
-            'no_requires_declared_key',
             does_keys => 1,
-            keys      => { foo=>{} },
+            keys => { foo=>{} },
         );
 
         is( dies{ $meta->fetch('foo') }, undef, 'known key worked' );
@@ -176,9 +171,8 @@ subtest requires_key_declaration => sub{
 
     subtest requires => sub{
         my $meta = new_meta(
-            'requires_declared_key',
             does_keys => 1,
-            keys      => { foo=>{} },
+            keys => { foo=>{} },
             requires_key_declaration => 1,
         );
 
@@ -190,7 +184,6 @@ subtest requires_key_declaration => sub{
 subtest default_key => sub{
     subtest no_key => sub{
         my $meta = new_meta(
-            'no_default_key',
             does_keys => 1,
         );
 
@@ -200,7 +193,6 @@ subtest default_key => sub{
 
     subtest key => sub{
         my $meta = new_meta(
-            'default_key',
             does_keys => 1,
             default_key => 'foo',
         );
@@ -213,7 +205,6 @@ subtest default_key => sub{
 subtest key_argument => sub{
     subtest no_key_argument => sub{
         my $meta = new_meta(
-            'no_default_key',
             does_keys => 1,
         );
 
@@ -225,7 +216,6 @@ subtest key_argument => sub{
 
     subtest no_key_argument => sub{
         my $meta = new_meta(
-            'default_key',
             does_keys => 1,
             key_argument => 'foo',
         );
@@ -240,14 +230,16 @@ subtest key_argument => sub{
 done_testing;
 
 sub new_meta {
-    my $name = shift;
+    $new_meta_counter++;
 
     my $meta = Vendor::Meta->new(
-        class=>"Vendor::Test::$name",
+        class => "Vendor::Test$new_meta_counter",
         @_,
     );
 
     Moo->import::into( $meta->class() );
+
+    note $meta->class() . ' created';
 
     return $meta;
 }
