@@ -187,6 +187,29 @@ subtest requires_key_declaration => sub{
     };
 };
 
+subtest default_key => sub{
+    subtest no_key => sub{
+        my $meta = new_meta(
+            'no_default_key',
+            does_keys => 1,
+        );
+
+        isnt( dies{ $meta->fetch() }, undef, 'no key failed' );
+        is( dies{ $meta->fetch('key') }, undef, 'key worked' );
+    };
+
+    subtest key => sub{
+        my $meta = new_meta(
+            'default_key',
+            does_keys => 1,
+            default_key => 'foo',
+        );
+
+        is( dies{ $meta->fetch() }, undef, 'no key worked' );
+        is( dies{ $meta->fetch('key') }, undef, 'key worked' );
+    };
+};
+
 done_testing;
 
 sub new_meta {
