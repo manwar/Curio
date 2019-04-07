@@ -227,6 +227,37 @@ subtest key_argument => sub{
     };
 };
 
+subtest arguments => sub{
+    subtest no_keys => sub{
+        my $meta = new_meta();
+        is( $meta->arguments(), {}, 'empty arguments' );
+    };
+
+    subtest keys => sub{
+        my $meta = new_meta(
+            does_keys => 1,
+            keys => { key2 => {foo=>'bar'} },
+        );
+        is( $meta->arguments('key1'), {}, 'empty arguments' );
+        is( $meta->arguments('key2'), {foo=>'bar'}, 'has arguments' );
+    };
+
+    subtest key_argument => sub{
+        my $meta = new_meta(
+            does_keys => 1,
+            keys => { bar2 => {foo1=>'bar1'} },
+            key_argument => 'foo2',
+        );
+
+        $meta->class->can('has')->('foo1', is=>'ro');
+        $meta->class->can('has')->('foo2', is=>'ro');
+        my $object = $meta->fetch('bar2');
+
+        is( $object->foo1(), 'bar1', 'key argument was set' );
+        is( $object->foo2(), 'bar2', 'key argument was set' );
+    };
+};
+
 done_testing;
 
 sub new_meta {
