@@ -43,7 +43,7 @@ sub _process_key_arg {
             croak 'A key is required';
         }
 
-        if ($self->requires_declared_key()) {
+        if ($self->requires_key_declaration()) {
             croak 'Key is not declared' if !$self->keys->{$key};
         }
     }
@@ -133,15 +133,19 @@ has keys => (
     default => sub{ {} },
 );
 
-=head2 requires_declared_key
+=head2 requires_key_declaration
 
 =cut
 
-has requires_declared_key => (
-    is      => 'ro',
-    isa     => Bool,
-    default => 1,
+has requires_key_declaration => (
+    is  => 'lazy',
+    isa => Bool,
 );
+sub _build_requires_key_declaration {
+    my ($self) = @_;
+    return 1 if %{ $self->keys() };
+    return 0;
+}
 
 =head2 default_key
 

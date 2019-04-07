@@ -78,7 +78,6 @@ subtest does_caching => sub{
         my $meta = new_meta(
             'no_cache_with_keys',
             does_keys => 1,
-            requires_declared_key => 0,
         );
         $meta->install();
 
@@ -95,7 +94,6 @@ subtest does_caching => sub{
             'cache_with_keys',
             does_caching => 1,
             does_keys    => 1,
-            requires_declared_key => 0,
         );
         $meta->install();
 
@@ -130,7 +128,6 @@ subtest does_keys => sub{
         my $meta = new_meta(
             'does_keys',
             does_keys => 1,
-            requires_declared_key => 0,
         );
 
         foreach my $method (qw( fetch create arguments )) {
@@ -149,7 +146,6 @@ subtest does_keys => sub{
         my $meta = new_meta(
             'does_keys_with_default',
             does_keys   => 1,
-            requires_declared_key => 0,
             default_key => 'foo',
         );
 
@@ -166,13 +162,13 @@ subtest does_keys => sub{
     };
 };
 
-subtest requires_declared_key => sub{
+subtest requires_key_declaration => sub{
     subtest no_requires => sub{
         my $meta = new_meta(
             'no_requires_declared_key',
             does_keys => 1,
             keys      => { foo=>{} },
-            requires_declared_key => 0,
+            requires_key_declaration => 0,
         );
 
         is( dies{ $meta->fetch('foo') }, undef, 'known key worked' );
