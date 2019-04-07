@@ -11,6 +11,6 @@ use Test2::V0;
     install;
 }
 
-ok( Foo->vendor() );
+ok( Foo->vendor_meta() );
 
 done_testing;

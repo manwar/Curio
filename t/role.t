@@ -10,6 +10,6 @@ use Test2::V0;
     __PACKAGE__->install_vendor();
 }
 
-ok( Foo->vendor() );
+ok( Foo->vendor_meta() );
 
 done_testing;

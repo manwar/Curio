@@ -50,11 +50,11 @@ sub install_vendor {
     return;
 }
 
-=head2 vendor
+=head2 vendor_meta
 
 =cut
 
-sub vendor {
+sub vendor_meta {
     my $class = shift;
 
     $class = blessed( $class ) || $class;
