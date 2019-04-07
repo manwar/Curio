@@ -106,11 +106,11 @@ has class => (
 
 =head1 OPTIONAL ARGUMENTS
 
-=head2 fetch_method
+=head2 fetch_method_name
 
 =cut
 
-has fetch_method => (
+has fetch_method_name => (
     is      => 'ro',
     isa     => NonEmptySimpleStr,
     default => 'fetch',
@@ -252,7 +252,7 @@ sub install {
     install_modifier(
         $self->class(),
         'fresh',
-        $self->fetch_method(),
+        $self->fetch_method_name(),
         \&_fetch_sub,
     );
 

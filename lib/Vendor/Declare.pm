@@ -22,7 +22,7 @@ use strictures 2;
 use Exporter qw( import );
 
 our @EXPORT = qw(
-    fetch_method
+    fetch_method_name
     does_caching
     does_keys
     requires_key_declaration
@@ -36,13 +36,13 @@ my %meta_args;
 
 =head1 EXPORTED FUNCTIONS
 
-=head2 fetch_method
+=head2 fetch_method_name
 
 =cut
 
-sub fetch_method ($) {
+sub fetch_method_name ($) {
     my $class = caller;
-    $meta_args{$class}->{fetch_method} = shift;
+    $meta_args{$class}->{fetch_method_name} = shift;
     return;
 }
 

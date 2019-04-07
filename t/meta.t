@@ -23,7 +23,7 @@ subtest basic => sub{
     );
 };
 
-subtest fetch_method => sub{
+subtest fetch_method_name => sub{
     subtest default => sub{
         my $meta = new_meta();
 
@@ -36,7 +36,7 @@ subtest fetch_method => sub{
 
     subtest custom => sub{
         my $meta = new_meta(
-            fetch_method => 'connect',
+            fetch_method_name => 'connect',
         );
 
         ok( !$meta->class->can('fetch'), 'fetch not installed' );
