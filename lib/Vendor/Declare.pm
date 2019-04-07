@@ -25,7 +25,7 @@ our @EXPORT = qw(
     fetch_method
     does_caching
     does_keys
-    requires_declared_key
+    key_declaration_optional
     default_key
     key_argument
     has_key
@@ -66,13 +66,14 @@ sub does_keys (;$) {
     return;
 }
 
-=head2 requires_declared_key
+=head2 key_declaration_optional
 
 =cut
 
-sub requires_declared_key (;$) {
+sub key_declaration_optional (;$) {
     my $class = caller;
-    $meta_args{$class}->{requires_declared_key} = @_ ? shift : 1;
+    my $optional = @_ ? shift : 1;
+    $meta_args{$class}->{requires_declared_key} = $optional ? 0 : 1;
     return;
 }
 

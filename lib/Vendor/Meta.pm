@@ -140,7 +140,7 @@ has keys => (
 has requires_declared_key => (
     is      => 'ro',
     isa     => Bool,
-    default => 0,
+    default => 1,
 );
 
 =head2 default_key
