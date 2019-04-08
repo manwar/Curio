@@ -9,28 +9,26 @@ use strictures;
 use namespace::clean;
 
 sub import {
-    my $class = caller;
+    my $class = shift;
 
-    shift;
-    my $args = {
-        map { $_ => 1 }
-        @_
-    };
+    my $target = caller;
 
-    Vendor::Declare->import::into( $class )
+    my $args = { map { $_ => 1 } @_ };
+
+    Vendor::Declare->import::into( $target )
         if !$args->{no_declare};
 
-    Moo->import::into( $class );
+    Moo->import::into( $target );
 
     strictures->import::into({
         level   => 1,
         version => 2,
     }) if !$args->{no_strictures};
 
-    namespace::clean->import::into( $class )
+    namespace::clean->import::into( $target )
         if !$args->{no_clean};
 
-    $class->can( 'with' )->( 'Vendor::Role' );
+    $target->can( 'with' )->( 'Vendor::Role' );
 
     return;
 }
