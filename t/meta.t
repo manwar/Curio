@@ -158,8 +158,8 @@ subtest does_keys => sub{
     };
 };
 
-subtest requires_key_declaration => sub{
-    subtest no_requires => sub{
+subtest require_key_declaration => sub{
+    subtest no_require => sub{
         my $meta = new_meta(
             does_keys => 1,
             keys => { foo=>{} },
@@ -169,11 +169,11 @@ subtest requires_key_declaration => sub{
         is( dies{ $meta->fetch('bar') }, undef, 'unknown key worked' );
     };
 
-    subtest requires => sub{
+    subtest require => sub{
         my $meta = new_meta(
             does_keys => 1,
             keys => { foo=>{} },
-            requires_key_declaration => 1,
+            require_key_declaration => 1,
         );
 
         is( dies{ $meta->fetch('foo') }, undef, 'known key worked' );

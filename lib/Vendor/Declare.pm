@@ -27,7 +27,7 @@ our @EXPORT = qw(
     always_export
     does_caching
     does_keys
-    requires_key_declaration
+    require_key_declaration
     default_key
     key_argument
     has_key
@@ -88,13 +88,13 @@ sub does_keys (;$) {
     return;
 }
 
-=head2 requires_key_declaration
+=head2 require_key_declaration
 
 =cut
 
-sub requires_key_declaration (;$) {
+sub require_key_declaration (;$) {
     my $class = caller;
-    $meta_args{$class}->{requires_key_declaration} = @_ ? shift : 1;
+    $meta_args{$class}->{require_key_declaration} = @_ ? shift : 1;
     return;
 }
 
@@ -141,7 +141,7 @@ sub install () {
 
     if (%$keys) {
         $args->{does_keys} = 1 if !defined $args->{does_keys};
-        $args->{requires_key_declaration} = 1 if !defined $args->{requires_key_declaration};
+        $args->{require_key_declaration} = 1 if !defined $args->{require_key_declaration};
     }
 
     $class->install_vendor( $args );
