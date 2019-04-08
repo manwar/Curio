@@ -23,6 +23,8 @@ use Exporter qw( import );
 
 our @EXPORT = qw(
     fetch_method_name
+    export_name
+    always_export
     does_caching
     does_keys
     requires_key_declaration
@@ -43,6 +45,26 @@ my %meta_args;
 sub fetch_method_name ($) {
     my $class = caller;
     $meta_args{$class}->{fetch_method_name} = shift;
+    return;
+}
+
+=head2 export_name
+
+=cut
+
+sub export_name ($) {
+    my $class = caller;
+    $meta_args{$class}->{export_name} = shift;
+    return;
+}
+
+=head2 always_export
+
+=cut
+
+sub always_export (;$) {
+    my $class = caller;
+    $meta_args{$class}->{always_export} = @_ ? shift : 1;
     return;
 }
 

@@ -22,6 +22,8 @@ use Types::Common::String qw( NonEmptySimpleStr );
 use Class::Method::Modifiers qw( install_modifier );
 use Vendor::Util qw( croak );
 use Scalar::Util qw( weaken );
+use Import::Into;
+use Exporter qw();
 
 use Moo;
 use strictures 2;
@@ -114,6 +116,25 @@ has fetch_method_name => (
     is      => 'ro',
     isa     => NonEmptySimpleStr,
     default => 'fetch',
+);
+
+=head2 export_name
+
+=cut
+
+has export_name => (
+    is  => 'ro',
+    isa => NonEmptySimpleStr,
+);
+
+=head2 always_export
+
+=cut
+
+has always_export => (
+    is      => 'ro',
+    isa     => Bool,
+    default => 0,
 );
 
 =head2 does_caching
@@ -239,29 +260,49 @@ sub arguments {
 
 =cut
 
-sub _fetch_sub {
-    my $class = shift;
-    return $class->vendor->fetch( @_ );
-}
-
 sub install {
     my $self = shift;
 
     croak 'Too many arguments' if @_;
 
+    my $class = $self->class();
+
     install_modifier(
-        $self->class(),
+        $class,
         'fresh',
         'vendor_meta',
         sub{ $self },
     );
 
     install_modifier(
-        $self->class(),
+        $class,
         'fresh',
         $self->fetch_method_name(),
-        \&_fetch_sub,
+        sub{ my $class=shift; $class->vendor_meta->fetch( @_ ) },
     );
+
+    if (defined $self->export_name()) {
+        install_modifier(
+            $class,
+            'fresh',
+            $self->export_name(),
+            sub{ $class->vendor_meta->fetch( @_ ) },
+        );
+
+        Exporter->import::into( $class, 'import' );
+
+        my $symbol = $self->always_export()
+                   ? 'EXPORT'
+                   : 'EXPORT_OK';
+
+        my $ok = eval("
+            package $class;
+            our \@$symbol = ( $class\->vendor_meta->export_name() );
+            1;
+        ");
+
+        croak "Failed to install \@$class\::$symbol" if !$ok;
+    }
 
     return;
 }
