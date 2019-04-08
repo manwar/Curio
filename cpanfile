@@ -1,9 +1,9 @@
 requires 'perl' => '5.008001';
 
-requires 'Class::Method::Modifiers' => '2.10';
 requires 'Import::Into' => '1.002005';
 requires 'Moo' => '2.003000';
 requires 'Moo::Role' => '2.003000';
+requires 'Package::Stash' => '0.36';
 requires 'Types::Common::String' => '1.002001';
 requires 'Types::Standard' => '1.002001';
 requires 'namespace::clean' => '0.27';

@@ -2,8 +2,8 @@ package Vendor;
 our $VERSION = '0.01';
 
 use Import::Into;
-use Vendor::Declare qw();
 use Moo qw();
+use Vendor::Declare qw();
 
 use strictures;
 use namespace::clean;

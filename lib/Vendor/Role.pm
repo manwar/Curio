@@ -17,8 +17,8 @@ Vendor::Role - Role for creating Vendor classes.
 
 =cut
 
-use Vendor::Meta;
 use Scalar::Util qw( blessed );
+use Vendor::Meta;
 use Vendor::Util qw( croak );
 
 use Moo::Role;

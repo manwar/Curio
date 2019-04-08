@@ -17,13 +17,13 @@ Vendor::Meta - Vendor class metadata and core functionality.
 
 =cut
 
-use Types::Standard qw( Bool Map HashRef );
-use Types::Common::String qw( NonEmptySimpleStr );
-use Class::Method::Modifiers qw( install_modifier );
-use Vendor::Util qw( croak );
-use Scalar::Util qw( weaken );
-use Import::Into;
 use Exporter qw();
+use Import::Into;
+use Package::Stash;
+use Scalar::Util qw( weaken );
+use Types::Common::String qw( NonEmptySimpleStr );
+use Types::Standard qw( Bool Map HashRef );
+use Vendor::Util qw( croak );
 
 use Moo;
 use strictures 2;
@@ -267,25 +267,21 @@ sub install {
 
     my $class = $self->class();
 
-    install_modifier(
-        $class,
-        'fresh',
-        'vendor_meta',
+    my $stash = Package::Stash->new( $class );
+
+    $stash->add_symbol(
+        '&vendor_meta',
         sub{ $self },
     );
 
-    install_modifier(
-        $class,
-        'fresh',
-        $self->fetch_method_name(),
+    $stash->add_symbol(
+        '&' . $self->fetch_method_name(),
         sub{ my $class=shift; $class->vendor_meta->fetch( @_ ) },
     );
 
     if (defined $self->export_name()) {
-        install_modifier(
-            $class,
-            'fresh',
-            $self->export_name(),
+        $stash->add_symbol(
+            '&' . $self->export_name(),
             sub{ $class->vendor_meta->fetch( @_ ) },
         );
 
