@@ -26,11 +26,6 @@ subtest basic => sub{
 subtest fetch_method_name => sub{
     subtest default => sub{
         my $meta = new_meta();
-
-        ok( !$meta->class->can('fetch'), 'fetch not installed' );
-
-        $meta->install();
-
         ok( $meta->class->can('fetch'), 'fetch installed' );
     };
 
@@ -40,12 +35,13 @@ subtest fetch_method_name => sub{
         );
 
         ok( !$meta->class->can('fetch'), 'fetch not installed' );
-        ok( !$meta->class->can('connect'), 'connect not installed' );
+        ok( $meta->class->can('connect'), 'connect installed' );
 
-        $meta->install();
+        $meta->fetch_method_name('foo');
 
         ok( !$meta->class->can('fetch'), 'fetch not installed' );
-        ok( $meta->class->can('connect'), 'connect installed' );
+        ok( !$meta->class->can('connect'), 'connect not installed' );
+        ok( $meta->class->can('foo'), 'foo installed' );
     };
 };
 
@@ -275,15 +271,6 @@ subtest multi_meta_guard => sub{
         },
         undef,
         'two meta objects with different classes worked',
-    );
-
-    is(
-        dies{
-            Vendor::Meta->new( class=>'Vendor::TestGuard' );
-            Vendor::Meta->new( class=>'Vendor::TestGuard' );
-        },
-        undef,
-        'meta objects were properly weakened',
     );
 };
 

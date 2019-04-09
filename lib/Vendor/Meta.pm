@@ -20,7 +20,6 @@ Vendor::Meta - Vendor class metadata and core functionality.
 use Exporter qw();
 use Import::Into;
 use Package::Stash;
-use Scalar::Util qw( weaken );
 use Types::Common::String qw( NonEmptySimpleStr );
 use Types::Standard qw( Bool Map HashRef );
 use Vendor::Util qw( croak );
@@ -40,7 +39,8 @@ sub BUILD {
         if $class_to_meta{ $class };
 
     $class_to_meta{ $class } = $self;
-    weaken $class_to_meta{ $class };
+
+    $self->_install_fetch_method();
 
     return;
 }
@@ -113,10 +113,43 @@ has class => (
 =cut
 
 has fetch_method_name => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => NonEmptySimpleStr,
     default => 'fetch',
+    trigger => 1,
 );
+
+has _installed_fetch_method_name => (
+    is => 'rw',
+);
+
+sub _trigger_fetch_method_name {
+    my ($self) = @_;
+    $self->_install_fetch_method();
+    return;
+}
+
+sub _install_fetch_method {
+    my ($self) = @_;
+
+    my $stash = Package::Stash->new( $self->class() );
+
+    my $new_name = $self->fetch_method_name();
+
+    my $existing_name = $self->_installed_fetch_method_name();
+    if (defined $existing_name) {
+        $stash->remove_symbol( "&$existing_name" )
+    }
+
+    $stash->add_symbol(
+        "&$new_name",
+        sub{ shift; $self->fetch(@_) },
+    );
+
+    $self->_installed_fetch_method_name( $new_name );
+
+    return;
+}
 
 =head2 export_name
 
@@ -272,11 +305,6 @@ sub install {
     $stash->add_symbol(
         '&vendor_meta',
         sub{ $self },
-    );
-
-    $stash->add_symbol(
-        '&' . $self->fetch_method_name(),
-        sub{ my $class=shift; $class->vendor_meta->fetch( @_ ) },
     );
 
     if (defined $self->export_name()) {
