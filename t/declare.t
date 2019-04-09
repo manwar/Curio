@@ -8,9 +8,8 @@ use Test2::V0;
     use Moo;
     with 'Vendor::Role';
     use Vendor::Declare;
-    install;
 }
 
-ok( Foo->vendor_meta() );
+ok( Foo->vendor() );
 
 done_testing;

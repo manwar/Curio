@@ -17,12 +17,11 @@ Vendor::Meta - Vendor class metadata and core functionality.
 
 =cut
 
-use Exporter qw();
-use Import::Into;
 use Package::Stash;
 use Types::Common::String qw( NonEmptySimpleStr );
 use Types::Standard qw( Bool Map HashRef );
 use Vendor::Util qw( croak );
+use Scalar::Util qw( blessed );
 
 use Moo;
 use strictures 2;
@@ -33,14 +32,23 @@ my %class_to_meta;
 sub BUILD {
     my ($self) = @_;
 
+    $self->_store_class_to_meta();
+    $self->_trigger_fetch_method_name();
+    $self->_trigger_export_name();
+    $self->_trigger_always_export();
+
+    return;
+}
+
+sub _store_class_to_meta {
+    my ($self) = @_;
+
     my $class = $self->class();
 
     croak "A Vendor::Meta object already exists for $class"
         if $class_to_meta{ $class };
 
     $class_to_meta{ $class } = $self;
-
-    $self->_install_fetch_method();
 
     return;
 }
@@ -63,7 +71,7 @@ sub _process_key_arg {
         }
 
         if ($self->require_key_declaration()) {
-            croak 'Key is not declared' if !$self->keys->{$key};
+            croak 'Key is not declared' if !$self->_keys->{$key};
         }
     }
 
@@ -75,7 +83,6 @@ sub _process_key_arg {
 has _cache => (
     is       => 'ro',
     init_arg => undef,
-    isa      => HashRef,
     default  => sub{ {} },
 );
 
@@ -93,6 +100,12 @@ sub _cache_get {
     $key = $undef_cache_key if !defined $key;
     return $self->_cache->{$key};
 }
+
+has _keys => (
+    is       => 'ro',
+    init_arg => undef,
+    default  => sub{ {} },
+);
 
 =head1 REQUIRED ARGUMENTS
 
@@ -125,20 +138,13 @@ has _installed_fetch_method_name => (
 
 sub _trigger_fetch_method_name {
     my ($self) = @_;
-    $self->_install_fetch_method();
-    return;
-}
-
-sub _install_fetch_method {
-    my ($self) = @_;
 
     my $stash = Package::Stash->new( $self->class() );
-
     my $new_name = $self->fetch_method_name();
+    my $old_name = $self->_installed_fetch_method_name();
 
-    my $existing_name = $self->_installed_fetch_method_name();
-    if (defined $existing_name) {
-        $stash->remove_symbol( "&$existing_name" )
+    if (defined $old_name) {
+        $stash->remove_symbol( "&$old_name" )
     }
 
     $stash->add_symbol(
@@ -156,26 +162,89 @@ sub _install_fetch_method {
 =cut
 
 has export_name => (
-    is  => 'ro',
-    isa => NonEmptySimpleStr,
+    is      => 'rw',
+    isa     => NonEmptySimpleStr,
+    trigger => 1,
 );
+
+has _installed_export_name => (
+    is => 'rw',
+);
+
+sub _trigger_export_name {
+    my ($self) = @_;
+
+    return if !defined $self->export_name();
+
+    my $stash = Package::Stash->new( $self->class() );
+    my $new_name = $self->export_name();
+    my $old_name = $self->_installed_export_name();
+
+    if (defined $old_name) {
+        $stash->remove_symbol( "&$old_name" )
+    }
+
+    $stash->add_symbol(
+        "&$new_name",
+        sub{ $self->fetch( @_ ) },
+    );
+
+    $self->_trigger_always_export();
+
+    $self->_installed_export_name( $new_name );
+
+    return;
+}
 
 =head2 always_export
 
 =cut
 
 has always_export => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => Bool,
     default => 0,
+    trigger => 1,
 );
+
+has _installed_always_export => (
+    is => 'rw',
+);
+
+sub _trigger_always_export {
+    my ($self) = @_;
+
+    return if !defined $self->export_name();
+
+    my $stash = Package::Stash->new( $self->class() );
+    my $new_always = $self->always_export();
+    my $old_always = $self->_installed_always_export();
+
+    if (defined $old_always) {
+        $stash->remove_symbol( '@EXPORT' );
+        $stash->remove_symbol( '@EXPORT_OK' );
+    }
+
+    if ($new_always) {
+        $stash->add_symbol( '@EXPORT', [ $self->export_name() ] );
+        $stash->add_symbol( '@EXPORT_OK', [] );
+    }
+    else {
+        $stash->add_symbol( '@EXPORT', [] );
+        $stash->add_symbol( '@EXPORT_OK', [ $self->export_name() ] );
+    }
+
+    $self->_installed_always_export( $new_always );
+
+    return;
+}
 
 =head2 does_caching
 
 =cut
 
 has does_caching => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => Bool,
     default => 0,
 );
@@ -184,38 +253,52 @@ has does_caching => (
 
 =cut
 
-has does_keys => (
-    is      => 'ro',
-    isa     => Bool,
-    default => 0,
+has _does_keys => (
+    is       => 'rw',
+    isa      => Bool,
+    init_arg => 'does_keys',
 );
 
-=head2 keys
+sub does_keys {
+    my $self = shift;
 
-=cut
+    return $self->_does_keys( @_ ) if @_;
 
-has keys => (
-    is      => 'ro',
-    isa     => Map[ NonEmptySimpleStr, HashRef ],
-    default => sub{ {} },
-);
+    my $existing = $self->_does_keys();
+    return $existing if defined $existing;
+
+    return 1 if %{ $self->_keys() };
+    return 0;
+}
 
 =head2 require_key_declaration
 
 =cut
 
-has require_key_declaration => (
-    is      => 'ro',
-    isa     => Bool,
-    default => 0,
+has _require_key_declaration => (
+    is       => 'rw',
+    isa      => Bool,
+    init_arg => 'require_key_declaration',
 );
+
+sub require_key_declaration {
+    my $self = shift;
+
+    return $self->_require_key_declaration( @_ ) if @_;
+
+    my $existing = $self->_require_key_declaration();
+    return $existing if defined $existing;
+
+    return 1 if %{ $self->_keys() };
+    return 0;
+}
 
 =head2 default_key
 
 =cut
 
 has default_key => (
-    is  => 'ro',
+    is  => 'rw',
     isa => NonEmptySimpleStr,
 );
 
@@ -224,7 +307,7 @@ has default_key => (
 =cut
 
 has key_argument => (
-    is  => 'ro',
+    is  => 'rw',
     isa => NonEmptySimpleStr,
 );
 
@@ -280,7 +363,7 @@ sub arguments {
 
     return {} if !defined $key;
 
-    my %args = %{ $self->keys->{$key} || {} };
+    my %args = %{ $self->_keys->{$key} || {} };
 
     if (defined $self->key_argument()) {
         $args{ $self->key_argument() } = $key;
@@ -289,46 +372,31 @@ sub arguments {
     return \%args;
 }
 
-=head2 install
+=head2 add_key
 
 =cut
 
-sub install {
+sub add_key {
     my $self = shift;
+    my $name = shift;
 
-    croak 'Too many arguments' if @_;
-
-    my $class = $self->class();
-
-    my $stash = Package::Stash->new( $class );
-
-    $stash->add_symbol(
-        '&vendor_meta',
-        sub{ $self },
-    );
-
-    if (defined $self->export_name()) {
-        $stash->add_symbol(
-            '&' . $self->export_name(),
-            sub{ $class->vendor_meta->fetch( @_ ) },
-        );
-
-        Exporter->import::into( $class, 'import' );
-
-        my $symbol = $self->always_export()
-                   ? 'EXPORT'
-                   : 'EXPORT_OK';
-
-        my $ok = eval("
-            package $class;
-            our \@$symbol = ( $class\->vendor_meta->export_name() );
-            1;
-        ");
-
-        croak "Failed to install \@$class\::$symbol" if !$ok;
-    }
+    $self->_keys->{$name} = { @_ };
 
     return;
+}
+
+=head1 CLASS METHODS
+
+=head2 find_meta
+
+=cut
+
+sub find_meta {
+    my ($class, $thing) = @_;
+
+    $thing = blessed( $thing ) || $thing;
+
+    return $class_to_meta{ $thing };
 }
 
 1;

@@ -17,9 +17,12 @@ Vendor::Declare - Define vendor classes using declarative functions.
 
 =cut
 
-use strictures 2;
+use Vendor::Meta;
 
-use Exporter qw( import );
+use strictures 2;
+use namespace::clean;
+
+use Exporter qw();
 
 our @EXPORT = qw(
     fetch_method_name
@@ -30,11 +33,17 @@ our @EXPORT = qw(
     require_key_declaration
     default_key
     key_argument
-    has_key
-    install
+    add_key
 );
 
-my %meta_args;
+sub import {
+    my ($class) = @_;
+
+    my $target = caller;
+    Vendor::Meta->new( class=>$target );
+
+    goto &Exporter::import;
+}
 
 =head1 EXPORTED FUNCTIONS
 
@@ -44,7 +53,7 @@ my %meta_args;
 
 sub fetch_method_name ($) {
     my $class = caller;
-    $meta_args{$class}->{fetch_method_name} = shift;
+    $class->vendor->fetch_method_name( shift );
     return;
 }
 
@@ -54,7 +63,7 @@ sub fetch_method_name ($) {
 
 sub export_name ($) {
     my $class = caller;
-    $meta_args{$class}->{export_name} = shift;
+    $class->vendor->export_name( shift );
     return;
 }
 
@@ -64,7 +73,7 @@ sub export_name ($) {
 
 sub always_export (;$) {
     my $class = caller;
-    $meta_args{$class}->{always_export} = @_ ? shift : 1;
+    $class->vendor->always_export( @_ ? shift : 1 );
     return;
 }
 
@@ -74,7 +83,7 @@ sub always_export (;$) {
 
 sub does_caching (;$) {
     my $class = caller;
-    $meta_args{$class}->{does_caching} = @_ ? shift : 1;
+    $class->vendor->does_caching( @_ ? shift : 1 );
     return;
 }
 
@@ -84,7 +93,7 @@ sub does_caching (;$) {
 
 sub does_keys (;$) {
     my $class = caller;
-    $meta_args{$class}->{does_keys} = @_ ? shift : 1;
+    $class->vendor->does_keys( @_ ? shift : 1 );
     return;
 }
 
@@ -94,7 +103,7 @@ sub does_keys (;$) {
 
 sub require_key_declaration (;$) {
     my $class = caller;
-    $meta_args{$class}->{require_key_declaration} = @_ ? shift : 1;
+    $class->vendor->require_key_declaration( @_ ? shift : 1 );
     return;
 }
 
@@ -104,7 +113,7 @@ sub require_key_declaration (;$) {
 
 sub default_key ($) {
     my $class = caller;
-    $meta_args{$class}->{default_key} = shift;
+    $class->vendor->default_key( shift );
     return;
 }
 
@@ -114,38 +123,17 @@ sub default_key ($) {
 
 sub key_argument ($) {
     my $class = caller;
-    $meta_args{$class}->{key_argument} = shift;
+    $class->vendor->key_argument( shift );
     return;
 }
 
-=head2 has_key
+=head2 add_key
 
 =cut
 
-sub has_key ($;@) {
+sub add_key ($;@) {
     my $class = caller;
-    my $key = shift;
-    $meta_args{$class}->{keys}->{$key} = { @_ };
-    return;
-}
-
-=head2 install
-
-=cut
-
-sub install () {
-    my $class = caller;
-
-    my $args = $meta_args{$class} ||= {};
-    my $keys = $args->{keys} ||= {};
-
-    if (%$keys) {
-        $args->{does_keys} = 1 if !defined $args->{does_keys};
-        $args->{require_key_declaration} = 1 if !defined $args->{require_key_declaration};
-    }
-
-    $class->install_vendor( $args );
-
+    $class->vendor->add_key( @_ );
     return;
 }
 

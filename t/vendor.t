@@ -6,9 +6,8 @@ use Test2::V0;
 {
     package Foo;
     use Vendor;
-    install;
 }
 
-ok( Foo->vendor_meta() );
+ok( Foo->vendor() );
 
 done_testing;

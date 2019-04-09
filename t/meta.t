@@ -12,7 +12,6 @@ my $new_meta_counter = 0;
 
 subtest basic => sub{
     my $meta = new_meta();
-    $meta->install();
 
     my $object = $meta->fetch();
 
@@ -48,7 +47,6 @@ subtest fetch_method_name => sub{
 subtest does_caching => sub{
     subtest no_cache => sub{
         my $meta = new_meta();
-        $meta->install();
 
         my $object1 = $meta->fetch();
         my $object2 = $meta->fetch();
@@ -60,7 +58,6 @@ subtest does_caching => sub{
         my $meta = new_meta(
             does_caching => 1,
         );
-        $meta->install();
 
         my $object1 = $meta->fetch();
         my $object2 = $meta->fetch();
@@ -74,7 +71,6 @@ subtest does_caching => sub{
         my $meta = new_meta(
             does_keys => 1,
         );
-        $meta->install();
 
         my $object1 = $meta->fetch('key1');
         my $object2 = $meta->fetch('key2');
@@ -89,7 +85,6 @@ subtest does_caching => sub{
             does_caching => 1,
             does_keys => 1,
         );
-        $meta->install();
 
         my $object1 = $meta->fetch('key1');
         my $object2 = $meta->fetch('key2');
@@ -157,20 +152,17 @@ subtest does_keys => sub{
 subtest require_key_declaration => sub{
     subtest no_require => sub{
         my $meta = new_meta(
-            does_keys => 1,
-            keys => { foo=>{} },
+            require_key_declaration => 0,
         );
+        $meta->add_key( 'foo' );
 
         is( dies{ $meta->fetch('foo') }, undef, 'known key worked' );
         is( dies{ $meta->fetch('bar') }, undef, 'unknown key worked' );
     };
 
     subtest require => sub{
-        my $meta = new_meta(
-            does_keys => 1,
-            keys => { foo=>{} },
-            require_key_declaration => 1,
-        );
+        my $meta = new_meta();
+        $meta->add_key( 'foo' );
 
         is( dies{ $meta->fetch('foo') }, undef, 'known key worked' );
         isnt( dies{ $meta->fetch('bar') }, undef, 'unknown key failed' );
@@ -231,19 +223,18 @@ subtest arguments => sub{
 
     subtest keys => sub{
         my $meta = new_meta(
-            does_keys => 1,
-            keys => { key2 => {foo=>'bar'} },
+            require_key_declaration => 0,
         );
+        $meta->add_key( 'key2', foo=>'bar' );
         is( $meta->arguments('key1'), {}, 'empty arguments' );
         is( $meta->arguments('key2'), {foo=>'bar'}, 'has arguments' );
     };
 
     subtest key_argument => sub{
         my $meta = new_meta(
-            does_keys => 1,
-            keys => { bar2 => {foo1=>'bar1'} },
             key_argument => 'foo2',
         );
+        $meta->add_key( 'bar2', foo1=>'bar1' );
 
         $meta->class->can('has')->('foo1', is=>'ro');
         $meta->class->can('has')->('foo2', is=>'ro');

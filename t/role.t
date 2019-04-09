@@ -3,9 +3,10 @@ use 5.008001;
 use strictures 2;
 use Test2::V0;
 
-use Vendor::Role qw();
-use Moo qw();
 use Import::Into;
+use Moo qw();
+use Moo::Role qw();
+use Vendor::Meta;
 
 my $new_class_counter = 0;
 
@@ -15,13 +16,13 @@ subtest basic => sub{
     );
 
     is(
-        $class->vendor_meta->class(),
+        $class->vendor->class(),
         $class,
-        'vendor_meta was installed and works',
+        'vendor was installed and works',
     );
 
     is(
-        $class->vendor_meta->fetch_method_name(),
+        $class->vendor->fetch_method_name(),
         'connect',
         'argument to install_vendor made it to the meta',
     );
@@ -41,6 +42,11 @@ subtest export => sub{
 
         my $object = get_foo();
         isa_ok( $object, $class );
+
+        $class->vendor->export_name( 'get_foo2' );
+        $class->import('get_foo2');
+        ok( !$class->can('get_foo'), 'old export removed' );
+        ok( $class->can('get_foo2'), 'new export installed' );
     };
 
     subtest always => sub{
@@ -63,8 +69,16 @@ sub new_class {
     my $class = "Vendor::Test$new_class_counter";
 
     Moo->import::into( $class );
-    $class->can( 'with' )->( 'Vendor::Role' );
-    $class->install_vendor( @_ );
+
+    Moo::Role->apply_roles_to_package(
+        $class,
+        'Vendor::Role',
+    );
+
+    Vendor::Meta->new(
+        class => $class,
+        @_,
+    );
 
     note "$class created";
 
