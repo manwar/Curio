@@ -22,28 +22,6 @@ subtest basic => sub{
     );
 };
 
-subtest fetch_method_name => sub{
-    subtest default => sub{
-        my $meta = new_meta();
-        ok( $meta->class->can('fetch'), 'fetch installed' );
-    };
-
-    subtest custom => sub{
-        my $meta = new_meta(
-            fetch_method_name => 'connect',
-        );
-
-        ok( !$meta->class->can('fetch'), 'fetch not installed' );
-        ok( $meta->class->can('connect'), 'connect installed' );
-
-        $meta->fetch_method_name('foo');
-
-        ok( !$meta->class->can('fetch'), 'fetch not installed' );
-        ok( !$meta->class->can('connect'), 'connect not installed' );
-        ok( $meta->class->can('foo'), 'foo installed' );
-    };
-};
-
 subtest export => sub{
     subtest no_always => sub{
         my $class = new_meta(
