@@ -1,12 +1,12 @@
 #!/usr/bin/env perl
-use 5.008001;
 use strictures 2;
 use Test2::V0;
 
-use Vendor::Meta;
-use Moo qw();
 use Import::Into;
+use Moo qw();
+use Moo::Role qw();
 use Scalar::Util qw( blessed );
+use Vendor::Meta;
 
 my $new_meta_counter = 0;
 
@@ -41,6 +41,39 @@ subtest fetch_method_name => sub{
         ok( !$meta->class->can('fetch'), 'fetch not installed' );
         ok( !$meta->class->can('connect'), 'connect not installed' );
         ok( $meta->class->can('foo'), 'foo installed' );
+    };
+};
+
+subtest export => sub{
+    subtest no_always => sub{
+        my $class = new_meta(
+            export_name => 'get_foo',
+        )->class();
+
+        isnt( dies{ get_foo() }, undef, 'export not yet installed' );
+        $class->import();
+        isnt( dies{ get_foo() }, undef, 'export not yet installed' );
+        $class->import('get_foo');
+        is( dies{ get_foo() }, undef, 'export installed' );
+
+        my $object = get_foo();
+        isa_ok( $object, $class );
+
+        $class->vendor->export_name( 'get_foo2' );
+        $class->import('get_foo2');
+        ok( !$class->can('get_foo'), 'old export removed' );
+        ok( $class->can('get_foo2'), 'new export installed' );
+    };
+
+    subtest always => sub{
+        my $class = new_meta(
+            export_name => 'get_bar',
+            always_export => 1,
+        )->class();
+
+        isnt( dies{ get_bar() }, undef, 'export not yet installed' );
+        $class->import();
+        is( dies{ get_bar() }, undef, 'export installed' );
     };
 };
 
@@ -276,6 +309,11 @@ sub new_meta {
     );
 
     Moo->import::into( $meta->class() );
+
+    Moo::Role->apply_roles_to_package(
+        $meta->class(),
+        'Vendor::Role',
+    );
 
     note $meta->class() . ' created';
 
