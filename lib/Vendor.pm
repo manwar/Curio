@@ -10,7 +10,7 @@ use strictures 2;
 use namespace::clean;
 
 sub import {
-    my $class = shift;
+    my ($class) = @_;
 
     my $target = caller;
 
