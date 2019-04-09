@@ -17,24 +17,34 @@ use Vendor;
 Calling `use Vendor;` is the same as:
 
 ```perl
-use Vendor::Declare;
-
+package MyApp::Service::Cache;
 use Moo;
-use strictures 2;
-use namespace::clean;
-
 with 'Vendor::Role';
+Vendor::Meta->new( class=>__PACKAGE__ );
 ```
 
-This can be adjusted by setting import flags, as in:
+Also, all the ["EXPORTED FUNCTIONS"](#exported-functions) are exported to the calling
+package.
 
-```perl
-use Vendor qw( no_strictures );
-```
+# EXPORTED FUNCTIONS
 
-Available flags are `no_declare` which disables [Vendor::Declare](https://metacpan.org/pod/Vendor::Declare),
-`no_strictures` which disables [strictures](https://metacpan.org/pod/strictures), and `no_clean` which
-disables [namespace::clean](https://metacpan.org/pod/namespace::clean).
+## fetch\_method\_name
+
+## export\_name
+
+## always\_export
+
+## does\_caching
+
+## does\_keys
+
+## require\_key\_declaration
+
+## default\_key
+
+## key\_argument
+
+## add\_key
 
 # SUPPORT
 

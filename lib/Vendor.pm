@@ -1,10 +1,10 @@
 package Vendor;
 our $VERSION = '0.01';
 
+use Exporter qw();
 use Import::Into;
 use Moo qw();
 use Moo::Role qw();
-use Vendor::Declare qw();
 
 use strictures 2;
 use namespace::clean;
@@ -14,26 +14,81 @@ sub import {
 
     my $target = caller;
 
-    my $args = { map { $_ => 1 } @_ };
-
-    Vendor::Declare->import::into( 1 )
-        if !$args->{no_declare};
-
     Moo->import::into( 1 );
-
-    strictures->import::into({
-        level   => 1,
-        version => 2,
-    }) if !$args->{no_strictures};
-
-    namespace::clean->import::into( 1 )
-        if !$args->{no_clean};
 
     Moo::Role->apply_roles_to_package(
         $target,
         'Vendor::Role',
     );
 
+    Vendor::Meta->new( class=>$target );
+
+    goto &Exporter::import;
+}
+
+our @EXPORT = qw(
+    fetch_method_name
+    export_name
+    always_export
+    does_caching
+    does_keys
+    require_key_declaration
+    default_key
+    key_argument
+    add_key
+);
+
+sub fetch_method_name ($) {
+    my $class = caller;
+    $class->vendor->fetch_method_name( shift );
+    return;
+}
+
+sub export_name ($) {
+    my $class = caller;
+    $class->vendor->export_name( shift );
+    return;
+}
+
+sub always_export (;$) {
+    my $class = caller;
+    $class->vendor->always_export( @_ ? shift : 1 );
+    return;
+}
+
+sub does_caching (;$) {
+    my $class = caller;
+    $class->vendor->does_caching( @_ ? shift : 1 );
+    return;
+}
+
+sub does_keys (;$) {
+    my $class = caller;
+    $class->vendor->does_keys( @_ ? shift : 1 );
+    return;
+}
+
+sub require_key_declaration (;$) {
+    my $class = caller;
+    $class->vendor->require_key_declaration( @_ ? shift : 1 );
+    return;
+}
+
+sub default_key ($) {
+    my $class = caller;
+    $class->vendor->default_key( shift );
+    return;
+}
+
+sub key_argument ($) {
+    my $class = caller;
+    $class->vendor->key_argument( shift );
+    return;
+}
+
+sub add_key ($;@) {
+    my $class = caller;
+    $class->vendor->add_key( @_ );
     return;
 }
 
@@ -58,21 +113,33 @@ Vendor - Procurer of fine resources and services.
 
 Calling C<use Vendor;> is the same as:
 
-    use Vendor::Declare;
-    
+    package MyApp::Service::Cache;
     use Moo;
-    use strictures 2;
-    use namespace::clean;
-    
     with 'Vendor::Role';
+    Vendor::Meta->new( class=>__PACKAGE__ );
 
-This can be adjusted by setting import flags, as in:
+Also, all the L</EXPORTED FUNCTIONS> are exported to the calling
+package.
 
-    use Vendor qw( no_strictures );
+=head1 EXPORTED FUNCTIONS
 
-Available flags are C<no_declare> which disables L<Vendor::Declare>,
-C<no_strictures> which disables L<strictures>, and C<no_clean> which
-disables L<namespace::clean>.
+=head2 fetch_method_name
+
+=head2 export_name
+
+=head2 always_export
+
+=head2 does_caching
+
+=head2 does_keys
+
+=head2 require_key_declaration
+
+=head2 default_key
+
+=head2 key_argument
+
+=head2 add_key
 
 =head1 SUPPORT
 
