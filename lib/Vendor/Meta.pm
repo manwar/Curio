@@ -17,11 +17,20 @@ Vendor::Meta - Vendor class metadata and core functionality.
 
 =cut
 
+use Carp qw();
 use Package::Stash;
+use Scalar::Util qw( blessed );
 use Types::Common::String qw( NonEmptySimpleStr );
 use Types::Standard qw( Bool Map HashRef );
-use Vendor::Util qw( croak );
-use Scalar::Util qw( blessed );
+
+sub croak {
+    local $Carp::Internal{'Vendor'} = 1;
+    local $Carp::Internal{'Vendor::Declare'} = 1;
+    local $Carp::Internal{'Vendor::Meta'} = 1;
+    local $Carp::Internal{'Vendor::Role'} = 1;
+
+    return Carp::croak( @_ );
+}
 
 use Moo;
 use strictures 2;
