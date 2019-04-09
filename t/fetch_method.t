@@ -8,6 +8,7 @@ subtest default => sub{
         use Vendor;
     }
 
+    can_ok( 'VT::default', 'fetch' );
     ok( VT::default->can('fetch'), 'fetch installed' );
 };
 
