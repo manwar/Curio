@@ -22,59 +22,6 @@ subtest basic => sub{
     );
 };
 
-subtest does_caching => sub{
-    subtest no_cache => sub{
-        my $meta = new_meta();
-
-        my $object1 = $meta->fetch();
-        my $object2 = $meta->fetch();
-
-        ref_is_not( $object1, $object2, 'caching is disabled' );
-    };
-
-    subtest cache => sub{
-        my $meta = new_meta(
-            does_caching => 1,
-        );
-
-        my $object1 = $meta->fetch();
-        my $object2 = $meta->fetch();
-        my $object3 = $meta->create();
-
-        ref_is( $object1, $object2, 'caching is enabled' );
-        ref_is_not( $object1, $object3, 'create bypassed caching' );
-    };
-
-    subtest no_cache_with_keys => sub{
-        my $meta = new_meta(
-            does_keys => 1,
-        );
-
-        my $object1 = $meta->fetch('key1');
-        my $object2 = $meta->fetch('key2');
-        my $object3 = $meta->fetch('key1');
-
-        ref_is_not( $object1, $object2, 'different keys' );
-        ref_is_not( $object1, $object3, 'caching is disabled' );
-    };
-
-    subtest cache_with_keys => sub{
-        my $meta = new_meta(
-            does_caching => 1,
-            does_keys => 1,
-        );
-
-        my $object1 = $meta->fetch('key1');
-        my $object2 = $meta->fetch('key2');
-        my $object3 = $meta->fetch('key1');
-        my $object4 = $meta->create('key1');
-
-        ref_is_not( $object1, $object2, 'different keys' );
-        ref_is( $object1, $object3, 'caching is enabled' );
-        ref_is_not( $object1, $object4, 'create bypassed caching' );
-    };
-};
-
 subtest does_keys => sub{
     subtest 'no_keys' => sub{
         my $meta = new_meta();
