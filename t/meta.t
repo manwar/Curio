@@ -115,31 +115,6 @@ subtest default_key => sub{
     };
 };
 
-subtest key_argument => sub{
-    subtest no_key_argument => sub{
-        my $meta = new_meta(
-            does_keys => 1,
-        );
-
-        $meta->class->can('has')->('foo', is=>'ro');
-        my $object = $meta->fetch('bar');
-
-        is( $object->foo(), undef, 'key argument was not set' );
-    };
-
-    subtest no_key_argument => sub{
-        my $meta = new_meta(
-            does_keys => 1,
-            key_argument => 'foo',
-        );
-
-        $meta->class->can('has')->('foo', is=>'ro');
-        my $object = $meta->fetch('bar');
-
-        is( $object->foo(), 'bar', 'key argument was set' );
-    };
-};
-
 subtest arguments => sub{
     subtest no_keys => sub{
         my $meta = new_meta();
