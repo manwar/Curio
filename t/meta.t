@@ -22,39 +22,6 @@ subtest basic => sub{
     );
 };
 
-subtest export => sub{
-    subtest no_always => sub{
-        my $class = new_meta(
-            export_name => 'get_foo',
-        )->class();
-
-        isnt( dies{ get_foo() }, undef, 'export not yet installed' );
-        $class->import();
-        isnt( dies{ get_foo() }, undef, 'export not yet installed' );
-        $class->import('get_foo');
-        is( dies{ get_foo() }, undef, 'export installed' );
-
-        my $object = get_foo();
-        isa_ok( $object, $class );
-
-        $class->vendor->export_name( 'get_foo2' );
-        $class->import('get_foo2');
-        ok( !$class->can('get_foo'), 'old export removed' );
-        ok( $class->can('get_foo2'), 'new export installed' );
-    };
-
-    subtest always => sub{
-        my $class = new_meta(
-            export_name => 'get_bar',
-            always_export => 1,
-        )->class();
-
-        isnt( dies{ get_bar() }, undef, 'export not yet installed' );
-        $class->import();
-        is( dies{ get_bar() }, undef, 'export installed' );
-    };
-};
-
 subtest does_caching => sub{
     subtest no_cache => sub{
         my $meta = new_meta();
