@@ -94,27 +94,6 @@ subtest require_key_declaration => sub{
     };
 };
 
-subtest default_key => sub{
-    subtest no_key => sub{
-        my $meta = new_meta(
-            does_keys => 1,
-        );
-
-        isnt( dies{ $meta->fetch() }, undef, 'no key failed' );
-        is( dies{ $meta->fetch('key') }, undef, 'key worked' );
-    };
-
-    subtest key => sub{
-        my $meta = new_meta(
-            does_keys => 1,
-            default_key => 'foo',
-        );
-
-        is( dies{ $meta->fetch() }, undef, 'no key worked' );
-        is( dies{ $meta->fetch('key') }, undef, 'key worked' );
-    };
-};
-
 subtest arguments => sub{
     subtest no_keys => sub{
         my $meta = new_meta();
