@@ -4,16 +4,16 @@ use Test2::V0;
 
 use Vendor::Meta;
 
-{
-    package Foo;
+my $class = 'VT';
+package VT;
     use Moo;
     with 'Vendor::Role';
-}
+package main;
 
-is( Foo->vendor(), undef, 'vendor() returned undef' );
+is( $class->vendor(), undef, 'vendor() returned undef' );
 
-Vendor::Meta->new( class=>'Foo' );
+Vendor::Meta->new( class=>$class );
 
-isnt( Foo->vendor(), undef, 'vendor() returned meta' );
+isa_ok( $class->vendor(), ['Vendor::Meta'], 'vendor() returned meta' );
 
 done_testing;

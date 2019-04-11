@@ -5,7 +5,7 @@ use Test2::V0;
 subtest no_cache => sub{
     my $class = 'VT::no_cache';
     package VT::no_cache;
-    use Vendor;
+        use Vendor;
     package main;
 
     my $object1 = $class->fetch();
@@ -17,8 +17,8 @@ subtest no_cache => sub{
 subtest cache => sub{
     my $class = 'VT::cache';
     package VT::cache;
-    use Vendor;
-    does_caching;
+        use Vendor;
+        does_caching;
     package main;
 
     my $object1 = $class->fetch();
@@ -32,8 +32,8 @@ subtest cache => sub{
 subtest no_cache_with_keys => sub{
     my $class = 'VT::no_cache_with_keys';
     package VT::no_cache_with_keys;
-    use Vendor;
-    does_keys;
+        use Vendor;
+        does_keys;
     package main;
 
     my $object1 = $class->fetch('key1');
@@ -47,9 +47,9 @@ subtest no_cache_with_keys => sub{
 subtest cache_with_keys => sub{
     my $class = 'VT::cache_with_keys';
     package VT::cache_with_keys;
-    use Vendor;
-    does_caching;
-    does_keys;
+        use Vendor;
+        does_caching;
+        does_keys;
     package main;
 
     my $object1 = $class->fetch('key1');

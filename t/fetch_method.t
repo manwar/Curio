@@ -3,31 +3,30 @@ use strictures 2;
 use Test2::V0;
 
 subtest default => sub{
-    {
-        package VT::default;
+    my $class = 'VT::default';
+    package VT::default;
         use Vendor;
-    }
+    package main;
 
-    can_ok( 'VT::default', 'fetch' );
-    ok( VT::default->can('fetch'), 'fetch installed' );
+    ok( $class->can('fetch'), 'fetch installed' );
 };
 
 subtest custom => sub{
-    {
-        package VT::custom;
+    my $class = 'VT::custom';
+    package VT::custom;
         use Vendor;
         fetch_method_name 'connect';
-    }
+    package main;
 
-    ok( !VT::custom->can('fetch'), 'fetch not installed' );
-    ok( VT::custom->can('connect'), 'connect installed' );
+    ok( !$class->can('fetch'), 'fetch not installed' );
+    ok( $class->can('connect'), 'connect installed' );
 
-    VT::custom->vendor->fetch_method_name('foo');
+    $class->vendor->fetch_method_name('foo');
     note 'switched fetch_method_name to foo';
 
-    ok( !VT::custom->can('fetch'), 'fetch not installed' );
-    ok( !VT::custom->can('connect'), 'connect not installed' );
-    ok( VT::custom->can('foo'), 'foo installed' );
+    ok( !$class->can('fetch'), 'fetch not installed' );
+    ok( !$class->can('connect'), 'connect not installed' );
+    ok( $class->can('foo'), 'foo installed' );
 };
 
 done_testing;

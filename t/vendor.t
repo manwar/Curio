@@ -2,11 +2,11 @@
 use strictures 2;
 use Test2::V0;
 
-{
-    package Foo;
+my $class = 'VT';
+package VT;
     use Vendor;
-}
+package main;
 
-ok( Foo->vendor() );
+isa_ok( $class->vendor(), ['Vendor::Meta'] );
 
 done_testing;
