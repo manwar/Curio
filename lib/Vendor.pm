@@ -37,6 +37,7 @@ our @EXPORT = qw(
     default_key
     key_argument
     add_key
+    alias_key
 );
 
 sub fetch_method_name ($) {
@@ -99,6 +100,12 @@ sub add_key ($;@) {
     return;
 }
 
+sub alias_key ($$) {
+    my $class = caller;
+    $class->vendor->alias_key( @_ );
+    return;
+}
+
 1;
 __END__
 
@@ -149,6 +156,8 @@ package.
 =head2 key_argument
 
 =head2 add_key
+
+=head2 alias_key
 
 =head1 SUPPORT
 

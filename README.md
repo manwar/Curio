@@ -48,6 +48,8 @@ package.
 
 ## add\_key
 
+## alias\_key
+
 # SUPPORT
 
 Please submit bugs and feature requests to the

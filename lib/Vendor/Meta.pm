@@ -85,6 +85,9 @@ sub _process_key_arg {
 
     croak 'Too many arguments' if @_;
 
+    $key = $self->_aliases->{$key}
+        if defined($key) and defined($self->_aliases->{$key});
+
     return $key;
 }
 
@@ -122,6 +125,12 @@ sub _fixup_cache_key {
 }
 
 has _keys => (
+    is       => 'ro',
+    init_arg => undef,
+    default  => sub{ {} },
+);
+
+has _aliases => (
     is       => 'ro',
     init_arg => undef,
     default  => sub{ {} },
@@ -298,6 +307,7 @@ sub does_keys {
     return $existing if defined $existing;
 
     return 1 if %{ $self->_keys() };
+    return 1 if %{ $self->_aliases() };
     return 0;
 }
 
@@ -320,6 +330,7 @@ sub require_key_declaration {
     return $existing if defined $existing;
 
     return 1 if %{ $self->_keys() };
+    return 1 if %{ $self->_aliases() };
     return 0;
 }
 
@@ -411,6 +422,18 @@ sub add_key {
     my $name = shift;
 
     $self->_keys->{$name} = { @_ };
+
+    return;
+}
+
+=head2 alias_key
+
+=cut
+
+sub alias_key {
+    my ($self, $alias, $key) = @_;
+
+    $self->_aliases->{$alias} = $key;
 
     return;
 }
