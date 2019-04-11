@@ -22,58 +22,6 @@ subtest basic => sub{
     );
 };
 
-subtest does_keys => sub{
-    subtest 'no_keys' => sub{
-        my $meta = new_meta();
-
-        foreach my $method (qw( fetch create arguments )) {
-            is(
-                dies{ $meta->$method() }, undef,
-                "$method with no key worked",
-            );
-            isnt(
-                dies{ $meta->$method('key') }, undef,
-                "$method with key failed",
-            );
-        }
-    };
-
-    subtest 'keys' => sub{
-        my $meta = new_meta(
-            does_keys => 1,
-        );
-
-        foreach my $method (qw( fetch create arguments )) {
-            isnt(
-                dies{ $meta->$method() }, undef,
-                "$method with no key failed",
-            );
-            is(
-                dies{ $meta->$method('key') }, undef,
-                "$method with key worked",
-            );
-        }
-    };
-
-    subtest 'keys_with_default' => sub{
-        my $meta = new_meta(
-            does_keys => 1,
-            default_key => 'foo',
-        );
-
-        foreach my $method (qw( fetch create arguments )) {
-            is(
-                dies{ $meta->$method() }, undef,
-                "$method with no key worked",
-            );
-            is(
-                dies{ $meta->$method('key') }, undef,
-                "$method with key worked",
-            );
-        }
-    };
-};
-
 subtest arguments => sub{
     subtest no_keys => sub{
         my $meta = new_meta();
