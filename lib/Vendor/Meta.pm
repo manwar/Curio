@@ -98,15 +98,27 @@ my $undef_cache_key = '__UNDEF_KEY__';
 
 sub _cache_set {
     my ($self, $key, $object) = @_;
-    $key = $undef_cache_key if !defined $key;
+    $key = $self->_fixup_cache_key( $key );
     $self->_cache->{$key} = $object;
     return;
 }
 
 sub _cache_get {
     my ($self, $key) = @_;
-    $key = $undef_cache_key if !defined $key;
+    $key = $self->_fixup_cache_key( $key );
     return $self->_cache->{$key};
+}
+
+sub _fixup_cache_key {
+    my ($self, $key) = @_;
+
+    $key = $undef_cache_key if !defined $key;
+    return $key if !$self->cache_per_process();
+
+    $key .= "-$$";
+    $key .= '-' . threads->tid() if $INC{'threads.pm'};
+
+    return $key;
 }
 
 has _keys => (
@@ -252,6 +264,16 @@ sub _trigger_always_export {
 =cut
 
 has does_caching => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 0,
+);
+
+=head2 cache_per_process
+
+=cut
+
+has cache_per_process => (
     is      => 'rw',
     isa     => Bool,
     default => 0,

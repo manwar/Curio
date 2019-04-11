@@ -31,6 +31,7 @@ our @EXPORT = qw(
     export_name
     always_export
     does_caching
+    cache_per_process
     does_keys
     require_key_declaration
     default_key
@@ -59,6 +60,12 @@ sub always_export (;$) {
 sub does_caching (;$) {
     my $class = caller;
     $class->vendor->does_caching( @_ ? shift : 1 );
+    return;
+}
+
+sub cache_per_process (;$) {
+    my $class = caller;
+    $class->vendor->cache_per_process( @_ ? shift : 1 );
     return;
 }
 
@@ -130,6 +137,8 @@ package.
 =head2 always_export
 
 =head2 does_caching
+
+=head2 cache_per_process
 
 =head2 does_keys
 

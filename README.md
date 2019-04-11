@@ -36,6 +36,8 @@ package.
 
 ## does\_caching
 
+## cache\_per\_process
+
 ## does\_keys
 
 ## require\_key\_declaration
