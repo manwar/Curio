@@ -74,26 +74,6 @@ subtest does_keys => sub{
     };
 };
 
-subtest require_key_declaration => sub{
-    subtest no_require => sub{
-        my $meta = new_meta(
-            require_key_declaration => 0,
-        );
-        $meta->add_key( 'foo' );
-
-        is( dies{ $meta->fetch('foo') }, undef, 'known key worked' );
-        is( dies{ $meta->fetch('bar') }, undef, 'unknown key worked' );
-    };
-
-    subtest require => sub{
-        my $meta = new_meta();
-        $meta->add_key( 'foo' );
-
-        is( dies{ $meta->fetch('foo') }, undef, 'known key worked' );
-        isnt( dies{ $meta->fetch('bar') }, undef, 'unknown key failed' );
-    };
-};
-
 subtest arguments => sub{
     subtest no_keys => sub{
         my $meta = new_meta();
