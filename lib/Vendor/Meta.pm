@@ -25,7 +25,6 @@ use Types::Standard qw( Bool Map HashRef );
 
 sub croak {
     local $Carp::Internal{'Vendor'} = 1;
-    local $Carp::Internal{'Vendor::Declare'} = 1;
     local $Carp::Internal{'Vendor::Meta'} = 1;
     local $Carp::Internal{'Vendor::Role'} = 1;
 
