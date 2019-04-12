@@ -53,8 +53,7 @@ sub _store_class_to_meta {
 
     my $class = $self->class();
 
-    croak "A Vendor::Meta object already exists for $class"
-        if $class_to_meta{ $class };
+    croak "Class already has a Vendor::Meta object: $class" if $class_to_meta{ $class };
 
     $class_to_meta{ $class } = $self;
 
@@ -64,26 +63,29 @@ sub _store_class_to_meta {
 sub _process_key_arg {
     my $self = shift;
 
+    my $caller_sub_name = (caller 1)[3];
+    $caller_sub_name =~ s{^.*::}{};
+
     my $key;
 
     if ($self->does_keys()) {
         if (@_) {
             $key = shift;
-            croak 'Invalid key' if !NonEmptySimpleStr->check( $key );
+            croak "Invalid key passed to $caller_sub_name()" if !NonEmptySimpleStr->check( $key );
         }
         elsif (defined $self->default_key()) {
             $key = $self->default_key();
         }
         else {
-            croak 'A key is required';
+            croak "No key was passed to $caller_sub_name()";
         }
 
         if ($self->require_key_declaration()) {
-            croak 'Key is not declared' if !$self->_keys->{$key};
+            croak "Undeclared key passed to $caller_sub_name()" if !$self->_keys->{$key};
         }
     }
 
-    croak 'Too many arguments' if @_;
+    croak "Too many arguments passed to $caller_sub_name()" if @_;
 
     $key = $self->_aliases->{$key}
         if defined($key) and defined($self->_aliases->{$key});
@@ -421,8 +423,9 @@ sub add_key {
     my ($self, $key, @args) = @_;
 
     croak 'Too few arguments to add_key()' if @_ < 2;
-    croak 'Invalid key passed to add_key()' if !NonEmptySimpleStr->check( $key );
+    croak 'Invalid key passed to add_key(): ' . NonEmptySimpleStr->get_message($key) if !NonEmptySimpleStr->check( $key );
     croak 'Odd number of key arguments passed to add_key()' if @args % 2 != 0;
+    croak "Already declared key passed to add_key(): $key" if $self->_keys->{$key};
 
     $self->_keys->{$key} = { @args };
 
@@ -438,8 +441,10 @@ sub alias_key {
 
     croak 'Too few arguments passed to alias_key()' if @_ < 3;
     croak 'Too many arguments passed to alias_key()' if @_ > 3;
-    croak 'Invalid alias passed to alias_key()' if !NonEmptySimpleStr->check( $alias );
-    croak 'Invalid key passed to alias_key()' if !NonEmptySimpleStr->check( $key );
+    croak 'Invalid alias passed to alias_key(): ' . NonEmptySimpleStr->get_message($alias) if !NonEmptySimpleStr->check( $alias );
+    croak 'Invalid key passed to alias_key(): ' . NonEmptySimpleStr->get_message($key) if !NonEmptySimpleStr->check( $key );
+    croak "Already declared alias passed to alias_key(): $alias" if defined $self->_aliases->{$alias};
+    croak "Undeclared key passed to alias_key(): $key" if !$self->allow_undeclared_keys() and !$self->_keys->{$key};
 
     $self->_aliases->{$alias} = $key;
 

@@ -41,7 +41,7 @@ subtest requires_key => sub{
 
     like(
         dies{ $class->vendor->_process_key_arg() },
-        qr{^A key is required},
+        qr{^No key was passed},
         'failed on key requirement',
     );
 };
@@ -60,7 +60,7 @@ subtest undeclared_key => sub{
 
     like(
         dies{ $class->vendor->_process_key_arg('bar') },
-        qr{^Key is not declared},
+        qr{^Undeclared key passed},
         'failed on undeclared key',
     );
 };
