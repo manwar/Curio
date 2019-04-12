@@ -418,10 +418,13 @@ sub arguments {
 =cut
 
 sub add_key {
-    my $self = shift;
-    my $name = shift;
+    my ($self, $key, @args) = @_;
 
-    $self->_keys->{$name} = { @_ };
+    croak 'Too few arguments to add_key()' if @_ < 2;
+    croak 'Invalid key passed to add_key()' if !NonEmptySimpleStr->check( $key );
+    croak 'Odd number of key arguments passed to add_key()' if @args % 2 != 0;
+
+    $self->_keys->{$key} = { @args };
 
     return;
 }
@@ -432,6 +435,11 @@ sub add_key {
 
 sub alias_key {
     my ($self, $alias, $key) = @_;
+
+    croak 'Too few arguments passed to alias_key()' if @_ < 3;
+    croak 'Too many arguments passed to alias_key()' if @_ > 3;
+    croak 'Invalid alias passed to alias_key()' if !NonEmptySimpleStr->check( $alias );
+    croak 'Invalid key passed to alias_key()' if !NonEmptySimpleStr->check( $key );
 
     $self->_aliases->{$alias} = $key;
 
@@ -445,11 +453,14 @@ sub alias_key {
 =cut
 
 sub find_meta {
-    my ($class, $thing) = @_;
+    my ($class, $for_class) = @_;
 
-    $thing = blessed( $thing ) || $thing;
+    croak 'Too few arguments passed to find_meta()' if @_ < 2;
+    croak 'Too many arguments passed to find_meta()' if @_ > 2;
 
-    return $class_to_meta{ $thing };
+    $for_class = blessed( $for_class ) || $for_class;
+
+    return $class_to_meta{ $for_class };
 }
 
 1;
