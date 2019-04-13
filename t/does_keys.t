@@ -23,7 +23,7 @@ subtest 'keys' => sub{
     my $class = 'VT::keys';
     package VT::keys;
         use Vendor;
-        does_keys;
+        add_key 'key';
     package main;
 
     isnt(

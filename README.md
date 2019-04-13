@@ -40,7 +40,7 @@ package.
 
 ## does\_keys
 
-## require\_key\_declaration
+## allow\_undeclared\_keys
 
 ## default\_key
 

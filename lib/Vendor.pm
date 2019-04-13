@@ -33,7 +33,7 @@ our @EXPORT = qw(
     does_caching
     cache_per_process
     does_keys
-    require_key_declaration
+    allow_undeclared_keys
     default_key
     key_argument
     add_key
@@ -76,9 +76,9 @@ sub does_keys (;$) {
     return;
 }
 
-sub require_key_declaration (;$) {
+sub allow_undeclared_keys (;$) {
     my $class = caller;
-    $class->vendor->require_key_declaration( @_ ? shift : 1 );
+    $class->vendor->allow_undeclared_keys( @_ ? shift : 1 );
     return;
 }
 
@@ -149,7 +149,7 @@ package.
 
 =head2 does_keys
 
-=head2 require_key_declaration
+=head2 allow_undeclared_keys
 
 =head2 default_key
 

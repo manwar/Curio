@@ -80,7 +80,7 @@ sub _process_key_arg {
             croak "No key was passed to $caller_sub_name()";
         }
 
-        if ($self->require_key_declaration()) {
+        if (!$self->allow_undeclared_keys()) {
             croak "Undeclared key passed to $caller_sub_name()" if !$self->_keys->{$key};
         }
     }
@@ -313,28 +313,15 @@ sub does_keys {
     return 0;
 }
 
-=head2 require_key_declaration
+=head2 allow_undeclared_keys
 
 =cut
 
-has _require_key_declaration => (
-    is       => 'rw',
-    isa      => Bool,
-    init_arg => 'require_key_declaration',
+has allow_undeclared_keys => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 0,
 );
-
-sub require_key_declaration {
-    my $self = shift;
-
-    return $self->_require_key_declaration( @_ ) if @_;
-
-    my $existing = $self->_require_key_declaration();
-    return $existing if defined $existing;
-
-    return 1 if %{ $self->_keys() };
-    return 1 if %{ $self->_aliases() };
-    return 0;
-}
 
 =head2 default_key
 

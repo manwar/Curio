@@ -15,7 +15,7 @@ subtest keys => sub{
     my $class = 'VT::keys';
     package VT::keys;
         use Vendor;
-        require_key_declaration 0;
+        allow_undeclared_keys;
         add_key key2 => ( foo=>'bar' );
     package main;
 

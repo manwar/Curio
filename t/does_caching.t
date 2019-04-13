@@ -33,7 +33,8 @@ subtest no_cache_with_keys => sub{
     my $class = 'VT::no_cache_with_keys';
     package VT::no_cache_with_keys;
         use Vendor;
-        does_keys;
+        add_key 'key1';
+        add_key 'key2';
     package main;
 
     my $object1 = $class->fetch('key1');
@@ -49,7 +50,8 @@ subtest cache_with_keys => sub{
     package VT::cache_with_keys;
         use Vendor;
         does_caching;
-        does_keys;
+        add_key 'key1';
+        add_key 'key2';
     package main;
 
     my $object1 = $class->fetch('key1');

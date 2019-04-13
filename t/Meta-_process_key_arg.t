@@ -6,7 +6,7 @@ subtest invalid_key => sub{
     my $class = 'VT::invalid_key';
     package VT::invalid_key;
         use Vendor;
-        does_keys;
+        add_key 'foo';
     package main;
 
     is(
@@ -31,7 +31,7 @@ subtest requires_key => sub{
     my $class = 'VT::requires_key';
     package VT::requires_key;
         use Vendor;
-        does_keys;
+        add_key 'foo';
     package main;
 
     is(
@@ -88,7 +88,7 @@ subtest too_many_arguments => sub{
         my $class = 'VT::too_many_arguments_keys';
         package VT::too_many_arguments_keys;
             use Vendor;
-            does_keys;
+            add_key 'foo';
         package main;
 
         is(

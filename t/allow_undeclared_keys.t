@@ -6,7 +6,7 @@ subtest no_require => sub{
     my $class = 'VT::no_require';
     package VT::no_require;
         use Vendor;
-        require_key_declaration 0;
+        allow_undeclared_keys;
         add_key 'foo';
     package main;
 

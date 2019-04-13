@@ -5,7 +5,7 @@ use Test2::V0;
 my $class = 'VT';
 package VT;
     use Vendor;
-    require_key_declaration 0;
+    allow_undeclared_keys;
     alias_key 'foo' => 'bar';
     key_argument 'actual_key';
     has actual_key => ( is=>'ro' );

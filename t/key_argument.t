@@ -6,7 +6,7 @@ subtest no_key_argument => sub{
     my $class = 'VT::no_key_argument';
     package VT::no_key_argument;
         use Vendor;
-        does_keys;
+        add_key 'bar';
         has foo => ( is=>'ro' );
     package main;
 
@@ -19,7 +19,8 @@ subtest key_argument => sub{
     my $class = 'VT::key_argument';
     package VT::key_argument;
         use Vendor;
-        does_keys;
+        add_key 'foo';
+        add_key 'bar';
         key_argument 'foo';
         has foo => ( is=>'ro' );
     package main;

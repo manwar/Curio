@@ -6,7 +6,7 @@ subtest no_key => sub{
     my $class = 'VT::no_key';
     package VT::no_key;
         use Vendor;
-        does_keys;
+        add_key 'key';
     package main;
 
     isnt( dies{ $class->fetch() }, undef, 'no key failed' );
@@ -17,7 +17,8 @@ subtest key => sub{
     my $class = 'VT::key';
     package VT::key;
         use Vendor;
-        does_keys;
+        add_key 'key';
+        add_key 'foo';
         default_key 'foo';
     package main;
 
