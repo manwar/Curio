@@ -7,6 +7,6 @@ package VT;
     use Curio;
 package main;
 
-isa_ok( $class->curio(), ['Curio::Meta'] );
+isa_ok( $class->curio_meta(), ['Curio::Meta'] );
 
 done_testing;

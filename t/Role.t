@@ -10,10 +10,10 @@ package VT;
     with 'Curio::Role';
 package main;
 
-is( $class->curio(), undef, 'curio() returned undef' );
+isnt( dies{ $class->curio_meta() }, undef, 'curio_meta() failed' );
 
 Curio::Meta->new( class=>$class );
 
-isa_ok( $class->curio(), ['Curio::Meta'], 'curio() returned meta' );
+isa_ok( $class->curio_meta(), ['Curio::Meta'], 'curio_meta() returned meta' );
 
 done_testing;

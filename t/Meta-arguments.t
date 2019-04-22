@@ -8,7 +8,7 @@ subtest no_keys => sub{
         use Curio;
     package main;
 
-    is( $class->curio->arguments(), {}, 'empty arguments' );
+    is( $class->curio_meta->arguments(), {}, 'empty arguments' );
 };
 
 subtest keys => sub{
@@ -19,8 +19,8 @@ subtest keys => sub{
         add_key key2 => ( foo=>'bar' );
     package main;
 
-    is( $class->curio->arguments('key1'), {}, 'empty arguments' );
-    is( $class->curio->arguments('key2'), {foo=>'bar'}, 'has arguments' );
+    is( $class->curio_meta->arguments('key1'), {}, 'empty arguments' );
+    is( $class->curio_meta->arguments('key2'), {foo=>'bar'}, 'has arguments' );
 };
 
 subtest key_argument => sub{

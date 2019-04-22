@@ -23,7 +23,7 @@ subtest cache => sub{
 
     my $object1 = $class->fetch();
     my $object2 = $class->fetch();
-    my $object3 = $class->curio->create();
+    my $object3 = $class->curio_meta->create();
 
     ref_is( $object1, $object2, 'caching is enabled' );
     ref_is_not( $object1, $object3, 'create bypassed caching' );
@@ -57,7 +57,7 @@ subtest cache_with_keys => sub{
     my $object1 = $class->fetch('key1');
     my $object2 = $class->fetch('key2');
     my $object3 = $class->fetch('key1');
-    my $object4 = $class->curio->create('key1');
+    my $object4 = $class->curio_meta->create('key1');
 
     ref_is_not( $object1, $object2, 'different keys' );
     ref_is( $object1, $object3, 'caching is enabled' );

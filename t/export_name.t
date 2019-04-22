@@ -17,9 +17,4 @@ is( dies{ get_foo() }, undef, 'export installed' );
 my $object = get_foo();
 isa_ok( $object, $class );
 
-$class->curio->export_name( 'get_foo2' );
-$class->import('get_foo2');
-ok( !$class->can('get_foo'), 'old export removed' );
-ok( $class->can('get_foo2'), 'new export installed' );
-
 done_testing;

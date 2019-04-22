@@ -10,18 +10,18 @@ subtest invalid_key => sub{
     package main;
 
     is(
-        $class->curio->_process_key_arg('foo'), 'foo',
+        $class->curio_meta->_process_key_arg('foo'), 'foo',
         'valid key returned key',
     );
 
     like(
-        dies{ $class->curio->_process_key_arg("foo\n") },
+        dies{ $class->curio_meta->_process_key_arg("foo\n") },
         qr{^Invalid key},
         'failed on invalid defined key',
     );
 
     like(
-        dies{ $class->curio->_process_key_arg(undef) },
+        dies{ $class->curio_meta->_process_key_arg(undef) },
         qr{^Invalid key},
         'failed on invalid undef key',
     );
@@ -35,12 +35,12 @@ subtest requires_key => sub{
     package main;
 
     is(
-        $class->curio->_process_key_arg('foo'), 'foo',
+        $class->curio_meta->_process_key_arg('foo'), 'foo',
         'valid key returned key',
     );
 
     like(
-        dies{ $class->curio->_process_key_arg() },
+        dies{ $class->curio_meta->_process_key_arg() },
         qr{^No key was passed},
         'failed on key requirement',
     );
@@ -54,12 +54,12 @@ subtest undeclared_key => sub{
     package main;
 
     is(
-        $class->curio->_process_key_arg('foo'), 'foo',
+        $class->curio_meta->_process_key_arg('foo'), 'foo',
         'declared key returned key',
     );
 
     like(
-        dies{ $class->curio->_process_key_arg('bar') },
+        dies{ $class->curio_meta->_process_key_arg('bar') },
         qr{^Undeclared key passed},
         'failed on undeclared key',
     );
@@ -73,12 +73,12 @@ subtest too_many_arguments => sub{
         package main;
 
         is(
-            $class->curio->_process_key_arg(), undef,
+            $class->curio_meta->_process_key_arg(), undef,
             'no key returned undef',
         );
 
         like(
-            dies{ $class->curio->_process_key_arg('foo') },
+            dies{ $class->curio_meta->_process_key_arg('foo') },
             qr{^Too many arguments},
             'failed on too many arguments',
         );
@@ -92,12 +92,12 @@ subtest too_many_arguments => sub{
         package main;
 
         is(
-            $class->curio->_process_key_arg('foo'), 'foo',
+            $class->curio_meta->_process_key_arg('foo'), 'foo',
             'key returned key',
         );
 
         like(
-            dies{ $class->curio->_process_key_arg('foo', 'bar') },
+            dies{ $class->curio_meta->_process_key_arg('foo', 'bar') },
             qr{^Too many arguments},
             'failed on too many arguments',
         );

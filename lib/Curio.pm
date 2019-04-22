@@ -1,6 +1,8 @@
 package Curio;
 our $VERSION = '0.01';
 
+use Curio::Meta;
+use Curio::Role qw();
 use Exporter qw();
 use Import::Into;
 use Moo qw();
@@ -10,8 +12,6 @@ use strictures 2;
 use namespace::clean;
 
 sub import {
-    my ($class) = @_;
-
     my $target = caller;
 
     Moo->import::into( 1 );
@@ -42,67 +42,67 @@ our @EXPORT = qw(
 
 sub fetch_method_name ($) {
     my $class = caller;
-    $class->curio->fetch_method_name( shift );
+    $class->curio_meta->fetch_method_name( shift );
     return;
 }
 
 sub export_name ($) {
     my $class = caller;
-    $class->curio->export_name( shift );
+    $class->curio_meta->export_name( shift );
     return;
 }
 
 sub always_export (;$) {
     my $class = caller;
-    $class->curio->always_export( @_ ? shift : 1 );
+    $class->curio_meta->always_export( @_ ? shift : 1 );
     return;
 }
 
 sub does_caching (;$) {
     my $class = caller;
-    $class->curio->does_caching( @_ ? shift : 1 );
+    $class->curio_meta->does_caching( @_ ? shift : 1 );
     return;
 }
 
 sub cache_per_process (;$) {
     my $class = caller;
-    $class->curio->cache_per_process( @_ ? shift : 1 );
+    $class->curio_meta->cache_per_process( @_ ? shift : 1 );
     return;
 }
 
 sub does_keys (;$) {
     my $class = caller;
-    $class->curio->does_keys( @_ ? shift : 1 );
+    $class->curio_meta->does_keys( @_ ? shift : 1 );
     return;
 }
 
 sub allow_undeclared_keys (;$) {
     my $class = caller;
-    $class->curio->allow_undeclared_keys( @_ ? shift : 1 );
+    $class->curio_meta->allow_undeclared_keys( @_ ? shift : 1 );
     return;
 }
 
 sub default_key ($) {
     my $class = caller;
-    $class->curio->default_key( shift );
+    $class->curio_meta->default_key( shift );
     return;
 }
 
 sub key_argument ($) {
     my $class = caller;
-    $class->curio->key_argument( shift );
+    $class->curio_meta->key_argument( shift );
     return;
 }
 
 sub add_key ($;@) {
     my $class = caller;
-    $class->curio->add_key( @_ );
+    $class->curio_meta->add_key( @_ );
     return;
 }
 
 sub alias_key ($$) {
     my $class = caller;
-    $class->curio->alias_key( @_ );
+    $class->curio_meta->alias_key( @_ );
     return;
 }
 

@@ -42,8 +42,6 @@ sub BUILD {
 
     $self->_store_class_to_meta();
     $self->_trigger_fetch_method_name();
-    $self->_trigger_export_name();
-    $self->_trigger_always_export();
 
     return;
 }
@@ -174,13 +172,11 @@ sub _trigger_fetch_method_name {
     my $new_name = $self->fetch_method_name();
     my $old_name = $self->_installed_fetch_method_name();
 
-    if (defined $old_name) {
-        $stash->remove_symbol( "&$old_name" )
-    }
+    $stash->remove_symbol( "&$old_name" ) if defined $old_name;
 
     $stash->add_symbol(
         "&$new_name",
-        sub{ shift; $self->fetch(@_) },
+        $self->_build_fetch_method(),
     );
 
     $self->_installed_fetch_method_name( $new_name );
@@ -188,44 +184,19 @@ sub _trigger_fetch_method_name {
     return;
 }
 
+sub _build_fetch_method {
+    my $self = shift;
+    return sub{ shift; $self->fetch( @_ ) };
+}
+
 =head2 export_name
 
 =cut
 
 has export_name => (
-    is      => 'rw',
-    isa     => NonEmptySimpleStr,
-    trigger => 1,
+    is  => 'rw',
+    isa => NonEmptySimpleStr,
 );
-
-has _installed_export_name => (
-    is => 'rw',
-);
-
-sub _trigger_export_name {
-    my ($self) = @_;
-
-    return if !defined $self->export_name();
-
-    my $stash = Package::Stash->new( $self->class() );
-    my $new_name = $self->export_name();
-    my $old_name = $self->_installed_export_name();
-
-    if (defined $old_name) {
-        $stash->remove_symbol( "&$old_name" )
-    }
-
-    $stash->add_symbol(
-        "&$new_name",
-        sub{ $self->fetch( @_ ) },
-    );
-
-    $self->_trigger_always_export();
-
-    $self->_installed_export_name( $new_name );
-
-    return;
-}
 
 =head2 always_export
 
@@ -235,40 +206,7 @@ has always_export => (
     is      => 'rw',
     isa     => Bool,
     default => 0,
-    trigger => 1,
 );
-
-has _installed_always_export => (
-    is => 'rw',
-);
-
-sub _trigger_always_export {
-    my ($self) = @_;
-
-    return if !defined $self->export_name();
-
-    my $stash = Package::Stash->new( $self->class() );
-    my $new_always = $self->always_export();
-    my $old_always = $self->_installed_always_export();
-
-    if (defined $old_always) {
-        $stash->remove_symbol( '@EXPORT' );
-        $stash->remove_symbol( '@EXPORT_OK' );
-    }
-
-    if ($new_always) {
-        $stash->add_symbol( '@EXPORT', [ $self->export_name() ] );
-        $stash->add_symbol( '@EXPORT_OK', [] );
-    }
-    else {
-        $stash->add_symbol( '@EXPORT', [] );
-        $stash->add_symbol( '@EXPORT_OK', [ $self->export_name() ] );
-    }
-
-    $self->_installed_always_export( $new_always );
-
-    return;
-}
 
 =head2 does_caching
 
@@ -440,19 +378,23 @@ sub alias_key {
 
 =head1 CLASS METHODS
 
-=head2 find_meta
+=head2 class_to_meta
 
 =cut
 
-sub find_meta {
+sub class_to_meta {
     my ($class, $for_class) = @_;
 
-    croak 'Too few arguments passed to find_meta()' if @_ < 2;
-    croak 'Too many arguments passed to find_meta()' if @_ > 2;
+    croak 'Too few arguments passed to class_to_meta()' if @_ < 2;
+    croak 'Too many arguments passed to class_to_meta()' if @_ > 2;
+    croak 'Undefined class passed to class_to_meta()' if !defined $for_class;
 
     $for_class = blessed( $for_class ) || $for_class;
+    my $meta = $class_to_meta{ $for_class };
 
-    return $class_to_meta{ $for_class };
+    croak "Unable to find existing Curio::Meta object for $for_class" if !$meta;
+
+    return $meta;
 }
 
 1;
