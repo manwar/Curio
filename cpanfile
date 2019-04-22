@@ -13,6 +13,8 @@ requires 'Carp';
 requires 'Exporter';
 requires 'Scalar::Util';
 
+recommends 'Sub::Name' => '0.20';
+
 on test => sub {
     requires 'Test2::V0' => '0.000094';
 };

@@ -17,19 +17,11 @@ Curio::Meta - Curio class metadata and core functionality.
 
 =cut
 
-use Carp qw();
+use Curio::Util;
 use Package::Stash;
 use Scalar::Util qw( blessed );
 use Types::Common::String qw( NonEmptySimpleStr );
 use Types::Standard qw( Bool Map HashRef );
-
-sub croak {
-    local $Carp::Internal{'Curio'} = 1;
-    local $Carp::Internal{'Curio::Meta'} = 1;
-    local $Carp::Internal{'Curio::Role'} = 1;
-
-    return Carp::croak( @_ );
-}
 
 use Moo;
 use strictures 2;
@@ -176,7 +168,7 @@ sub _trigger_fetch_method_name {
 
     $stash->add_symbol(
         "&$new_name",
-        $self->_build_fetch_method(),
+        subname( $new_name, $self->_build_fetch_method() ),
     );
 
     $self->_installed_fetch_method_name( $new_name );

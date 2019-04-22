@@ -1,7 +1,6 @@
 package Curio::Role;
 our $VERSION = '0.01';
 
-use Carp qw();
 use Curio::Meta;
 use Curio::Util;
 use Exporter qw();
