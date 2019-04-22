@@ -5,7 +5,7 @@ use Test2::V0;
 subtest 'no_keys' => sub{
     my $class = 'VT::no_keys';
     package VT::no_keys;
-        use Vendor;
+        use Curio;
     package main;
 
     is(
@@ -22,7 +22,7 @@ subtest 'no_keys' => sub{
 subtest 'keys' => sub{
     my $class = 'VT::keys';
     package VT::keys;
-        use Vendor;
+        use Curio;
         add_key 'key';
     package main;
 

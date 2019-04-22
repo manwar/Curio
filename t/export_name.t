@@ -4,7 +4,7 @@ use Test2::V0;
 
 my $class = 'VT';
 package VT;
-    use Vendor;
+    use Curio;
     export_name 'get_foo';
 package main;
 
@@ -17,7 +17,7 @@ is( dies{ get_foo() }, undef, 'export installed' );
 my $object = get_foo();
 isa_ok( $object, $class );
 
-$class->vendor->export_name( 'get_foo2' );
+$class->curio->export_name( 'get_foo2' );
 $class->import('get_foo2');
 ok( !$class->can('get_foo'), 'old export removed' );
 ok( $class->can('get_foo2'), 'new export installed' );

@@ -5,7 +5,7 @@ use Test2::V0;
 subtest no_key => sub{
     my $class = 'VT::no_key';
     package VT::no_key;
-        use Vendor;
+        use Curio;
         add_key 'key';
     package main;
 
@@ -16,7 +16,7 @@ subtest no_key => sub{
 subtest key => sub{
     my $class = 'VT::key';
     package VT::key;
-        use Vendor;
+        use Curio;
         add_key 'key';
         add_key 'foo';
         default_key 'foo';

@@ -4,9 +4,9 @@ use Test2::V0;
 
 my $class = 'VT';
 package VT;
-    use Vendor;
+    use Curio;
 package main;
 
-isa_ok( $class->vendor(), ['Vendor::Meta'] );
+isa_ok( $class->curio(), ['Curio::Meta'] );
 
 done_testing;

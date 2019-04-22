@@ -5,28 +5,28 @@ use Test2::V0;
 subtest no_keys => sub{
     my $class = 'VT::no_keys';
     package VT::no_keys;
-        use Vendor;
+        use Curio;
     package main;
 
-    is( $class->vendor->arguments(), {}, 'empty arguments' );
+    is( $class->curio->arguments(), {}, 'empty arguments' );
 };
 
 subtest keys => sub{
     my $class = 'VT::keys';
     package VT::keys;
-        use Vendor;
+        use Curio;
         allow_undeclared_keys;
         add_key key2 => ( foo=>'bar' );
     package main;
 
-    is( $class->vendor->arguments('key1'), {}, 'empty arguments' );
-    is( $class->vendor->arguments('key2'), {foo=>'bar'}, 'has arguments' );
+    is( $class->curio->arguments('key1'), {}, 'empty arguments' );
+    is( $class->curio->arguments('key2'), {foo=>'bar'}, 'has arguments' );
 };
 
 subtest key_argument => sub{
     my $class = 'VT::key_argument';
     package VT::key_argument;
-        use Vendor;
+        use Curio;
         key_argument 'foo2';
         add_key bar2 => ( foo1=>'bar1' );
         has foo1 => ( is=>'ro' );

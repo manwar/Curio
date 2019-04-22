@@ -1,4 +1,4 @@
-package Vendor;
+package Curio;
 our $VERSION = '0.01';
 
 use Exporter qw();
@@ -18,10 +18,10 @@ sub import {
 
     Moo::Role->apply_roles_to_package(
         $target,
-        'Vendor::Role',
+        'Curio::Role',
     );
 
-    Vendor::Meta->new( class=>$target );
+    Curio::Meta->new( class=>$target );
 
     goto &Exporter::import;
 }
@@ -42,67 +42,67 @@ our @EXPORT = qw(
 
 sub fetch_method_name ($) {
     my $class = caller;
-    $class->vendor->fetch_method_name( shift );
+    $class->curio->fetch_method_name( shift );
     return;
 }
 
 sub export_name ($) {
     my $class = caller;
-    $class->vendor->export_name( shift );
+    $class->curio->export_name( shift );
     return;
 }
 
 sub always_export (;$) {
     my $class = caller;
-    $class->vendor->always_export( @_ ? shift : 1 );
+    $class->curio->always_export( @_ ? shift : 1 );
     return;
 }
 
 sub does_caching (;$) {
     my $class = caller;
-    $class->vendor->does_caching( @_ ? shift : 1 );
+    $class->curio->does_caching( @_ ? shift : 1 );
     return;
 }
 
 sub cache_per_process (;$) {
     my $class = caller;
-    $class->vendor->cache_per_process( @_ ? shift : 1 );
+    $class->curio->cache_per_process( @_ ? shift : 1 );
     return;
 }
 
 sub does_keys (;$) {
     my $class = caller;
-    $class->vendor->does_keys( @_ ? shift : 1 );
+    $class->curio->does_keys( @_ ? shift : 1 );
     return;
 }
 
 sub allow_undeclared_keys (;$) {
     my $class = caller;
-    $class->vendor->allow_undeclared_keys( @_ ? shift : 1 );
+    $class->curio->allow_undeclared_keys( @_ ? shift : 1 );
     return;
 }
 
 sub default_key ($) {
     my $class = caller;
-    $class->vendor->default_key( shift );
+    $class->curio->default_key( shift );
     return;
 }
 
 sub key_argument ($) {
     my $class = caller;
-    $class->vendor->key_argument( shift );
+    $class->curio->key_argument( shift );
     return;
 }
 
 sub add_key ($;@) {
     my $class = caller;
-    $class->vendor->add_key( @_ );
+    $class->curio->add_key( @_ );
     return;
 }
 
 sub alias_key ($$) {
     my $class = caller;
-    $class->vendor->alias_key( @_ );
+    $class->curio->alias_key( @_ );
     return;
 }
 
@@ -113,24 +113,24 @@ __END__
 
 =head1 NAME
 
-Vendor - Procurer of fine resources and services.
+Curio - Procurer of fine resources and services.
 
 =head1 SYNOPSIS
 
     package MyApp::Service::Cache;
     
-    use Vendor;
+    use Curio;
     
     ...
 
 =head1 DESCRIPTION
 
-Calling C<use Vendor;> is the same as:
+Calling C<use Curio;> is the same as:
 
     package MyApp::Service::Cache;
     use Moo;
-    with 'Vendor::Role';
-    Vendor::Meta->new( class=>__PACKAGE__ );
+    with 'Curio::Role';
+    Curio::Meta->new( class=>__PACKAGE__ );
 
 Also, all the L</EXPORTED FUNCTIONS> are exported to the calling
 package.
@@ -162,9 +162,9 @@ package.
 =head1 SUPPORT
 
 Please submit bugs and feature requests to the
-Vendor GitHub issue tracker:
+Curio GitHub issue tracker:
 
-L<https://github.com/bluefeet/Vendor/issues>
+L<https://github.com/bluefeet/Curio/issues>
 
 =head1 AUTHORS
 

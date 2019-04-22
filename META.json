@@ -12,7 +12,7 @@
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : 2
    },
-   "name" : "Vendor",
+   "name" : "Curio",
    "no_index" : {
       "directory" : [
          "t",
@@ -65,13 +65,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/bluefeet/Vendor/issues"
+         "web" : "https://github.com/bluefeet/Curio/issues"
       },
-      "homepage" : "https://github.com/bluefeet/Vendor",
+      "homepage" : "https://github.com/bluefeet/Curio",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/bluefeet/Vendor.git",
-         "web" : "https://github.com/bluefeet/Vendor"
+         "url" : "git://github.com/bluefeet/Curio.git",
+         "web" : "https://github.com/bluefeet/Curio"
       }
    },
    "version" : "0.01",

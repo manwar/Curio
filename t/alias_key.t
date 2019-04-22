@@ -4,7 +4,7 @@ use Test2::V0;
 
 my $class = 'VT';
 package VT;
-    use Vendor;
+    use Curio;
     allow_undeclared_keys;
     alias_key 'foo' => 'bar';
     key_argument 'actual_key';

@@ -2,18 +2,18 @@
 use strictures 2;
 use Test2::V0;
 
-use Vendor::Meta;
+use Curio::Meta;
 
 my $class = 'VT';
 package VT;
     use Moo;
-    with 'Vendor::Role';
+    with 'Curio::Role';
 package main;
 
-is( $class->vendor(), undef, 'vendor() returned undef' );
+is( $class->curio(), undef, 'curio() returned undef' );
 
-Vendor::Meta->new( class=>$class );
+Curio::Meta->new( class=>$class );
 
-isa_ok( $class->vendor(), ['Vendor::Meta'], 'vendor() returned meta' );
+isa_ok( $class->curio(), ['Curio::Meta'], 'curio() returned meta' );
 
 done_testing;

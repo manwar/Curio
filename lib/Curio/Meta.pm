@@ -1,11 +1,11 @@
-package Vendor::Meta;
+package Curio::Meta;
 our $VERSION = '0.01';
 
 =encoding utf8
 
 =head1 NAME
 
-Vendor::Meta - Vendor class metadata and core functionality.
+Curio::Meta - Curio class metadata and core functionality.
 
 =head1 SYNOPSIS
 
@@ -24,9 +24,9 @@ use Types::Common::String qw( NonEmptySimpleStr );
 use Types::Standard qw( Bool Map HashRef );
 
 sub croak {
-    local $Carp::Internal{'Vendor'} = 1;
-    local $Carp::Internal{'Vendor::Meta'} = 1;
-    local $Carp::Internal{'Vendor::Role'} = 1;
+    local $Carp::Internal{'Curio'} = 1;
+    local $Carp::Internal{'Curio::Meta'} = 1;
+    local $Carp::Internal{'Curio::Role'} = 1;
 
     return Carp::croak( @_ );
 }
@@ -53,7 +53,7 @@ sub _store_class_to_meta {
 
     my $class = $self->class();
 
-    croak "Class already has a Vendor::Meta object: $class" if $class_to_meta{ $class };
+    croak "Class already has a Curio::Meta object: $class" if $class_to_meta{ $class };
 
     $class_to_meta{ $class } = $self;
 
@@ -460,15 +460,15 @@ __END__
 
 =head1 SUPPORT
 
-See L<Vendor/SUPPORT>.
+See L<Curio/SUPPORT>.
 
 =head1 AUTHORS
 
-See L<Vendor/AUTHORS>.
+See L<Curio/AUTHORS>.
 
 =head1 LICENSE
 
-See L<Vendor/LICENSE>.
+See L<Curio/LICENSE>.
 
 =cut
 

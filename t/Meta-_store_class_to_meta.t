@@ -2,12 +2,12 @@
 use strictures 2;
 use Test2::V0;
 
-use Vendor::Meta;
+use Curio::Meta;
 
 isnt(
     dies{
-        my $meta1 = Vendor::Meta->new( class=>'VT::same' );
-        my $meta2 = Vendor::Meta->new( class=>'VT::same' );
+        my $meta1 = Curio::Meta->new( class=>'VT::same' );
+        my $meta2 = Curio::Meta->new( class=>'VT::same' );
     },
     undef,
     'two meta objects with the same class failed',
@@ -15,8 +15,8 @@ isnt(
 
 is(
     dies{
-        my $meta1 = Vendor::Meta->new( class=>'VT::first' );
-        my $meta2 = Vendor::Meta->new( class=>'VT::second' );
+        my $meta1 = Curio::Meta->new( class=>'VT::first' );
+        my $meta2 = Curio::Meta->new( class=>'VT::second' );
     },
     undef,
     'two meta objects with different classes worked',

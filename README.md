@@ -1,26 +1,26 @@
 # NAME
 
-Vendor - Procurer of fine resources and services.
+Curio - Procurer of fine resources and services.
 
 # SYNOPSIS
 
 ```perl
 package MyApp::Service::Cache;
 
-use Vendor;
+use Curio;
 
 ...
 ```
 
 # DESCRIPTION
 
-Calling `use Vendor;` is the same as:
+Calling `use Curio;` is the same as:
 
 ```perl
 package MyApp::Service::Cache;
 use Moo;
-with 'Vendor::Role';
-Vendor::Meta->new( class=>__PACKAGE__ );
+with 'Curio::Role';
+Curio::Meta->new( class=>__PACKAGE__ );
 ```
 
 Also, all the ["EXPORTED FUNCTIONS"](#exported-functions) are exported to the calling
@@ -53,9 +53,9 @@ package.
 # SUPPORT
 
 Please submit bugs and feature requests to the
-Vendor GitHub issue tracker:
+Curio GitHub issue tracker:
 
-[https://github.com/bluefeet/Vendor/issues](https://github.com/bluefeet/Vendor/issues)
+[https://github.com/bluefeet/Curio/issues](https://github.com/bluefeet/Curio/issues)
 
 # AUTHORS
 

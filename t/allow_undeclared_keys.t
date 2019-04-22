@@ -5,7 +5,7 @@ use Test2::V0;
 subtest no_require => sub{
     my $class = 'VT::no_require';
     package VT::no_require;
-        use Vendor;
+        use Curio;
         allow_undeclared_keys;
         add_key 'foo';
     package main;
@@ -17,7 +17,7 @@ subtest no_require => sub{
 subtest require => sub{
     my $class = 'VT::require';
     package VT::require;
-        use Vendor;
+        use Curio;
         add_key 'foo';
     package main;
 
