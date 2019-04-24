@@ -220,29 +220,6 @@ has cache_per_process => (
     default => 0,
 );
 
-=head2 does_keys
-
-=cut
-
-has _does_keys => (
-    is       => 'rw',
-    isa      => Bool,
-    init_arg => 'does_keys',
-);
-
-sub does_keys {
-    my $self = shift;
-
-    return $self->_does_keys( @_ ) if @_;
-
-    my $existing = $self->_does_keys();
-    return $existing if defined $existing;
-
-    return 1 if %{ $self->_keys() };
-    return 1 if %{ $self->_aliases() };
-    return 0;
-}
-
 =head2 allow_undeclared_keys
 
 =cut
@@ -270,6 +247,24 @@ has key_argument => (
     is  => 'rw',
     isa => NonEmptySimpleStr,
 );
+
+=head1 ATTRIBUTES
+
+=head2 does_keys
+
+=cut
+
+sub does_keys {
+    my $self = shift;
+
+    return 1 if %{ $self->_keys() };
+    return 1 if %{ $self->_aliases() };
+    return 1 if $self->allow_undeclared_keys();
+    return 1 if defined $self->default_key();
+    return 1 if defined $self->key_argument();
+
+    return 0;
+}
 
 =head1 METHODS
 

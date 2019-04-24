@@ -11,7 +11,6 @@ our @EXPORT = qw(
     always_export
     does_caching
     cache_per_process
-    does_keys
     allow_undeclared_keys
     default_key
     key_argument
@@ -46,12 +45,6 @@ sub does_caching (;$) {
 sub cache_per_process (;$) {
     my $class = caller;
     $class->curio_meta->cache_per_process( @_ ? shift : 1 );
-    return;
-}
-
-sub does_keys (;$) {
-    my $class = caller;
-    $class->curio_meta->does_keys( @_ ? shift : 1 );
     return;
 }
 
@@ -109,8 +102,6 @@ Curio::Declare - Provider of Curio's declarative interface.
 =head2 does_caching
 
 =head2 cache_per_process
-
-=head2 does_keys
 
 =head2 allow_undeclared_keys
 
