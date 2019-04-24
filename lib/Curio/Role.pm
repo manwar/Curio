@@ -45,6 +45,11 @@ sub curio_meta {
     return Curio::Meta->class_to_meta( shift );
 }
 
+sub setup_curio {
+    Curio::Meta->new( class => shift );
+    return;
+}
+
 1;
 __END__
 
@@ -79,13 +84,18 @@ Enables C<$class-E<gt>does('Curio::Role')> checks.
 
 =head2 curio_meta
 
-    my $curio_meta = MyApp::Cache->curio_meta();
+    my $curio_meta = MyApp::Service::Cache->curio_meta();
 
 Returns the class's L<Curio::Meta> object.
 
 This method may also be called on instances of the class.
 
 Calling this is equivalent to calling L<Curio::Meta/class_to_meta>.
+
+=head2 setup_curio
+
+Sets up your class's L<Curio::Meta> object and is automatically
+called when you use L<Curio>.
 
 =head1 SUPPORT
 

@@ -17,14 +17,12 @@ use Curio;
 Calling `use Curio;` is the same as:
 
 ```perl
-package MyApp::Service::Cache;
 use Moo;
+use Curio::Declare;
+use namespace::clean;
 with 'Curio::Role';
-Curio::Meta->new( class=>__PACKAGE__ );
+__PACKAGE__->setup_curio();
 ```
-
-Also, all the ["EXPORTED FUNCTIONS"](#exported-functions) are exported to the calling
-package.
 
 # EXPORTED FUNCTIONS
 

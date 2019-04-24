@@ -1,9 +1,9 @@
 package Curio;
 our $VERSION = '0.01';
 
+use Curio::Declare qw();
 use Curio::Meta;
 use Curio::Role qw();
-use Exporter qw();
 use Import::Into;
 use Moo qw();
 use Moo::Role qw();
@@ -15,94 +15,16 @@ sub import {
     my $target = caller;
 
     Moo->import::into( 1 );
+    Curio::Declare->import::into( 1 );
+    namespace::clean->import::into( 1 );
 
     Moo::Role->apply_roles_to_package(
         $target,
         'Curio::Role',
     );
 
-    Curio::Meta->new( class=>$target );
+    $target->setup_curio();
 
-    goto &Exporter::import;
-}
-
-our @EXPORT = qw(
-    fetch_method_name
-    export_name
-    always_export
-    does_caching
-    cache_per_process
-    does_keys
-    allow_undeclared_keys
-    default_key
-    key_argument
-    add_key
-    alias_key
-);
-
-sub fetch_method_name ($) {
-    my $class = caller;
-    $class->curio_meta->fetch_method_name( shift );
-    return;
-}
-
-sub export_name ($) {
-    my $class = caller;
-    $class->curio_meta->export_name( shift );
-    return;
-}
-
-sub always_export (;$) {
-    my $class = caller;
-    $class->curio_meta->always_export( @_ ? shift : 1 );
-    return;
-}
-
-sub does_caching (;$) {
-    my $class = caller;
-    $class->curio_meta->does_caching( @_ ? shift : 1 );
-    return;
-}
-
-sub cache_per_process (;$) {
-    my $class = caller;
-    $class->curio_meta->cache_per_process( @_ ? shift : 1 );
-    return;
-}
-
-sub does_keys (;$) {
-    my $class = caller;
-    $class->curio_meta->does_keys( @_ ? shift : 1 );
-    return;
-}
-
-sub allow_undeclared_keys (;$) {
-    my $class = caller;
-    $class->curio_meta->allow_undeclared_keys( @_ ? shift : 1 );
-    return;
-}
-
-sub default_key ($) {
-    my $class = caller;
-    $class->curio_meta->default_key( shift );
-    return;
-}
-
-sub key_argument ($) {
-    my $class = caller;
-    $class->curio_meta->key_argument( shift );
-    return;
-}
-
-sub add_key ($;@) {
-    my $class = caller;
-    $class->curio_meta->add_key( @_ );
-    return;
-}
-
-sub alias_key ($$) {
-    my $class = caller;
-    $class->curio_meta->alias_key( @_ );
     return;
 }
 
@@ -127,13 +49,11 @@ Curio - Procurer of fine resources and services.
 
 Calling C<use Curio;> is the same as:
 
-    package MyApp::Service::Cache;
     use Moo;
+    use Curio::Declare;
+    use namespace::clean;
     with 'Curio::Role';
-    Curio::Meta->new( class=>__PACKAGE__ );
-
-Also, all the L</EXPORTED FUNCTIONS> are exported to the calling
-package.
+    __PACKAGE__->setup_curio();
 
 =head1 EXPORTED FUNCTIONS
 

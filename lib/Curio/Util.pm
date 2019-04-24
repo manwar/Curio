@@ -41,7 +41,7 @@ __END__
 
 =head1 NAME
 
-Curio::Util - Internal utility functions.
+Curio::Util - Internal Curio utility functions.
 
 =head1 EXPORTED FUNCTIONS
 
