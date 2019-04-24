@@ -39,11 +39,51 @@ Curio - Procurer of fine resources and services.
 
 =head1 SYNOPSIS
 
+Create a Curio class:
+
     package MyApp::Service::Cache;
     
-    use Curio;
+    use CHI;
+    use Types::Standard qw( InstanceOf );
     
-    ...
+    use Curio;
+    use strictures 2;
+    
+    with 'MooX::BuildArgs';
+    
+    fetch_method_name 'connect';
+    export_name 'myapp_cache';
+    always_export;
+    does_caching;
+    cache_per_process;
+    
+    add_key sessions => (
+        driver => 'Memory',
+        global => 0,
+    );
+    
+    add_key users => (
+        driver => 'File',
+        root_dir => '/some/path',
+    );
+    
+    has chi => (
+        is  => 'lazy',
+        isa => InstanceOf[ 'CHI::Driver' ],
+    );
+    
+    sub _build_chi {
+        my ($self) = @_;
+        my $chi = CHI->new( %{ $self->build_args() } );
+        $self->clear_build_args();
+        return $chi;
+    }
+
+Then use it elsewhere:
+
+    use MyApp::Service::Cache;
+    
+    my $chi = myapp_cache('sessions')->chi();
 
 =head1 DESCRIPTION
 

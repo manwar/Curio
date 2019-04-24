@@ -17,4 +17,6 @@ recommends 'Sub::Name' => '0.20';
 
 on test => sub {
     requires 'Test2::V0' => '0.000094';
+    suggests 'CHI' => '0.60';
+    suggests 'MooX::BuildArgs' => '0.08';
 };

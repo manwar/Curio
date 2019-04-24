@@ -62,6 +62,10 @@
       "test" : {
          "requires" : {
             "Test2::V0" : "0.000094"
+         },
+         "suggests" : {
+            "CHI" : "0.60",
+            "MooX::BuildArgs" : "0.08"
          }
       }
    },
