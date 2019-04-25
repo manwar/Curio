@@ -20,61 +20,61 @@ our @EXPORT = qw(
 
 sub fetch_method_name ($) {
     my $class = caller;
-    $class->curio_meta->fetch_method_name( shift );
+    $class->factory->fetch_method_name( shift );
     return;
 }
 
 sub export_name ($) {
     my $class = caller;
-    $class->curio_meta->export_name( shift );
+    $class->factory->export_name( shift );
     return;
 }
 
 sub always_export (;$) {
     my $class = caller;
-    $class->curio_meta->always_export( @_ ? shift : 1 );
+    $class->factory->always_export( @_ ? shift : 1 );
     return;
 }
 
 sub does_caching (;$) {
     my $class = caller;
-    $class->curio_meta->does_caching( @_ ? shift : 1 );
+    $class->factory->does_caching( @_ ? shift : 1 );
     return;
 }
 
 sub cache_per_process (;$) {
     my $class = caller;
-    $class->curio_meta->cache_per_process( @_ ? shift : 1 );
+    $class->factory->cache_per_process( @_ ? shift : 1 );
     return;
 }
 
 sub allow_undeclared_keys (;$) {
     my $class = caller;
-    $class->curio_meta->allow_undeclared_keys( @_ ? shift : 1 );
+    $class->factory->allow_undeclared_keys( @_ ? shift : 1 );
     return;
 }
 
 sub default_key ($) {
     my $class = caller;
-    $class->curio_meta->default_key( shift );
+    $class->factory->default_key( shift );
     return;
 }
 
 sub key_argument ($) {
     my $class = caller;
-    $class->curio_meta->key_argument( shift );
+    $class->factory->key_argument( shift );
     return;
 }
 
 sub add_key ($;@) {
     my $class = caller;
-    $class->curio_meta->add_key( @_ );
+    $class->factory->add_key( @_ );
     return;
 }
 
 sub alias_key ($$) {
     my $class = caller;
-    $class->curio_meta->alias_key( @_ );
+    $class->factory->alias_key( @_ );
     return;
 }
 

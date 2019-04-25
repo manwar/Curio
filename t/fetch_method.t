@@ -21,7 +21,7 @@ subtest custom => sub{
     ok( !$class->can('fetch'), 'fetch not installed' );
     ok( $class->can('connect'), 'connect installed' );
 
-    $class->curio_meta->fetch_method_name('foo');
+    $class->factory->fetch_method_name('foo');
     note 'switched fetch_method_name to foo';
 
     ok( !$class->can('fetch'), 'fetch not installed' );

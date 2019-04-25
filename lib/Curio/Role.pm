@@ -1,7 +1,7 @@
 package Curio::Role;
 our $VERSION = '0.01';
 
-use Curio::Meta;
+use Curio::Factory;
 use Curio::Util;
 use Exporter qw();
 use Package::Stash;
@@ -16,14 +16,14 @@ sub import {
     my ($class) = @_;
     my $target = caller;
 
-    my $meta = $class->curio_meta();
-    my $export_name = $meta->export_name();
+    my $factory = $class->factory();
+    my $export_name = $factory->export_name();
     return if !defined $export_name;
 
     if (!$is_exporter_setup{ $class }) {
-        my $sub = subname( $export_name, _build_exported_fetch( $meta ) );
-        my $export = $meta->always_export() ? [$export_name] : [];
-        my $export_ok = $meta->always_export() ? [] : [$export_name];
+        my $sub = subname( $export_name, _build_exported_fetch( $factory ) );
+        my $export = $factory->always_export() ? [$export_name] : [];
+        my $export_ok = $factory->always_export() ? [] : [$export_name];
 
         my $stash = Package::Stash->new( $class );
         $stash->add_symbol( "&$export_name", $sub );
@@ -37,16 +37,16 @@ sub import {
 }
 
 sub _build_exported_fetch {
-    my $meta = shift;
-    return sub{ $meta->fetch( @_ ) },
+    my $factory = shift;
+    return sub{ $factory->fetch( @_ ) },
 }
 
-sub curio_meta {
-    return Curio::Meta->class_to_meta( shift );
+sub factory {
+    return Curio::Factory->find_factory( shift );
 }
 
-sub setup_curio {
-    Curio::Meta->new( class => shift );
+sub setup_factory {
+    Curio::Factory->new( class => shift );
     return;
 }
 
@@ -67,12 +67,12 @@ This L<Moo::Role>:
 
 =item *
 
-Sets up exporting of the L<Curio::Meta/export_name>.
+Sets up exporting of the L<Curio::Factory/export_name>.
 
 =item *
 
-Provides the L</curio_meta> method, a convenient way to access
-the underlying L<Curio::Meta> object of a curio class.
+Provides the L</factory> method, a convenient way to access
+the underlying L<Curio::Factory> object of a curio class.
 
 =item *
 
@@ -82,19 +82,19 @@ Enables C<$class-E<gt>does('Curio::Role')> checks.
 
 =head1 CLASS METHODS
 
-=head2 curio_meta
+=head2 factory
 
-    my $curio_meta = MyApp::Service::Cache->curio_meta();
+    my $factory = MyApp::Service::Cache->factory();
 
-Returns the class's L<Curio::Meta> object.
+Returns the class's L<Curio::Factory> object.
 
 This method may also be called on instances of the class.
 
-Calling this is equivalent to calling L<Curio::Meta/class_to_meta>.
+Calling this is equivalent to calling L<Curio::Factory/find_factory>.
 
-=head2 setup_curio
+=head2 setup_factory
 
-Sets up your class's L<Curio::Meta> object and is automatically
+Sets up your class's L<Curio::Factory> object and is automatically
 called when you use L<Curio>.
 
 =head1 SUPPORT

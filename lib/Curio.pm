@@ -2,7 +2,7 @@ package Curio;
 our $VERSION = '0.01';
 
 use Curio::Declare qw();
-use Curio::Meta;
+use Curio::Factory;
 use Curio::Role qw();
 use Import::Into;
 use Moo qw();
@@ -23,7 +23,7 @@ sub import {
         'Curio::Role',
     );
 
-    $target->setup_curio();
+    $target->setup_factory();
 
     return;
 }

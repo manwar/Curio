@@ -1,11 +1,11 @@
-package Curio::Meta;
+package Curio::Factory;
 our $VERSION = '0.01';
 
 =encoding utf8
 
 =head1 NAME
 
-Curio::Meta - Curio class metadata and core functionality.
+Curio::Factory - Curio class core functionality and metadata.
 
 =head1 SYNOPSIS
 
@@ -27,25 +27,25 @@ use Moo;
 use strictures 2;
 use namespace::clean;
 
-my %class_to_meta;
+my %class_to_factory;
 
 sub BUILD {
     my ($self) = @_;
 
-    $self->_store_class_to_meta();
+    $self->_store_class_to_factory();
     $self->_trigger_fetch_method_name();
 
     return;
 }
 
-sub _store_class_to_meta {
+sub _store_class_to_factory {
     my ($self) = @_;
 
     my $class = $self->class();
 
-    croak "Class already has a Curio::Meta object: $class" if $class_to_meta{ $class };
+    croak "Class already has a Curio::Factory object: $class" if $class_to_factory{ $class };
 
-    $class_to_meta{ $class } = $self;
+    $class_to_factory{ $class } = $self;
 
     return;
 }
@@ -365,23 +365,23 @@ sub alias_key {
 
 =head1 CLASS METHODS
 
-=head2 class_to_meta
+=head2 find_factory
 
 =cut
 
-sub class_to_meta {
+sub find_factory {
     my ($class, $for_class) = @_;
 
-    croak 'Too few arguments passed to class_to_meta()' if @_ < 2;
-    croak 'Too many arguments passed to class_to_meta()' if @_ > 2;
-    croak 'Undefined class passed to class_to_meta()' if !defined $for_class;
+    croak 'Too few arguments passed to find_factory()' if @_ < 2;
+    croak 'Too many arguments passed to find_factory()' if @_ > 2;
+    croak 'Undefined class passed to find_factory()' if !defined $for_class;
 
     $for_class = blessed( $for_class ) || $for_class;
-    my $meta = $class_to_meta{ $for_class };
+    my $factory = $class_to_factory{ $for_class };
 
-    croak "Unable to find existing Curio::Meta object for $for_class" if !$meta;
+    croak "Unable to find an existing Curio::Factory object for $for_class" if !$factory;
 
-    return $meta;
+    return $factory;
 }
 
 1;

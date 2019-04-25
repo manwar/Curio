@@ -2,7 +2,7 @@
 use strictures 2;
 use Test2::V0;
 
-use Curio::Meta;
+use Curio::Factory;
 
 my $class = 'VT';
 package VT;
@@ -10,10 +10,10 @@ package VT;
     with 'Curio::Role';
 package main;
 
-isnt( dies{ $class->curio_meta() }, undef, 'curio_meta() failed' );
+isnt( dies{ $class->factory() }, undef, 'factory() failed' );
 
-Curio::Meta->new( class=>$class );
+Curio::Factory->new( class=>$class );
 
-isa_ok( $class->curio_meta(), ['Curio::Meta'], 'curio_meta() returned meta' );
+isa_ok( $class->factory(), ['Curio::Factory'], 'factory() returned a factory' );
 
 done_testing;
