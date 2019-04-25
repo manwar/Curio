@@ -14,7 +14,6 @@ my %is_exporter_setup;
 
 sub import {
     my ($class) = @_;
-    my $target = caller;
 
     my $factory = $class->factory();
     my $export_name = $factory->export_name();

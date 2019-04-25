@@ -2,7 +2,6 @@ package Curio;
 our $VERSION = '0.01';
 
 use Curio::Declare qw();
-use Curio::Factory;
 use Curio::Role qw();
 use Import::Into;
 use Moo qw();
