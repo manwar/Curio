@@ -44,7 +44,7 @@ sub factory {
     return Curio::Factory->find_factory( shift );
 }
 
-sub setup_factory {
+sub setup_curio {
     Curio::Factory->new( class => shift );
     return;
 }
@@ -91,10 +91,10 @@ This method may also be called on instances of the class.
 
 Calling this is equivalent to calling L<Curio::Factory/find_factory>.
 
-=head2 setup_factory
+=head2 setup_curio
 
 Sets up your class's L<Curio::Factory> object and is automatically
-called when you use L<Curio>.
+called when you C<use Curio;>.
 
 =head1 SUPPORT
 

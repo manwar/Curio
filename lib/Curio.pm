@@ -22,7 +22,7 @@ sub import {
         'Curio::Role',
     );
 
-    $target->setup_factory();
+    $target->setup_curio();
 
     return;
 }
