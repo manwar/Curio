@@ -10,7 +10,7 @@ package VT;
     with 'Curio::Role';
 package main;
 
-isnt( dies{ $class->factory() }, undef, 'factory() failed' );
+is( $class->factory(), undef, 'factory() returned undef' );
 
 Curio::Factory->new( class=>$class );
 

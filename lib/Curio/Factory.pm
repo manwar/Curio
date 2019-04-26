@@ -404,7 +404,6 @@ sub arguments {
 sub add_key {
     my ($self, $key, @args) = @_;
 
-    croak 'Too few arguments to add_key()' if @_ < 2;
     croak 'Invalid key passed to add_key(): ' . NonEmptySimpleStr->get_message($key) if !NonEmptySimpleStr->check( $key );
     croak 'Odd number of key arguments passed to add_key()' if @args % 2 != 0;
     croak "Already declared key passed to add_key(): $key" if $self->_keys->{$key};
@@ -421,8 +420,6 @@ sub add_key {
 sub alias_key {
     my ($self, $alias, $key) = @_;
 
-    croak 'Too few arguments passed to alias_key()' if @_ < 3;
-    croak 'Too many arguments passed to alias_key()' if @_ > 3;
     croak 'Invalid alias passed to alias_key(): ' . NonEmptySimpleStr->get_message($alias) if !NonEmptySimpleStr->check( $alias );
     croak 'Invalid key passed to alias_key(): ' . NonEmptySimpleStr->get_message($key) if !NonEmptySimpleStr->check( $key );
     croak "Already declared alias passed to alias_key(): $alias" if defined $self->_aliases->{$alias};
@@ -440,15 +437,9 @@ sub alias_key {
 sub find_curio {
     my ($self, $resource) = @_;
 
-    croak 'Too few arguments passed to find_curio()' if @_ < 2;
-    croak 'Too many arguments passed to find_curio()' if @_ > 2;
     croak 'Non-reference resource passed to find_curio()' if !ref $resource;
 
-    my $curio = $self->_registry->{ refaddr $resource };
-
-    croak "Unable to find an existing Curio object for the given resource" if !$curio;
-
-    return $curio;
+    return $self->_registry->{ refaddr $resource };
 }
 
 =head1 CLASS METHODS
@@ -460,16 +451,11 @@ sub find_curio {
 sub find_factory {
     my ($class, $curio_class) = @_;
 
-    croak 'Too few arguments passed to find_factory()' if @_ < 2;
-    croak 'Too many arguments passed to find_factory()' if @_ > 2;
     croak 'Undefined Curio class passed to find_factory()' if !defined $curio_class;
 
     $curio_class = blessed( $curio_class ) || $curio_class;
-    my $factory = $class_to_factory{ $curio_class };
 
-    croak "Unable to find an existing Curio::Factory object for $curio_class" if !$factory;
-
-    return $factory;
+    return $class_to_factory{ $curio_class };
 }
 
 1;
