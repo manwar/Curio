@@ -15,6 +15,7 @@ our @EXPORT = qw(
 
 sub croak {
     local $Carp::Internal{'Curio'} = 1;
+    local $Carp::Internal{'Curio::Declare'} = 1;
     local $Carp::Internal{'Curio::Factory'} = 1;
     local $Carp::Internal{'Curio::Role'} = 1;
     local $Carp::Internal{'Curio::Util'} = 1;
