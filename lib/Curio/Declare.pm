@@ -21,63 +21,63 @@ our @EXPORT = qw(
 );
 
 sub fetch_method_name {
-    my $class = caller;
-    $class->factory->fetch_method_name( shift );
-    return;
+    my $factory = caller->factory();
+    @_ = ( $factory, shift );
+    goto &{ $factory->can('fetch_method_name') };
 }
 
 sub export_function_name {
-    my $class = caller;
-    $class->factory->export_function_name( shift );
-    return;
+    my $factory = caller->factory();
+    @_ = ( $factory, shift );
+    goto &{ $factory->can('export_function_name') };
 }
 
 sub always_export {
-    my $class = caller;
-    $class->factory->always_export( @_ ? shift : 1 );
-    return;
+    my $factory = caller->factory();
+    @_ = ( $factory, (@_ ? shift : 1) );
+    goto &{ $factory->can('always_export') };
 }
 
 sub resource_method_name {
-    my $class = caller;
-    $class->factory->resource_method_name( shift );
-    return;
+    my $factory = caller->factory();
+    @_ = ( $factory, shift );
+    goto &{ $factory->can('resource_method_name') };
 }
 
 sub fetch_returns_resource {
-    my $class = caller;
-    $class->factory->fetch_returns_resource( @_ ? shift : 1 );
-    return;
+    my $factory = caller->factory();
+    @_ = ( $factory, (@_ ? shift : 1) );
+    goto &{ $factory->can('fetch_returns_resource') };
 }
 
 sub does_caching {
-    my $class = caller;
-    $class->factory->does_caching( @_ ? shift : 1 );
-    return;
+    my $factory = caller->factory();
+    @_ = ( $factory, (@_ ? shift : 1) );
+    goto &{ $factory->can('does_caching') };
 }
 
 sub cache_per_process {
-    my $class = caller;
-    $class->factory->cache_per_process( @_ ? shift : 1 );
-    return;
+    my $factory = caller->factory();
+    @_ = ( $factory, (@_ ? shift : 1) );
+    goto &{ $factory->can('cache_per_process') };
 }
 
 sub allow_undeclared_keys {
-    my $class = caller;
-    $class->factory->allow_undeclared_keys( @_ ? shift : 1 );
-    return;
+    my $factory = caller->factory();
+    @_ = ( $factory, (@_ ? shift : 1) );
+    goto &{ $factory->can('allow_undeclared_keys') };
 }
 
 sub default_key {
-    my $class = caller;
-    $class->factory->default_key( shift );
-    return;
+    my $factory = caller->factory();
+    @_ = ( $factory, shift );
+    goto &{ $factory->can('default_key') };
 }
 
 sub key_argument {
-    my $class = caller;
-    $class->factory->key_argument( shift );
-    return;
+    my $factory = caller->factory();
+    @_ = ( $factory, shift );
+    goto &{ $factory->can('key_argument') };
 }
 
 sub add_key {
