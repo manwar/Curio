@@ -11,6 +11,7 @@ our @EXPORT = qw(
     always_export
     resource_method_name
     fetch_returns_resource
+    registers_resources
     does_caching
     cache_per_process
     allow_undeclared_keys
@@ -48,6 +49,12 @@ sub fetch_returns_resource {
     my $factory = caller->factory();
     @_ = ( $factory, (@_ ? shift : 1) );
     goto &{ $factory->can('fetch_returns_resource') };
+}
+
+sub registers_resources {
+    my $factory = caller->factory();
+    @_ = ( $factory, (@_ ? shift : 1) );
+    goto &{ $factory->can('registers_resources') };
 }
 
 sub does_caching {
@@ -116,6 +123,8 @@ Curio::Declare - Provider of Curio's declarative interface.
 =head2 resource_method_name
 
 =head2 fetch_returns_resource
+
+=head2 registers_resources
 
 =head2 does_caching
 

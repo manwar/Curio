@@ -19,7 +19,7 @@ Curio::Factory - Curio class core functionality and metadata.
 
 use Curio::Util;
 use Package::Stash;
-use Scalar::Util qw( blessed );
+use Scalar::Util qw( blessed refaddr );
 use Types::Common::String qw( NonEmptySimpleStr );
 use Types::Standard qw( Bool Map HashRef );
 
@@ -115,6 +115,12 @@ sub _fixup_cache_key {
 
     return $key;
 }
+
+has _registry => (
+    is       => 'ro',
+    init_arg => undef,
+    default  => sub{ {} },
+);
 
 has _keys => (
     is       => 'ro',
@@ -214,6 +220,16 @@ has resource_method_name => (
 =cut
 
 has fetch_returns_resource => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 0,
+);
+
+=head2 registers_resources
+
+=cut
+
+has registers_resources => (
     is      => 'rw',
     isa     => Bool,
     default => 0,
@@ -350,6 +366,14 @@ sub create {
 
     my $curio = $self->class->new( $args );
 
+    if ($self->registers_resources()) {
+        my $method = $self->resource_method_name();
+        if (defined($method) and $curio->can($method)) {
+            my $resource = $curio->$method();
+            $self->_registry->{ refaddr $resource } = $curio if ref $resource;
+        }
+    }
+
     return $curio;
 }
 
@@ -409,6 +433,24 @@ sub alias_key {
     return;
 }
 
+=head2 find_curio
+
+=cut
+
+sub find_curio {
+    my ($self, $resource) = @_;
+
+    croak 'Too few arguments passed to find_curio()' if @_ < 2;
+    croak 'Too many arguments passed to find_curio()' if @_ > 2;
+    croak 'Non-reference resource passed to find_curio()' if !ref $resource;
+
+    my $curio = $self->_registry->{ refaddr $resource };
+
+    croak "Unable to find an existing Curio object for the given resource" if !$curio;
+
+    return $curio;
+}
+
 =head1 CLASS METHODS
 
 =head2 find_factory
@@ -416,16 +458,16 @@ sub alias_key {
 =cut
 
 sub find_factory {
-    my ($class, $for_class) = @_;
+    my ($class, $curio_class) = @_;
 
     croak 'Too few arguments passed to find_factory()' if @_ < 2;
     croak 'Too many arguments passed to find_factory()' if @_ > 2;
-    croak 'Undefined class passed to find_factory()' if !defined $for_class;
+    croak 'Undefined Curio class passed to find_factory()' if !defined $curio_class;
 
-    $for_class = blessed( $for_class ) || $for_class;
-    my $factory = $class_to_factory{ $for_class };
+    $curio_class = blessed( $curio_class ) || $curio_class;
+    my $factory = $class_to_factory{ $curio_class };
 
-    croak "Unable to find an existing Curio::Factory object for $for_class" if !$factory;
+    croak "Unable to find an existing Curio::Factory object for $curio_class" if !$factory;
 
     return $factory;
 }
