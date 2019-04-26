@@ -3,8 +3,8 @@ use strictures 2;
 use Test2::V0;
 
 subtest no_key => sub{
-    my $class = 'VT::no_key';
-    package VT::no_key;
+    my $class = 'CC::no_key';
+    package CC::no_key;
         use Curio;
         add_key 'key';
     package main;
@@ -14,8 +14,8 @@ subtest no_key => sub{
 };
 
 subtest key => sub{
-    my $class = 'VT::key';
-    package VT::key;
+    my $class = 'CC::key';
+    package CC::key;
         use Curio;
         add_key 'key';
         add_key 'foo';

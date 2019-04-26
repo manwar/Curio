@@ -3,8 +3,8 @@ use strictures 2;
 use Test2::V0;
 
 subtest invalid_key => sub{
-    my $class = 'VT::invalid_key';
-    package VT::invalid_key;
+    my $class = 'CC::invalid_key';
+    package CC::invalid_key;
         use Curio;
         add_key 'foo';
     package main;
@@ -28,8 +28,8 @@ subtest invalid_key => sub{
 };
 
 subtest requires_key => sub{
-    my $class = 'VT::requires_key';
-    package VT::requires_key;
+    my $class = 'CC::requires_key';
+    package CC::requires_key;
         use Curio;
         add_key 'foo';
     package main;
@@ -47,8 +47,8 @@ subtest requires_key => sub{
 };
 
 subtest undeclared_key => sub{
-    my $class = 'VT::undeclared_key';
-    package VT::undeclared_key;
+    my $class = 'CC::undeclared_key';
+    package CC::undeclared_key;
         use Curio;
         add_key 'foo';
     package main;
@@ -67,8 +67,8 @@ subtest undeclared_key => sub{
 
 subtest too_many_arguments => sub{
     subtest no_keys => sub{
-        my $class = 'VT::too_many_arguments_no_keys';
-        package VT::too_many_arguments_no_keys;
+        my $class = 'CC::too_many_arguments_no_keys';
+        package CC::too_many_arguments_no_keys;
             use Curio;
         package main;
 
@@ -85,8 +85,8 @@ subtest too_many_arguments => sub{
     };
 
     subtest keys => sub{
-        my $class = 'VT::too_many_arguments_keys';
-        package VT::too_many_arguments_keys;
+        my $class = 'CC::too_many_arguments_keys';
+        package CC::too_many_arguments_keys;
             use Curio;
             add_key 'foo';
         package main;

@@ -2,8 +2,8 @@
 use strictures 2;
 use Test2::V0;
 
-my $class = 'VT';
-package VT;
+my $class = 'CC';
+package CC;
     use Curio;
     allow_undeclared_keys;
     alias_key 'foo' => 'bar';

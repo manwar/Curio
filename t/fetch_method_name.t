@@ -3,8 +3,8 @@ use strictures 2;
 use Test2::V0;
 
 subtest default => sub{
-    my $class = 'VT::default';
-    package VT::default;
+    my $class = 'CC::default';
+    package CC::default;
         use Curio;
     package main;
 
@@ -12,8 +12,8 @@ subtest default => sub{
 };
 
 subtest custom => sub{
-    my $class = 'VT::custom';
-    package VT::custom;
+    my $class = 'CC::custom';
+    package CC::custom;
         use Curio;
         fetch_method_name 'connect';
     package main;

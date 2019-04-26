@@ -6,8 +6,8 @@ use Curio::Factory;
 
 isnt(
     dies{
-        my $factory1 = Curio::Factory->new( class=>'VT::same' );
-        my $factory2 = Curio::Factory->new( class=>'VT::same' );
+        my $factory1 = Curio::Factory->new( class=>'CC::same' );
+        my $factory2 = Curio::Factory->new( class=>'CC::same' );
     },
     undef,
     'two factory objects with the same class failed',
@@ -15,8 +15,8 @@ isnt(
 
 is(
     dies{
-        my $factory1 = Curio::Factory->new( class=>'VT::first' );
-        my $factory2 = Curio::Factory->new( class=>'VT::second' );
+        my $factory1 = Curio::Factory->new( class=>'CC::first' );
+        my $factory2 = Curio::Factory->new( class=>'CC::second' );
     },
     undef,
     'two factory objects with different classes worked',

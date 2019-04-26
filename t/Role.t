@@ -4,8 +4,8 @@ use Test2::V0;
 
 use Curio::Factory;
 
-my $class = 'VT';
-package VT;
+my $class = 'CC';
+package CC;
     use Moo;
     with 'Curio::Role';
 package main;

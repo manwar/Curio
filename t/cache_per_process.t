@@ -3,8 +3,8 @@ use strictures 2;
 use Test2::V0;
 
 subtest no_per_process => sub{
-    my $class = 'VT::no_per_process';
-    package VT::no_per_process;
+    my $class = 'CC::no_per_process';
+    package CC::no_per_process;
         use Curio;
         does_caching;
     package main;
@@ -17,8 +17,8 @@ subtest no_per_process => sub{
 };
 
 subtest per_process => sub{
-    my $class = 'VT::per_process';
-    package VT::per_process;
+    my $class = 'CC::per_process';
+    package CC::per_process;
         use Curio;
         does_caching;
         cache_per_process;

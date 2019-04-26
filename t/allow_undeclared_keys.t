@@ -3,8 +3,8 @@ use strictures 2;
 use Test2::V0;
 
 subtest no_require => sub{
-    my $class = 'VT::no_require';
-    package VT::no_require;
+    my $class = 'CC::no_require';
+    package CC::no_require;
         use Curio;
         allow_undeclared_keys;
         add_key 'foo';
@@ -15,8 +15,8 @@ subtest no_require => sub{
 };
 
 subtest require => sub{
-    my $class = 'VT::require';
-    package VT::require;
+    my $class = 'CC::require';
+    package CC::require;
         use Curio;
         add_key 'foo';
     package main;

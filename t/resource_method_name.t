@@ -2,24 +2,23 @@
 use strictures 2;
 use Test2::V0;
 
-my $class = 'VT';
-package VT;
+package CC;
     use Curio;
     sub resource { {5=>7} }
 package main;
 
 isnt(
-    dies{ $class->factory->fetch_resource() },
+    dies{ CC->factory->fetch_resource() },
     undef,
     'cannot fetch resource',
 );
 
-package VT;
+package CC;
     resource_method_name 'resource';
 package main;
 
 is(
-    $class->factory->fetch_resource(),
+    CC->factory->fetch_resource(),
     {5=>7},
     'able to fetch resource',
 );

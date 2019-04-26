@@ -2,30 +2,29 @@
 use strictures 2;
 use Test2::V0;
 
-my $class = 'VT';
-package VT;
+package CC;
     use Curio;
     resource_method_name 'resource';
     our $RESOURCE = [2,5];
     sub resource { $RESOURCE }
 package main;
 
-my $curio = VT->fetch();
+my $curio = CC->fetch();
 
 is(
-    $class->factory->find_curio( $VT::RESOURCE ),
+    CC->factory->find_curio( $CC::RESOURCE ),
     undef,
     'resource was not registered',
 );
 
-package VT;
+package CC;
     registers_resources;
 package main;
 
-$curio = VT->fetch();
+$curio = CC->fetch();
 
 is(
-    $class->factory->find_curio( $VT::RESOURCE ),
+    CC->factory->find_curio( $CC::RESOURCE ),
     $curio,
     'resource was registered',
 );

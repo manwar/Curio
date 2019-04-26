@@ -2,25 +2,24 @@
 use strictures 2;
 use Test2::V0;
 
-my $class = 'VT';
-package VT;
+package CC;
     use Curio;
     sub resource { [8,9] }
 package main;
 
 isa_ok(
-    $class->factory->fetch(),
-    ['VT'],
+    CC->factory->fetch(),
+    ['CC'],
     'fetch returns curio object',
 );
 
-package VT;
+package CC;
     fetch_returns_resource;
     resource_method_name 'resource';
 package main;
 
 is(
-    $class->factory->fetch(),
+    CC->factory->fetch(),
     [8,9],
     'fetch returns resource',
 );

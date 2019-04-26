@@ -3,8 +3,8 @@ use strictures 2;
 use Test2::V0;
 
 subtest no_keys => sub{
-    my $class = 'VT::no_keys';
-    package VT::no_keys;
+    my $class = 'CC::no_keys';
+    package CC::no_keys;
         use Curio;
     package main;
 
@@ -12,8 +12,8 @@ subtest no_keys => sub{
 };
 
 subtest keys => sub{
-    my $class = 'VT::keys';
-    package VT::keys;
+    my $class = 'CC::keys';
+    package CC::keys;
         use Curio;
         allow_undeclared_keys;
         add_key key2 => ( foo=>'bar' );
@@ -24,8 +24,8 @@ subtest keys => sub{
 };
 
 subtest key_argument => sub{
-    my $class = 'VT::key_argument';
-    package VT::key_argument;
+    my $class = 'CC::key_argument';
+    package CC::key_argument;
         use Curio;
         key_argument 'foo2';
         add_key bar2 => ( foo1=>'bar1' );

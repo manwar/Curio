@@ -3,8 +3,8 @@ use strictures 2;
 use Test2::V0;
 
 subtest no_cache => sub{
-    my $class = 'VT::no_cache';
-    package VT::no_cache;
+    my $class = 'CC::no_cache';
+    package CC::no_cache;
         use Curio;
     package main;
 
@@ -15,8 +15,8 @@ subtest no_cache => sub{
 };
 
 subtest cache => sub{
-    my $class = 'VT::cache';
-    package VT::cache;
+    my $class = 'CC::cache';
+    package CC::cache;
         use Curio;
         does_caching;
     package main;
@@ -30,8 +30,8 @@ subtest cache => sub{
 };
 
 subtest no_cache_with_keys => sub{
-    my $class = 'VT::no_cache_with_keys';
-    package VT::no_cache_with_keys;
+    my $class = 'CC::no_cache_with_keys';
+    package CC::no_cache_with_keys;
         use Curio;
         add_key 'key1';
         add_key 'key2';
@@ -46,8 +46,8 @@ subtest no_cache_with_keys => sub{
 };
 
 subtest cache_with_keys => sub{
-    my $class = 'VT::cache_with_keys';
-    package VT::cache_with_keys;
+    my $class = 'CC::cache_with_keys';
+    package CC::cache_with_keys;
         use Curio;
         does_caching;
         add_key 'key1';
