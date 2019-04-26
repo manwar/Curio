@@ -20,73 +20,73 @@ our @EXPORT = qw(
     alias_key
 );
 
-sub fetch_method_name ($) {
+sub fetch_method_name {
     my $class = caller;
     $class->factory->fetch_method_name( shift );
     return;
 }
 
-sub export_function_name ($) {
+sub export_function_name {
     my $class = caller;
     $class->factory->export_function_name( shift );
     return;
 }
 
-sub always_export (;$) {
+sub always_export {
     my $class = caller;
     $class->factory->always_export( @_ ? shift : 1 );
     return;
 }
 
-sub resource_method_name ($) {
+sub resource_method_name {
     my $class = caller;
     $class->factory->resource_method_name( shift );
     return;
 }
 
-sub fetch_returns_resource (;$) {
+sub fetch_returns_resource {
     my $class = caller;
     $class->factory->fetch_returns_resource( @_ ? shift : 1 );
     return;
 }
 
-sub does_caching (;$) {
+sub does_caching {
     my $class = caller;
     $class->factory->does_caching( @_ ? shift : 1 );
     return;
 }
 
-sub cache_per_process (;$) {
+sub cache_per_process {
     my $class = caller;
     $class->factory->cache_per_process( @_ ? shift : 1 );
     return;
 }
 
-sub allow_undeclared_keys (;$) {
+sub allow_undeclared_keys {
     my $class = caller;
     $class->factory->allow_undeclared_keys( @_ ? shift : 1 );
     return;
 }
 
-sub default_key ($) {
+sub default_key {
     my $class = caller;
     $class->factory->default_key( shift );
     return;
 }
 
-sub key_argument ($) {
+sub key_argument {
     my $class = caller;
     $class->factory->key_argument( shift );
     return;
 }
 
-sub add_key ($;@) {
+sub add_key {
     my $class = caller;
     $class->factory->add_key( @_ );
     return;
 }
 
-sub alias_key ($$) {
+sub alias_key {
     my $class = caller;
     $class->factory->alias_key( @_ );
     return;
