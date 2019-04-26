@@ -92,9 +92,9 @@ has _cache => (
 my $undef_cache_key = '__UNDEF_KEY__';
 
 sub _cache_set {
-    my ($self, $key, $object) = @_;
+    my ($self, $key, $curio) = @_;
     $key = $self->_fixup_cache_key( $key );
-    $self->_cache->{$key} = $object;
+    $self->_cache->{$key} = $curio;
     return;
 }
 
@@ -200,6 +200,25 @@ has always_export => (
     default => 0,
 );
 
+=head2 resource_method_name
+
+=cut
+
+has resource_method_name => (
+  is  => 'rw',
+  isa => NonEmptySimpleStr,
+);
+
+=head2 fetch_returns_resource
+
+=cut
+
+has fetch_returns_resource => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 0,
+);
+
 =head2 does_caching
 
 =cut
@@ -275,20 +294,47 @@ sub does_keys {
 sub fetch {
     my $self = shift;
 
+    return(
+        $self->fetch_returns_resource()
+        ? $self->fetch_resource( @_ )
+        : $self->fetch_curio( @_ )
+    );
+}
+
+=head2 fetch_curio
+
+=cut
+
+sub fetch_curio {
+    my $self = shift;
+
     my $key = $self->_process_key_arg( @_ );
 
     if ($self->does_caching()) {
-        my $object = $self->_cache_get( $key );
-        return $object if $object;
+        my $curio = $self->_cache_get( $key );
+        return $curio if $curio;
     }
 
-    my $object = $self->create( defined($key) ? $key : () );
+    my $curio = $self->create( defined($key) ? $key : () );
 
     if ($self->does_caching()) {
-        $self->_cache_set( $key, $object );
+        $self->_cache_set( $key, $curio );
     }
 
-    return $object;
+    return $curio;
+}
+
+=head2 fetch_resource
+
+=cut
+
+sub fetch_resource {
+    my $self = shift;
+
+    my $method = $self->resource_method_name();
+    croak 'Cannot call fetch_resource() without setting resource_method_name' if !defined $method;
+
+    return $self->fetch_curio( @_ )->$method();
 }
 
 =head2 create
@@ -302,9 +348,9 @@ sub create {
 
     my $args = $self->arguments( defined($key) ? $key : () );
 
-    my $object = $self->class->new( $args );
+    my $curio = $self->class->new( $args );
 
-    return $object;
+    return $curio;
 }
 
 =head2 arguments

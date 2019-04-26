@@ -9,6 +9,8 @@ our @EXPORT = qw(
     fetch_method_name
     export_function_name
     always_export
+    resource_method_name
+    fetch_returns_resource
     does_caching
     cache_per_process
     allow_undeclared_keys
@@ -33,6 +35,18 @@ sub export_function_name ($) {
 sub always_export (;$) {
     my $class = caller;
     $class->factory->always_export( @_ ? shift : 1 );
+    return;
+}
+
+sub resource_method_name ($) {
+    my $class = caller;
+    $class->factory->resource_method_name( shift );
+    return;
+}
+
+sub fetch_returns_resource (;$) {
+    my $class = caller;
+    $class->factory->fetch_returns_resource( @_ ? shift : 1 );
     return;
 }
 
@@ -98,6 +112,10 @@ Curio::Declare - Provider of Curio's declarative interface.
 =head2 export_function_name
 
 =head2 always_export
+
+=head2 resource_method_name
+
+=head2 fetch_returns_resource
 
 =head2 does_caching
 

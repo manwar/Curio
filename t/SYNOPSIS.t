@@ -14,7 +14,7 @@ if ($content =~ m{Create a Curio class:\n\n(.+?)\nThen use it elsewhere:\n\n(.+?
     eval $2;
 }
 
-my $chi = myapp_cache('sessions')->chi();
+my $chi = myapp_cache('sessions');
 $chi->set('foo' => 62);
 
 is(
