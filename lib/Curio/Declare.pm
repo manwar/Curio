@@ -7,7 +7,7 @@ use Exporter qw( import );
 
 our @EXPORT = qw(
     fetch_method_name
-    export_name
+    export_function_name
     always_export
     does_caching
     cache_per_process
@@ -24,9 +24,9 @@ sub fetch_method_name ($) {
     return;
 }
 
-sub export_name ($) {
+sub export_function_name ($) {
     my $class = caller;
-    $class->factory->export_name( shift );
+    $class->factory->export_function_name( shift );
     return;
 }
 
@@ -95,7 +95,7 @@ Curio::Declare - Provider of Curio's declarative interface.
 
 =head2 fetch_method_name
 
-=head2 export_name
+=head2 export_function_name
 
 =head2 always_export
 

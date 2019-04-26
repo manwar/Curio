@@ -181,11 +181,11 @@ sub _build_fetch_method {
     return sub{ shift; $self->fetch( @_ ) };
 }
 
-=head2 export_name
+=head2 export_function_name
 
 =cut
 
-has export_name => (
+has export_function_name => (
     is  => 'rw',
     isa => NonEmptySimpleStr,
 );

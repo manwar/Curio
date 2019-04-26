@@ -16,16 +16,16 @@ sub import {
     my ($class) = @_;
 
     my $factory = $class->factory();
-    my $export_name = $factory->export_name();
-    return if !defined $export_name;
+    my $name = $factory->export_function_name();
+    return if !defined $name;
 
     if (!$is_exporter_setup{ $class }) {
-        my $sub = subname( $export_name, _build_exported_fetch( $factory ) );
-        my $export = $factory->always_export() ? [$export_name] : [];
-        my $export_ok = $factory->always_export() ? [] : [$export_name];
+        my $sub = subname( $name, _build_exported_fetch( $factory ) );
+        my $export = $factory->always_export() ? [$name] : [];
+        my $export_ok = $factory->always_export() ? [] : [$name];
 
         my $stash = Package::Stash->new( $class );
-        $stash->add_symbol( "&$export_name", $sub );
+        $stash->add_symbol( "&$name", $sub );
         $stash->add_symbol( '@EXPORT', $export );
         $stash->add_symbol( '@EXPORT_OK', $export_ok );
 
@@ -66,7 +66,7 @@ This L<Moo::Role>:
 
 =item *
 
-Sets up exporting of the L<Curio::Factory/export_name>.
+Sets up exporting of the L<Curio::Factory/export_function_name>.
 
 =item *
 

@@ -5,7 +5,7 @@ use Test2::V0;
 my $class = 'VT';
 package VT;
     use Curio;
-    export_name 'get_foo';
+    export_function_name 'get_foo';
     always_export;
 package main;
 
