@@ -1,102 +1,70 @@
 package Curio::Declare;
 our $VERSION = '0.01';
 
+use Package::Stash;
+
 use strictures 2;
+use namespace::clean;
 
-use Exporter qw( import );
-
-our @EXPORT = qw(
-    fetch_method_name
-    export_function_name
-    always_export
-    resource_method_name
-    fetch_returns_resource
-    registers_resources
-    does_caching
-    cache_per_process
-    allow_undeclared_keys
-    default_key
-    key_argument
-    add_key
-    alias_key
+my %EXPORTS = (
+    fetch_method_name      => 'string',
+    export_function_name   => 'string',
+    always_export          => 'bool',
+    resource_method_name   => 'string',
+    fetch_returns_resource => 'bool',
+    registers_resources    => 'bool',
+    does_caching           => 'bool',
+    cache_per_process      => 'bool',
+    allow_undeclared_keys  => 'bool',
+    default_key            => 'string',
+    key_argument           => 'string',
+    add_key                => 'method',
+    alias_key              => 'method',
 );
 
-sub fetch_method_name {
-    my $factory = caller->factory();
-    @_ = ( $factory, shift );
-    goto &{ $factory->can('fetch_method_name') };
-}
+sub import {
+    my $target = caller;
 
-sub export_function_name {
-    my $factory = caller->factory();
-    @_ = ( $factory, shift );
-    goto &{ $factory->can('export_function_name') };
-}
+    my $stash = Package::Stash->new( $target );
 
-sub always_export {
-    my $factory = caller->factory();
-    @_ = ( $factory, (@_ ? shift : 1) );
-    goto &{ $factory->can('always_export') };
-}
+    foreach my $sub_name (sort keys %EXPORTS) {
+        my $type = $EXPORTS{ $sub_name };
+        my $builder = "_build_$type\_sub";
+        my $sub = __PACKAGE__->can( $builder )->( $target, $sub_name );
+        $stash->add_symbol( "&$sub_name", $sub );
+    }
 
-sub resource_method_name {
-    my $factory = caller->factory();
-    @_ = ( $factory, shift );
-    goto &{ $factory->can('resource_method_name') };
-}
-
-sub fetch_returns_resource {
-    my $factory = caller->factory();
-    @_ = ( $factory, (@_ ? shift : 1) );
-    goto &{ $factory->can('fetch_returns_resource') };
-}
-
-sub registers_resources {
-    my $factory = caller->factory();
-    @_ = ( $factory, (@_ ? shift : 1) );
-    goto &{ $factory->can('registers_resources') };
-}
-
-sub does_caching {
-    my $factory = caller->factory();
-    @_ = ( $factory, (@_ ? shift : 1) );
-    goto &{ $factory->can('does_caching') };
-}
-
-sub cache_per_process {
-    my $factory = caller->factory();
-    @_ = ( $factory, (@_ ? shift : 1) );
-    goto &{ $factory->can('cache_per_process') };
-}
-
-sub allow_undeclared_keys {
-    my $factory = caller->factory();
-    @_ = ( $factory, (@_ ? shift : 1) );
-    goto &{ $factory->can('allow_undeclared_keys') };
-}
-
-sub default_key {
-    my $factory = caller->factory();
-    @_ = ( $factory, shift );
-    goto &{ $factory->can('default_key') };
-}
-
-sub key_argument {
-    my $factory = caller->factory();
-    @_ = ( $factory, shift );
-    goto &{ $factory->can('key_argument') };
-}
-
-sub add_key {
-    my $class = caller;
-    $class->factory->add_key( @_ );
     return;
 }
 
-sub alias_key {
-    my $class = caller;
-    $class->factory->alias_key( @_ );
-    return;
+sub _build_string_sub {
+    my ($target, $sub_name) = @_;
+
+    return sub{
+        my $factory = $target->factory();
+        @_ = ( $factory, shift );
+        goto &{ $factory->can( $sub_name ) };
+    };
+}
+
+sub _build_bool_sub {
+    my ($target, $sub_name) = @_;
+
+    return sub{
+        my $factory = $target->factory();
+        @_ = ( $factory, (@_ ? shift : 1 ) );
+        goto &{ $factory->can( $sub_name ) };
+    };
+}
+
+sub _build_method_sub {
+    my ($target, $sub_name) = @_;
+
+    return sub{
+        my $factory = $target->factory();
+        @_ = ( $factory, @_ );
+        goto &{ $factory->can( $sub_name ) };
+    };
 }
 
 1;
