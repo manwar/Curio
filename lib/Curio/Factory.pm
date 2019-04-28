@@ -43,7 +43,8 @@ sub _store_class_to_factory {
 
     my $class = $self->class();
 
-    croak "Class already has a Curio::Factory object: $class" if $class_to_factory{ $class };
+    croak "Class already has a Curio::Factory object: $class"
+        if $class_to_factory{ $class };
 
     $class_to_factory{ $class } = $self;
 
@@ -61,7 +62,8 @@ sub _process_key_arg {
     if ($self->does_keys()) {
         if (@$args) {
             $key = shift @$args;
-            croak "Invalid key passed to $caller_sub_name()" if !NonEmptySimpleStr->check( $key );
+            croak "Invalid key passed to $caller_sub_name()"
+                if !NonEmptySimpleStr->check( $key );
         }
         elsif (defined $self->default_key()) {
             $key = $self->default_key();
@@ -71,7 +73,8 @@ sub _process_key_arg {
         }
 
         if (!$self->allow_undeclared_keys()) {
-            croak "Undeclared key passed to $caller_sub_name()" if !$self->_keys->{$key};
+            croak "Undeclared key passed to $caller_sub_name()"
+                if !$self->_keys->{$key};
         }
     }
 
@@ -378,7 +381,9 @@ sub _fetch_resource {
     my ($self, $key) = @_;
 
     my $method = $self->resource_method_name();
-    croak 'Cannot call fetch_resource() without setting resource_method_name' if !defined $method;
+
+    croak 'Cannot call fetch_resource() without setting resource_method_name'
+        if !defined $method;
 
     return $self->_fetch_curio( $key )->$method();
 }
@@ -446,9 +451,16 @@ sub _arguments {
 sub add_key {
     my ($self, $key, @args) = @_;
 
-    croak 'Invalid key passed to add_key(): ' . NonEmptySimpleStr->get_message($key) if !NonEmptySimpleStr->check( $key );
-    croak 'Odd number of key arguments passed to add_key()' if @args % 2 != 0;
-    croak "Already declared key passed to add_key(): $key" if $self->_keys->{$key};
+    croakf(
+        'Invalid key passed to add_key(): %s',
+        NonEmptySimpleStr->get_message( $key ),
+    ) if !NonEmptySimpleStr->check( $key );
+
+    croak "Already declared key passed to add_key(): $key"
+        if $self->_keys->{$key};
+
+    croak 'Odd number of key arguments passed to add_key()'
+        if @args % 2 != 0;
 
     $self->_keys->{$key} = { @args };
 
@@ -462,10 +474,21 @@ sub add_key {
 sub alias_key {
     my ($self, $alias, $key) = @_;
 
-    croak 'Invalid alias passed to alias_key(): ' . NonEmptySimpleStr->get_message($alias) if !NonEmptySimpleStr->check( $alias );
-    croak 'Invalid key passed to alias_key(): ' . NonEmptySimpleStr->get_message($key) if !NonEmptySimpleStr->check( $key );
-    croak "Already declared alias passed to alias_key(): $alias" if defined $self->_aliases->{$alias};
-    croak "Undeclared key passed to alias_key(): $key" if !$self->allow_undeclared_keys() and !$self->_keys->{$key};
+    croakf(
+        'Invalid alias passed to alias_key(): %s',
+        NonEmptySimpleStr->get_message( $alias ),
+    ) if !NonEmptySimpleStr->check( $alias );
+
+    croakf(
+        'Invalid key passed to alias_key(): %s',
+        NonEmptySimpleStr->get_message( $key ),
+    ) if !NonEmptySimpleStr->check( $key );
+
+    croak "Already declared alias passed to alias_key(): $alias"
+        if defined $self->_aliases->{$alias};
+
+    croak "Undeclared key passed to alias_key(): $key"
+        if !$self->allow_undeclared_keys() and !$self->_keys->{$key};
 
     $self->_aliases->{$alias} = $key;
 
@@ -481,9 +504,18 @@ sub inject {
     my $object = shift;
     my $key = $self->_process_key_arg( \@_ );
 
-    croak 'Non-Curio object passed to inject()' unless blessed($object) and $object->can('does') and $object->does('Curio::Role');
-
     $key = $undef_key if !defined $key;
+
+    croak 'No object passed to inject()'
+        if !blessed( $object );
+
+    croakf(
+        'Object of an incorrect class passed to inject(): %s (want %s)',
+        ref( $object ), $self->class(),
+    ) if !$object->isa( $self->class() );
+
+    croak 'Cannot inject a Curio object where one has already been injected'
+        if $self->_injections->{$key};
 
     $self->_injections->{$key} = $object;
 
@@ -500,7 +532,8 @@ sub uninject {
 
     $key = $undef_key if !defined $key;
 
-    croak 'Cannot uninject a Curio object where none has been injected' if !$self->_injections->{$key};
+    croak 'Cannot uninject a Curio object where none has been injected'
+        if !$self->_injections->{$key};
 
     delete $self->_injections->{$key};
 
@@ -514,7 +547,8 @@ sub uninject {
 sub find_curio {
     my ($self, $resource) = @_;
 
-    croak 'Non-reference resource passed to find_curio()' if !ref $resource;
+    croak 'Non-reference resource passed to find_curio()'
+        if !ref $resource;
 
     return $self->_registry->{ refaddr $resource };
 }
@@ -528,7 +562,8 @@ sub find_curio {
 sub find_factory {
     my ($class, $curio_class) = @_;
 
-    croak 'Undefined Curio class passed to find_factory()' if !defined $curio_class;
+    croak 'Undefined Curio class passed to find_factory()'
+        if !defined $curio_class;
 
     $curio_class = blessed( $curio_class ) || $curio_class;
 

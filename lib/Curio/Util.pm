@@ -10,6 +10,7 @@ use Exporter qw( import );
 
 our @EXPORT = qw(
     croak
+    croakf
     subname
 );
 
@@ -21,6 +22,11 @@ sub croak {
     local $Carp::Internal{'Curio::Util'} = 1;
 
     return Carp::croak( @_ );
+}
+
+sub croakf {
+    my $msg = sprintf( @_ );
+    return croak( $msg );
 }
 
 BEGIN {
