@@ -1,57 +1,6 @@
 package Curio::Role;
 our $VERSION = '0.01';
 
-use Curio::Factory;
-use Curio::Util;
-use Exporter qw();
-use Package::Stash;
-
-use Moo::Role;
-use strictures 2;
-use namespace::clean;
-
-my %is_exporter_setup;
-
-sub import {
-    my ($class) = @_;
-
-    my $factory = $class->factory();
-    my $name = $factory->export_function_name();
-    return if !defined $name;
-
-    if (!$is_exporter_setup{ $class }) {
-        my $sub = subname( $name, _build_exported_fetch( $factory ) );
-        my $export = $factory->always_export() ? [$name] : [];
-        my $export_ok = $factory->always_export() ? [] : [$name];
-
-        my $stash = Package::Stash->new( $class );
-        $stash->add_symbol( "&$name", $sub );
-        $stash->add_symbol( '@EXPORT', $export );
-        $stash->add_symbol( '@EXPORT_OK', $export_ok );
-
-        $is_exporter_setup{ $class } = 1;
-    }
-
-    goto &Exporter::import;
-}
-
-sub _build_exported_fetch {
-    my $factory = shift;
-    return sub{ $factory->fetch( @_ ) },
-}
-
-sub factory {
-    return Curio::Factory->find_factory( shift );
-}
-
-sub setup_curio {
-    Curio::Factory->new( class => shift );
-    return;
-}
-
-1;
-__END__
-
 =encoding utf8
 
 =head1 NAME
@@ -79,7 +28,63 @@ Enables C<$class-E<gt>does('Curio::Role')> checks.
 
 =back
 
+=cut
+
+use Curio::Factory;
+use Curio::Util;
+use Exporter qw();
+use Package::Stash;
+
+use Moo::Role;
+use strictures 2;
+use namespace::clean;
+
+my %is_exporter_setup;
+
+sub import {
+    my ($class) = @_;
+
+    my $factory = $class->factory();
+    my $name = $factory->export_function_name();
+    return if !defined $name;
+
+    if (!$is_exporter_setup{ $class }) {
+        my $stash = Package::Stash->new( $class );
+
+        $stash->add_symbol(
+            "&$name",
+            subname( $name, _build_exported_fetch( $factory ) ),
+        );
+
+        $stash->add_symbol(
+            $factory->always_export() ? '@EXPORT' : '@EXPORT_OK',
+            [ $name ],
+        );
+
+        $is_exporter_setup{ $class } = 1;
+    }
+
+    goto &Exporter::import;
+}
+
+sub _build_exported_fetch {
+    my $factory = shift;
+    return sub{ $factory->fetch( @_ ) },
+}
+
 =head1 CLASS METHODS
+
+=head2 initialize
+
+Sets up your class's L<Curio::Factory> object and is automatically
+called when you C<use Curio;>.
+
+=cut
+
+sub initialize {
+    Curio::Factory->new( class => shift );
+    return;
+}
 
 =head2 factory
 
@@ -91,10 +96,43 @@ This method may also be called on instances of the class.
 
 Calling this is equivalent to calling L<Curio::Factory/find_factory>.
 
-=head2 setup_curio
+=cut
 
-Sets up your class's L<Curio::Factory> object and is automatically
-called when you C<use Curio;>.
+sub factory {
+    return Curio::Factory->find_factory( shift );
+}
+
+=head2 inject
+
+=cut
+
+sub inject {
+    my $class = shift;
+    return $class->factory->inject( @_ );
+}
+
+=head2 uninject
+
+=cut
+
+sub uninject {
+    my $class = shift;
+    return $class->factory->uninject( @_ );
+}
+
+=head1 CLASS ATTRIBUTES
+
+=head2 keys
+
+=cut
+
+sub keys {
+    my $class = shift;
+    return $class->factory->keys( @_ );
+}
+
+1;
+__END__
 
 =head1 SUPPORT
 

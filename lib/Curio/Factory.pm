@@ -51,7 +51,7 @@ sub _store_class_to_factory {
 }
 
 sub _process_key_arg {
-    my $self = shift;
+    my ($self, $args) = @_;
 
     my $caller_sub_name = (caller 1)[3];
     $caller_sub_name =~ s{^.*::}{};
@@ -59,8 +59,8 @@ sub _process_key_arg {
     my $key;
 
     if ($self->does_keys()) {
-        if (@_) {
-            $key = shift;
+        if (@$args) {
+            $key = shift @$args;
             croak "Invalid key passed to $caller_sub_name()" if !NonEmptySimpleStr->check( $key );
         }
         elsif (defined $self->default_key()) {
@@ -75,10 +75,9 @@ sub _process_key_arg {
         }
     }
 
-    croak "Too many arguments passed to $caller_sub_name()" if @_;
-
     $key = $self->_aliases->{$key}
-        if defined($key) and defined($self->_aliases->{$key});
+        if defined( $key )
+        and defined( $self->_aliases->{$key} );
 
     return $key;
 }
@@ -89,7 +88,7 @@ has _cache => (
     default  => sub{ {} },
 );
 
-my $undef_cache_key = '__UNDEF_KEY__';
+my $undef_key = '__UNDEF_KEY__';
 
 sub _cache_set {
     my ($self, $key, $curio) = @_;
@@ -107,7 +106,7 @@ sub _cache_get {
 sub _fixup_cache_key {
     my ($self, $key) = @_;
 
-    $key = $undef_cache_key if !defined $key;
+    $key = $undef_key if !defined $key;
     return $key if !$self->cache_per_process();
 
     $key .= "-$$";
@@ -129,6 +128,12 @@ has _keys => (
 );
 
 has _aliases => (
+    is       => 'ro',
+    init_arg => undef,
+    default  => sub{ {} },
+);
+
+has _injections => (
     is       => 'ro',
     init_arg => undef,
     default  => sub{ {} },
@@ -183,7 +188,7 @@ sub _trigger_fetch_method_name {
 }
 
 sub _build_fetch_method {
-    my $self = shift;
+    my ($self) = @_;
     return sub{ shift; $self->fetch( @_ ) };
 }
 
@@ -290,7 +295,7 @@ has key_argument => (
 =cut
 
 sub does_keys {
-    my $self = shift;
+    my ($self) = @_;
 
     return 1 if %{ $self->_keys() };
     return 1 if %{ $self->_aliases() };
@@ -301,6 +306,15 @@ sub does_keys {
     return 0;
 }
 
+=head2 keys
+
+=cut
+
+sub keys {
+    my ($self) = @_;
+    return [ keys %{ $self->_keys() } ];
+}
+
 =head1 METHODS
 
 =head2 fetch
@@ -309,11 +323,13 @@ sub does_keys {
 
 sub fetch {
     my $self = shift;
+    my $key = $self->_process_key_arg( \@_ );
+    croak "Too many arguments passed to fetch()" if @_;
 
     return(
         $self->fetch_returns_resource()
-        ? $self->fetch_resource( @_ )
-        : $self->fetch_curio( @_ )
+        ? $self->_fetch_resource( $key )
+        : $self->_fetch_curio( $key )
     );
 }
 
@@ -323,15 +339,21 @@ sub fetch {
 
 sub fetch_curio {
     my $self = shift;
+    my $key = $self->_process_key_arg( \@_ );
+    croak "Too many arguments passed to fetch_curio()" if @_;
 
-    my $key = $self->_process_key_arg( @_ );
+    return $self->_fetch_curio( $key );
+}
+
+sub _fetch_curio {
+    my ($self, $key) = @_;
 
     if ($self->does_caching()) {
         my $curio = $self->_cache_get( $key );
         return $curio if $curio;
     }
 
-    my $curio = $self->create( defined($key) ? $key : () );
+    my $curio = $self->_create( $key );
 
     if ($self->does_caching()) {
         $self->_cache_set( $key, $curio );
@@ -346,11 +368,19 @@ sub fetch_curio {
 
 sub fetch_resource {
     my $self = shift;
+    my $key = $self->_process_key_arg( \@_ );
+    croak "Too many arguments passed to fetch_resource()" if @_;
+
+    return $self->_fetch_resource( $key );
+}
+
+sub _fetch_resource {
+    my ($self, $key) = @_;
 
     my $method = $self->resource_method_name();
     croak 'Cannot call fetch_resource() without setting resource_method_name' if !defined $method;
 
-    return $self->fetch_curio( @_ )->$method();
+    return $self->_fetch_curio( $key )->$method();
 }
 
 =head2 create
@@ -359,10 +389,16 @@ sub fetch_resource {
 
 sub create {
     my $self = shift;
+    my $key = $self->_process_key_arg( \@_ );
+    croak "Too many arguments passed to create()" if @_;
 
-    my $key = $self->_process_key_arg( @_ );
+    return $self->_create( $key );
+}
 
-    my $args = $self->arguments( defined($key) ? $key : () );
+sub _create {
+    my ($self, $key) = @_;
+
+    my $args = $self->_arguments( $key );
 
     my $curio = $self->class->new( $args );
 
@@ -383,8 +419,14 @@ sub create {
 
 sub arguments {
     my $self = shift;
+    my $key = $self->_process_key_arg( \@_ );
+    croak "Too many arguments passed to arguments()" if @_;
 
-    my $key = $self->_process_key_arg( @_ );
+    return $self->_arguments( $key );
+}
+
+sub _arguments {
+    my ($self, $key) = @_;
 
     return {} if !defined $key;
 
@@ -426,6 +468,41 @@ sub alias_key {
     croak "Undeclared key passed to alias_key(): $key" if !$self->allow_undeclared_keys() and !$self->_keys->{$key};
 
     $self->_aliases->{$alias} = $key;
+
+    return;
+}
+
+=head2 inject
+
+=cut
+
+sub inject {
+    my $self = shift;
+    my $object = shift;
+    my $key = $self->_process_key_arg( \@_ );
+
+    croak 'Non-Curio object passed to inject()' unless blessed($object) and $object->can('does') and $object->does('Curio::Role');
+
+    $key = $undef_key if !defined $key;
+
+    $self->_injections->{$key} = $object;
+
+    return;
+}
+
+=head1 uninject
+
+=cut
+
+sub uninject {
+    my $self = shift;
+    my $key = $self->_process_key_arg( \@_ );
+
+    $key = $undef_key if !defined $key;
+
+    croak 'Cannot uninject a Curio object where none has been injected' if !$self->_injections->{$key};
+
+    delete $self->_injections->{$key};
 
     return;
 }

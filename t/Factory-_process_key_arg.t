@@ -10,18 +10,18 @@ subtest invalid_key => sub{
     package main;
 
     is(
-        $class->factory->_process_key_arg('foo'), 'foo',
+        $class->factory->_process_key_arg(['foo']), 'foo',
         'valid key returned key',
     );
 
     like(
-        dies{ $class->factory->_process_key_arg("foo\n") },
+        dies{ $class->factory->_process_key_arg(["foo\n"]) },
         qr{^Invalid key},
         'failed on invalid defined key',
     );
 
     like(
-        dies{ $class->factory->_process_key_arg(undef) },
+        dies{ $class->factory->_process_key_arg([undef]) },
         qr{^Invalid key},
         'failed on invalid undef key',
     );
@@ -35,12 +35,12 @@ subtest requires_key => sub{
     package main;
 
     is(
-        $class->factory->_process_key_arg('foo'), 'foo',
+        $class->factory->_process_key_arg(['foo']), 'foo',
         'valid key returned key',
     );
 
     like(
-        dies{ $class->factory->_process_key_arg() },
+        dies{ $class->factory->_process_key_arg([]) },
         qr{^No key was passed},
         'failed on key requirement',
     );
@@ -54,54 +54,15 @@ subtest undeclared_key => sub{
     package main;
 
     is(
-        $class->factory->_process_key_arg('foo'), 'foo',
+        $class->factory->_process_key_arg(['foo']), 'foo',
         'declared key returned key',
     );
 
     like(
-        dies{ $class->factory->_process_key_arg('bar') },
+        dies{ $class->factory->_process_key_arg(['bar']) },
         qr{^Undeclared key passed},
         'failed on undeclared key',
     );
-};
-
-subtest too_many_arguments => sub{
-    subtest no_keys => sub{
-        my $class = 'CC::too_many_arguments_no_keys';
-        package CC::too_many_arguments_no_keys;
-            use Curio;
-        package main;
-
-        is(
-            $class->factory->_process_key_arg(), undef,
-            'no key returned undef',
-        );
-
-        like(
-            dies{ $class->factory->_process_key_arg('foo') },
-            qr{^Too many arguments},
-            'failed on too many arguments',
-        );
-    };
-
-    subtest keys => sub{
-        my $class = 'CC::too_many_arguments_keys';
-        package CC::too_many_arguments_keys;
-            use Curio;
-            add_key 'foo';
-        package main;
-
-        is(
-            $class->factory->_process_key_arg('foo'), 'foo',
-            'key returned key',
-        );
-
-        like(
-            dies{ $class->factory->_process_key_arg('foo', 'bar') },
-            qr{^Too many arguments},
-            'failed on too many arguments',
-        );
-    };
 };
 
 done_testing;
