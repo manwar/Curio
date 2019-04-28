@@ -2,7 +2,6 @@
 use strictures 2;
 use Test2::V0;
 
-my $class = 'CC';
 package CC;
     use Curio;
     allow_undeclared_keys;
@@ -12,19 +11,19 @@ package CC;
 package main;
 
 is(
-    $class->fetch('foo')->actual_key(),
+    CC->fetch('foo')->actual_key(),
     'bar',
     'key alias was used',
 );
 
 is(
-    $class->fetch('bar')->actual_key(),
+    CC->fetch('bar')->actual_key(),
     'bar',
     'key alias was not used',
 );
 
 is(
-    $class->fetch('baz')->actual_key(),
+    CC->fetch('baz')->actual_key(),
     'baz',
     'key alias was not used',
 );

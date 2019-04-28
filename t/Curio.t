@@ -41,7 +41,7 @@ subtest 'Curio::Role' => sub{
     can_ok( 'CC::cr', ['factory'], 'role is applied' );
 };
 
-subtest 'setup_curio' => sub{
+subtest 'initialize' => sub{
     package CC::sc1;
         use Moo;
         use Curio::Declare;
@@ -49,13 +49,13 @@ subtest 'setup_curio' => sub{
         with 'Curio::Role';
     package main;
 
-    is( CC::sc1->factory(), undef, 'setup_curio was not called' );
+    is( CC::sc1->factory(), undef, 'initialize was not called' );
 
     package CC::sc2;
         use Curio;
     package main;
 
-    isnt( CC::sc2->factory(), undef, 'setup_curio was called' );
+    isnt( CC::sc2->factory(), undef, 'initialize was called' );
 };
 
 done_testing;
