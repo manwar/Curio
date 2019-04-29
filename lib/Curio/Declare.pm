@@ -15,6 +15,7 @@ my %EXPORTS = (
     registers_resources    => 'bool',
     does_caching           => 'bool',
     cache_per_process      => 'bool',
+    does_keys              => 'bool',
     allow_undeclared_keys  => 'bool',
     default_key            => 'string',
     key_argument           => 'string',
@@ -97,6 +98,8 @@ Curio::Declare - Provider of Curio's declarative interface.
 =head2 does_caching
 
 =head2 cache_per_process
+
+=head2 does_keys
 
 =head2 allow_undeclared_keys
 

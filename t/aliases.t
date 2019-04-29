@@ -4,6 +4,7 @@ use Test2::V0;
 
 package CC;
     use Curio;
+    does_keys;
     allow_undeclared_keys;
     alias_key 'foo' => 'bar';
     key_argument 'actual_key';

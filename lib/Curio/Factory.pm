@@ -29,6 +29,8 @@ use namespace::clean;
 
 my %class_to_factory;
 
+my $undef_key = '__UNDEF_KEY__';
+
 sub BUILD {
     my ($self) = @_;
 
@@ -90,8 +92,6 @@ has _cache => (
     init_arg => undef,
     default  => sub{ {} },
 );
-
-my $undef_key = '__UNDEF_KEY__';
 
 sub _cache_set {
     my ($self, $key, $curio) = @_;
@@ -263,6 +263,16 @@ has cache_per_process => (
     default => 0,
 );
 
+=head2 does_keys
+
+=cut
+
+has does_keys => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 0,
+);
+
 =head2 allow_undeclared_keys
 
 =cut
@@ -293,22 +303,6 @@ has key_argument => (
 
 =head1 ATTRIBUTES
 
-=head2 does_keys
-
-=cut
-
-sub does_keys {
-    my ($self) = @_;
-
-    return 1 if %{ $self->_keys() };
-    return 1 if %{ $self->_aliases() };
-    return 1 if $self->allow_undeclared_keys();
-    return 1 if defined $self->default_key();
-    return 1 if defined $self->key_argument();
-
-    return 0;
-}
-
 =head2 keys
 
 =cut
@@ -327,7 +321,7 @@ sub keys {
 sub fetch {
     my $self = shift;
     my $key = $self->_process_key_arg( \@_ );
-    croak "Too many arguments passed to fetch()" if @_;
+    croak 'Too many arguments passed to fetch()' if @_;
 
     return(
         $self->fetch_returns_resource()
@@ -343,7 +337,7 @@ sub fetch {
 sub fetch_curio {
     my $self = shift;
     my $key = $self->_process_key_arg( \@_ );
-    croak "Too many arguments passed to fetch_curio()" if @_;
+    croak 'Too many arguments passed to fetch_curio()' if @_;
 
     return $self->_fetch_curio( $key );
 }
@@ -372,7 +366,7 @@ sub _fetch_curio {
 sub fetch_resource {
     my $self = shift;
     my $key = $self->_process_key_arg( \@_ );
-    croak "Too many arguments passed to fetch_resource()" if @_;
+    croak 'Too many arguments passed to fetch_resource()' if @_;
 
     return $self->_fetch_resource( $key );
 }
@@ -382,7 +376,7 @@ sub _fetch_resource {
 
     my $method = $self->resource_method_name();
 
-    croak 'Cannot call fetch_resource() without setting resource_method_name'
+    croak 'Cannot call fetch_resource() without first setting resource_method_name'
         if !defined $method;
 
     return $self->_fetch_curio( $key )->$method();
@@ -395,7 +389,7 @@ sub _fetch_resource {
 sub create {
     my $self = shift;
     my $key = $self->_process_key_arg( \@_ );
-    croak "Too many arguments passed to create()" if @_;
+    croak 'Too many arguments passed to create()' if @_;
 
     return $self->_create( $key );
 }
@@ -425,7 +419,7 @@ sub _create {
 sub arguments {
     my $self = shift;
     my $key = $self->_process_key_arg( \@_ );
-    croak "Too many arguments passed to arguments()" if @_;
+    croak 'Too many arguments passed to arguments()' if @_;
 
     return $self->_arguments( $key );
 }
@@ -463,6 +457,8 @@ sub add_key {
         if @args % 2 != 0;
 
     $self->_keys->{$key} = { @args };
+
+    $self->does_keys( 1 );
 
     return;
 }
