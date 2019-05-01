@@ -9,9 +9,15 @@ open( my $fh, '<', 'lib/Curio.pm' );
 my $content = do { local $/; <$fh> };
 close $fh;
 
-if ($content =~ m{Create a Curio class:\n\n(.+?)\nThen use it elsewhere:\n\n(.+?)\n=head1}s) {
-    eval $1;
-    eval $2;
+if ($content =~ m{=head1 SYNOPSIS\n\n\S.+?:\n\n(.+?)\n\S.+?:\n\n(.+?)\n=head1}s) {
+    my @blocks = ($1, $2);
+    my $count = 0;
+    foreach my $block (@blocks) {
+        $count++;
+        local $@;
+        my $ok = eval "$block; 1";
+        die "Failed to run SYNOPSIS block #$count:\n$@" if !$ok;
+    }
 }
 
 my $chi = myapp_cache('sessions');
