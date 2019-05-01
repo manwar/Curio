@@ -77,39 +77,149 @@ __END__
 
 Curio::Declare - Provider of Curio's declarative interface.
 
+=head1 SYNOPSIS
+
+    use Curio::Declare;
+    
+    fetch_method_name 'name_of_method';
+    export_function_name 'name_of_function';
+    always_export;
+    
+    resource_method_name 'name_of_method';
+    fetch_returns_resource;
+    registers_resources;
+    
+    does_caching;
+    cache_per_process;
+    
+    does_keys;
+    allow_undeclared_keys;
+    default_key 'some_key';
+    key_argument 'name_of_argument';
+    
+    add_key some_key => (
+        arg => 'value',
+        ...
+    );
+    
+    alias_key some_alias => 'some_key';
+
 =head1 DESCRIPTION
 
-...
+This module exports a bunch of candy functions as seen used in the
+L<Curio/SYNOPSIS>.  These functions set corresponding flags and
+fields of the same name in L<Curio::Factory> which are then used
+to define the behaviors of Curio classes and objects.
+
+There is a one-to-one match between functions listed here to
+arguments and methods listed in L<Curio::Factory>, so these
+functions are minimally documented.  Check out the linked
+documentation for details.
 
 =head1 EXPORTED FUNCTIONS
 
 =head2 fetch_method_name
 
+    fetch_method_name 'name_of_method';
+
+See L<Curio::Factory/fetch_method_name> for details.
+
 =head2 export_function_name
+
+    export_function_name 'name_of_function';
+
+See L<Curio::Factory/export_function_name> for details.
 
 =head2 always_export
 
+    always_export;
+    always_export 1; # same as above
+    always_export 0; # default value
+
+See L<Curio::Factory/always_export> for details.
+
 =head2 resource_method_name
+
+    resource_method_name 'name_of_method';
+
+See L<Curio::Factory/resource_method_name> for details.
 
 =head2 fetch_returns_resource
 
+    fetch_returns_resource;
+    fetch_returns_resource 1; # same as above
+    fetch_returns_resource 0; # default value
+
+See L<Curio::Factory/fetch_returns_resource> for details.
+
 =head2 registers_resources
+
+    registers_resources;
+    registers_resources 1; # same as above
+    registers_resources 0; # default value
+
+See L<Curio::Factory/registers_resources> for details.
 
 =head2 does_caching
 
+    does_caching;
+    does_caching 1; # same as above
+    does_caching 0; # default value
+
+See L<Curio::Factory/does_caching> for details.
+
 =head2 cache_per_process
+
+    cache_per_process;
+    cache_per_process 1; # same as above
+    cache_per_process 0; # default value
+
+See L<Curio::Factory/cache_per_process> for details.
 
 =head2 does_keys
 
+    does_keys;
+    does_keys 1; # same as above
+    does_keys 0; # default value
+
+See L<Curio::Factory/does_keys> for details.
+
 =head2 allow_undeclared_keys
+
+    allow_undeclared_keys;
+    allow_undeclared_keys 1; # same as above
+    allow_undeclared_keys 0; # default value
+
+See L<Curio::Factory/allow_undeclared_keys> for details.
 
 =head2 default_key
 
+    default_key 'some_key';
+
+See L<Curio::Factory/default_key> for details.
+
 =head2 key_argument
+
+    key_argument 'name_of_argument';
+
+See L<Curio::Factory/key_argument> for details.
 
 =head2 add_key
 
+    add_key some_key => (
+        arg => 'value',
+        ...
+    );
+    
+    add_key 'key_without_args';
+
+See L<Curio::Factory/add_key> for details.
+
 =head2 alias_key
+
+    alias_key some_alias => 'some_key';
+
+See L<Curio::Factory/alias_key> for details.
 
 =head1 SUPPORT
 
