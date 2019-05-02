@@ -27,7 +27,7 @@ subtest keys => sub{
     my $custom = CC::k->new();
 
     is( CC::k->fetch('foo'), $regular, 'fetch returned regular object' );
-    CC::k->inject( $custom, 'foo' );
+    CC::k->inject( 'foo', $custom );
     is( CC::k->fetch('foo'), $custom, 'fetch returned custom object' );
     CC::k->uninject('foo');
     is( CC::k->fetch('foo'), $regular, 'fetch returned regular object' );
