@@ -39,6 +39,20 @@ use Moo::Role;
 use strictures 2;
 use namespace::clean;
 
+=head1 EXPORTED FETCH FUNCTION
+
+If L<Curio::Factory/export_function_name> is set then this
+role will install an C<import> method in your class which uses
+L<Exporter> to export the function to consumers of your Curio
+class.
+
+Read more at
+L<Curio::Factory/export_function_name>,
+L<Curio::Factory/always_export>, and
+L<Curio::Factory/fetch_returns_resource>.
+
+=cut
+
 my %is_exporter_setup;
 
 sub import {
@@ -74,16 +88,49 @@ sub _build_exported_fetch {
 
 =head1 CLASS METHODS
 
-=head2 initialize
+=head2 fetch
 
-Sets up your class's L<Curio::Factory> object and is automatically
-called when you C<use Curio;>.
+    # Generic example:
+    my $curio = Some::Curio::Class->fetch();
+
+    # Or, from the Curio SYNOPSIS:
+    my $chi = MyApp::Service::Cache->connect( 'sessions' );
+
+This method proxies to L<Curio::Factory/fetch>.
+
+The actual method name defaults to C<fetch> but may be different
+based on the value of L<Curio::Factory/fetch_method_name>.
 
 =cut
 
-sub initialize {
-    Curio::Factory->new( class => shift );
-    return;
+# Installed by Curio::Factory->_trigger_fetch_method_name().
+
+=head2 inject
+
+    MyApp::Service::Cache->inject( $curio_object );
+    MyApp::Service::Cache->inject( $key, $curio_object );
+
+This method proxies to L<Curio::Factory/inject>.
+
+=cut
+
+sub inject {
+    my $class = shift;
+    return $class->factory->inject( @_ );
+}
+
+=head2 uninject
+
+    my $curio_object = MyApp::Service::Cache->uninject();
+    my $curio_object = MyApp::Service::Cache->uninject( $key );
+
+This method proxies to L<Curio::Factory/uninject>.
+
+=cut
+
+sub uninject {
+    my $class = shift;
+    return $class->factory->uninject( @_ );
 }
 
 =head2 factory
@@ -102,27 +149,27 @@ sub factory {
     return Curio::Factory->find_factory( shift );
 }
 
-=head2 inject
+=head2 initialize
+
+Sets up your class's L<Curio::Factory> object and is automatically
+called when you C<use Curio;>.  This is generally not called
+directly by end-user code.
 
 =cut
 
-sub inject {
-    my $class = shift;
-    return $class->factory->inject( @_ );
-}
-
-=head2 uninject
-
-=cut
-
-sub uninject {
-    my $class = shift;
-    return $class->factory->uninject( @_ );
+sub initialize {
+    Curio::Factory->new( class => shift );
+    return;
 }
 
 =head1 CLASS ATTRIBUTES
 
 =head2 keys
+
+    my $keys = MyApp::Service::Cache->keys();
+    foreach my $key (@$keys) { ... }
+
+This method proxies to L<Curio::Factory/keys>.
 
 =cut
 

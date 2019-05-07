@@ -161,8 +161,8 @@ one purpose.
 
 =back
 
-These closely related problems can be solved by Curio and, by solving
-them, your applications will be more robust and resilient to change.
+These challenges can be solved by Curio and, by resolving them,
+your applications will be more robust and resilient to change.
 
 =head1 INTEGRATIONS
 
@@ -178,18 +178,18 @@ get started on making one.
 It is hard to find anything out there on CPAN which is similar to
 Curio.
 
-There is L<Bread::Board> but it is such a different take and solves
-different problems that I almost don't want to mention it.
+There is L<Bread::Board> but it has a very different take and solves
+different problems.
 
 L<Catalyst> has its models, but that doesn't really apply since they
 are baked into the framework.  The idea is similar though.
 
-Someone started something that looks vaguely similar called L<Trinket>
+Someone started something that look vaguely similar called L<Trinket>
 (this was one of the names I was considering and found it by accident)
 but it never got any love since initial release in 2012 and is incomplete.
 
-And of course, since Curio can do singletons, I would be doing a
-disservice to not mention L<MooX::Singleton> and L<MooseX::Singleton>.
+Since Curio can do singletons, you may want to check out
+L<MooX::Singleton> and L<MooseX::Singleton>.
 
 =head1 SUPPORT
 

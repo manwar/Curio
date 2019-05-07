@@ -14,13 +14,12 @@ Curio::Factory - Definer, creator, provider, and holder of Curio objects.
 =head1 DESCRIPTION
 
 The factory object contains the vast majority of Curio's logic.
-Each Curio class (L<Moo> classes who consume L<Curio::Role>) get
-a single factory object created for, and assigned to, them via
-L<Curio::Role/factory>.
+Each Curio class (L<Moo> classes who consume L<Curio::Role>) gets
+a single factory object created for them via L<Curio::Role/initialize>.
 
 Note that much of the example code in this documentation is based
 on the L<Curio/SYNOPSIS>.  Also when you see the term "Curio
-object" we're just referring to the L</class>.
+object" it is referring to instances of L</class>.
 
 =cut
 
@@ -278,7 +277,7 @@ this argument refers to, such as:
 
 This argument must be defined in order for L</fetch_returns_resource>
 and L</registers_resources> to work, otherwise they have no way to
-get at the resource object.
+know how to get at the resource object.
 
 There is no default for this argument.
 
@@ -363,7 +362,7 @@ a new Curio object under the new process IDs.
 Defaults to off (C<0>), meaning the same Curio objects will be
 used by fetch across all forks and threads.
 
-Normally the default works just fine.  Some L<CHI> drivers need
+Normally the default works fine.  Some L<CHI> drivers need
 this turned on.
 
 =cut
@@ -462,6 +461,9 @@ has key_argument => (
 =head1 ATTRIBUTES
 
 =head2 keys
+
+    my $keys = $factory->keys();
+    foreach my $key (@$keys) { ... }
 
 Returns an array ref containing all the keys declared with
 L</add_key>.
@@ -660,9 +662,9 @@ sub add_key {
 
     $factory->alias_key( $alias_key => $real_key );
 
-Adds a key that is just an alias to a key that was declared with
-L</add_key>.  The alias key can then be used anywhere a declared
-key can be used.
+Adds a key that is an alias to a key that was declared with
+L</add_key>.  Alias keys can be used anywhere a declared key
+can be used.
 
 =cut
 
@@ -696,7 +698,7 @@ sub alias_key {
     $factory->inject( $key, $curio_object );
 
 Takes a curio object of your making and forces L</fetch> to
-return the injected object (or the injected objects resource).
+return the injected object (or the injected object's resource).
 This is useful for injecting mock objects in tests.
 
 =cut
@@ -726,11 +728,13 @@ sub inject {
 
 =head1 uninject
 
-    $factory->uninject();
-    $factory->uninject( $key );
+    my $curio_object = $factory->uninject();
+    my $curio_object = $factory->uninject( $key );
 
 Removes the previously injected curio object, restoring the
 original behavior of L</fetch>.
+
+Returns the previously injected curio object.
 
 =cut
 
@@ -740,12 +744,12 @@ sub uninject {
 
     $key = $undef_key if !defined $key;
 
-    croak 'Cannot uninject a Curio object where none has been injected'
+    croak 'Cannot uninject a Curio object where one has not already been injected'
         if !$self->_injections->{$key};
 
-    delete $self->_injections->{$key};
+    my $object = delete $self->_injections->{$key};
 
-    return;
+    return $object;
 }
 
 =head2 find_curio
@@ -757,8 +761,7 @@ object for it.
 
 This does a reverse lookup of sorts and can be useful in
 specialized situations where you have the resource, and you
-need to introspect back into the Curio object or factory.
-For example:
+need to introspect back into the Curio object.
 
     # I have my $chi and nothing else.
     my $factory = MyApp::Service::Cache->factory();

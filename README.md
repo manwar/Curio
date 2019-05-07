@@ -123,8 +123,8 @@ independent.  Yes, Curio is a framework itself, but it is a very slim
 framework which gets out of your way quickly and is designed for this
 one purpose.
 
-These closely related problems can be solved by Curio and, by solving
-them, your applications will be more robust and resilient to change.
+These challenges can be solved by Curio and, by resolving them,
+your applications will be more robust and resilient to change.
 
 # INTEGRATIONS
 
@@ -140,18 +140,18 @@ get started on making one.
 It is hard to find anything out there on CPAN which is similar to
 Curio.
 
-There is [Bread::Board](https://metacpan.org/pod/Bread::Board) but it is such a different take and solves
-different problems that I almost don't want to mention it.
+There is [Bread::Board](https://metacpan.org/pod/Bread::Board) but it has a very different take and solves
+different problems.
 
 [Catalyst](https://metacpan.org/pod/Catalyst) has its models, but that doesn't really apply since they
 are baked into the framework.  The idea is similar though.
 
-Someone started something that looks vaguely similar called [Trinket](https://metacpan.org/pod/Trinket)
+Someone started something that look vaguely similar called [Trinket](https://metacpan.org/pod/Trinket)
 (this was one of the names I was considering and found it by accident)
 but it never got any love since initial release in 2012 and is incomplete.
 
-And of course, since Curio can do singletons, I would be doing a
-disservice to not mention [MooX::Singleton](https://metacpan.org/pod/MooX::Singleton) and [MooseX::Singleton](https://metacpan.org/pod/MooseX::Singleton).
+Since Curio can do singletons, you may want to check out
+[MooX::Singleton](https://metacpan.org/pod/MooX::Singleton) and [MooseX::Singleton](https://metacpan.org/pod/MooseX::Singleton).
 
 # SUPPORT
 
