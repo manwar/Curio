@@ -50,12 +50,8 @@ Create a Curio class:
     
     with 'MooX::BuildArgs';
     
-    fetch_method_name 'connect';
-    export_function_name 'myapp_cache';
-    always_export;
-    
-    resource_method_name 'chi';
-    fetch_returns_resource;
+    use Exporter qw( import );
+    our @EXPORT = qw( myapp_cache );
     
     does_caching;
     cache_per_process;
@@ -75,6 +71,10 @@ Create a Curio class:
         my $chi = CHI->new( %{ $self->build_args() } );
         $self->clear_build_args();
         return $chi;
+    }
+    
+    sub myapp_cache {
+        return __PACKAGE__->fetch( @_ )->chi();
     }
 
 Then use your new Curio class elsewhere:

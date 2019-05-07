@@ -54,28 +54,4 @@ subtest registers_resources => sub{
     );
 };
 
-subtest fetch_returns_resource => sub{
-    package CC::frr;
-        use Curio;
-        sub resource { [8,9] }
-    package main;
-
-    isa_ok(
-        CC::frr->factory->fetch(),
-        ['CC::frr'],
-        'fetch returns curio object',
-    );
-
-    package CC::frr;
-        fetch_returns_resource;
-        resource_method_name 'resource';
-    package main;
-
-    is(
-        CC::frr->factory->fetch(),
-        [8,9],
-        'fetch returns resource',
-    );
-};
-
 done_testing;

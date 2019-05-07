@@ -17,8 +17,8 @@ subtest 'Curio::Declare' => sub{
         use Curio;
     package main;
 
-    is( dies{ CC::cd::always_export(1) }, undef, 'Curio::Declare imported' );
-    is( CC::cd->factory->always_export(), 1, 'Curio::Declare works' );
+    is( dies{ CC::cd::does_caching(1) }, undef, 'Curio::Declare imported' );
+    is( CC::cd->factory->does_caching(), 1, 'Curio::Declare works' );
 };
 
 subtest 'namespace::clean' => sub{

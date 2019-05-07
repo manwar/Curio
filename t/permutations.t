@@ -11,11 +11,7 @@ use List::MoreUtils qw( zip );
 use Curio::Factory;
 
 my %possibles = (
-    fetch_method_name      => [undef, 'connect'],
-    export_function_name   => [undef, 'myapp_cache'],
-    always_export          => [undef, 1],
     resource_method_name   => [undef, 'chi'],
-    fetch_returns_resource => [undef, 1],
     registers_resources    => [undef, 1],
     does_caching           => [undef, 1],
     cache_per_process      => [undef, 1],

@@ -7,11 +7,7 @@ use strictures 2;
 use namespace::clean;
 
 my %EXPORTS = (
-    fetch_method_name      => 'string',
-    export_function_name   => 'string',
-    always_export          => 'bool',
     resource_method_name   => 'string',
-    fetch_returns_resource => 'bool',
     registers_resources    => 'bool',
     does_caching           => 'bool',
     cache_per_process      => 'bool',
@@ -81,12 +77,7 @@ Curio::Declare - Provider of Curio's declarative interface.
 
     use Curio::Declare;
     
-    fetch_method_name 'name_of_method';
-    export_function_name 'name_of_function';
-    always_export;
-    
     resource_method_name 'name_of_method';
-    fetch_returns_resource;
     registers_resources;
     
     does_caching;
@@ -118,39 +109,11 @@ documentation for details.
 
 =head1 EXPORTED FUNCTIONS
 
-=head2 fetch_method_name
-
-    fetch_method_name 'name_of_method';
-
-See L<Curio::Factory/fetch_method_name> for details.
-
-=head2 export_function_name
-
-    export_function_name 'name_of_function';
-
-See L<Curio::Factory/export_function_name> for details.
-
-=head2 always_export
-
-    always_export;
-    always_export 1; # same as above
-    always_export 0; # default value
-
-See L<Curio::Factory/always_export> for details.
-
 =head2 resource_method_name
 
     resource_method_name 'name_of_method';
 
 See L<Curio::Factory/resource_method_name> for details.
-
-=head2 fetch_returns_resource
-
-    fetch_returns_resource;
-    fetch_returns_resource 1; # same as above
-    fetch_returns_resource 0; # default value
-
-See L<Curio::Factory/fetch_returns_resource> for details.
 
 =head2 registers_resources
 

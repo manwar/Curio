@@ -24,7 +24,6 @@ object" it is referring to instances of L</class>.
 =cut
 
 use Curio::Util;
-use Package::Stash;
 use Scalar::Util qw( blessed refaddr );
 use Types::Common::String qw( NonEmptySimpleStr );
 use Types::Standard qw( Bool Map HashRef );
@@ -41,7 +40,6 @@ sub BUILD {
     my ($self) = @_;
 
     $self->_store_class_to_factory();
-    $self->_trigger_fetch_method_name();
 
     return;
 }
@@ -169,97 +167,6 @@ has class => (
 
 =head1 OPTIONAL ARGUMENTS
 
-=head2 fetch_method_name
-
-    fetch_method_name => 'connect',
-
-The fetch method is installed on the Curio L</class> and is one
-of the main ways that user's of the Curio class retrieve curio
-or resource objects (depending on the value of
-L</fetch_returns_resource>).  For example:
-
-    my $object = MyApp::Service::Cache->connect( ... );
-
-The default is C<fetch>.  A common alternative is C<connect>.
-
-=cut
-
-has fetch_method_name => (
-    is      => 'rw',
-    isa     => NonEmptySimpleStr,
-    default => 'fetch',
-    trigger => 1,
-);
-
-has _installed_fetch_method_name => (
-    is => 'rw',
-);
-
-sub _trigger_fetch_method_name {
-    my ($self) = @_;
-
-    my $stash = Package::Stash->new( $self->class() );
-    my $new_name = $self->fetch_method_name();
-    my $old_name = $self->_installed_fetch_method_name();
-
-    $stash->remove_symbol( "&$old_name" ) if defined $old_name;
-
-    $stash->add_symbol(
-        "&$new_name",
-        subname( $new_name, $self->_build_fetch_method() ),
-    );
-
-    $self->_installed_fetch_method_name( $new_name );
-
-    return;
-}
-
-sub _build_fetch_method {
-    my ($self) = @_;
-    return sub{ shift; $self->fetch( @_ ) };
-}
-
-=head2 export_function_name
-
-    export_function_name => 'myapp_cache',
-
-The export function is exported when the the Curio class is
-imported, as in:
-
-    use MyApp::Service::Cache qw( myapp_cache );
-    my $object = myapp_cache( ... );
-
-There is no default, as exporting a function is only enabled once
-this argument is set.  Also, take a look at L</always_export>.
-
-=cut
-
-has export_function_name => (
-    is  => 'rw',
-    isa => NonEmptySimpleStr,
-);
-
-=head2 always_export
-
-    always_export => 1,
-
-Makes exporting of the L</export_function_name> happen when no
-arguments are passed to the import, as in:
-
-    use MyApp::Service::Cache;
-    my $object = myapp_cache( ... );
-
-Defaults off (C<0>), meaning you have to explicitly declare the
-importing of the function.
-
-=cut
-
-has always_export => (
-    is      => 'rw',
-    isa     => Bool,
-    default => 0,
-);
-
 =head2 resource_method_name
 
     resource_method_name 'chi';
@@ -275,9 +182,9 @@ this argument refers to, such as:
 
     has chi => ( is=>'lazy', ... );
 
-This argument must be defined in order for L</fetch_returns_resource>
-and L</registers_resources> to work, otherwise they have no way to
-know how to get at the resource object.
+This argument must be defined in order for L<fetch_resource> and
+L</registers_resources> to work, otherwise they wil have no way
+to know how to get at the resource object.
 
 There is no default for this argument.
 
@@ -286,28 +193,6 @@ There is no default for this argument.
 has resource_method_name => (
   is  => 'rw',
   isa => NonEmptySimpleStr,
-);
-
-=head2 fetch_returns_resource
-
-    fetch_returns_resource => 1,
-
-When enabled this augments L</fetch>, the fetch method
-(L<fetch_method_name>), and the exported fetch function
-(L</export_function_name>) to return the resource object rather
-than the Curio object.
-
-When enabled, the Curio object can still be retrieved with
-L</fetch_curio>.
-
-Defaults off (C<0>), meaning fetch returns a Curio object.
-
-=cut
-
-has fetch_returns_resource => (
-    is      => 'rw',
-    isa     => Bool,
-    default => 0,
 );
 
 =head2 registers_resources
@@ -332,7 +217,7 @@ has registers_resources => (
 
     does_caching => 1,
 
-When caching is enabled all calls to L</fetch> will attempt to
+When caching is enabled all calls to L</fetch_curio> will attempt to
 retrieve from an in-memory cache.
 
 Defaults off (C<0>), meaning all fetch calls will return a new
@@ -377,12 +262,12 @@ has cache_per_process => (
 
     does_keys => 1,
 
-Turning this on allows a key argument to be passed to L</fetch>
+Turning this on allows a key argument to be passed to L</fetch_curio>
 and many other methods.  Typically, though,  you don't have to
 set this as you'll be using L</add_key> which automatically
 turns this on.
 
-By enabling keys this allows L</fetch>, caching, resource
+By enabling keys this allows L</fetch_curio>, caching, resource
 registration, injecting, and anything else dealing with
 a Curio object to deal with multiple Curio objects based on
 the passed key argument.
@@ -402,7 +287,7 @@ has does_keys => (
 
     allow_undeclared_keys => 1,
 
-When L</fetch>, and other key-accepting methods are called, they
+When L</fetch_curio>, and other key-accepting methods are called, they
 normally throw an exception if the passed key has not already been
 declared with L</add_key>.  By allowing undeclared keys any key
 may be passed, which can be useful especially if coupled with
@@ -423,8 +308,8 @@ has allow_undeclared_keys => (
 
     default_key => 'generic',
 
-If no key is passed to key-accepting methods like L</fetch> then they
-will use this default key if available.
+If no key is passed to key-accepting methods like L</fetch_curio> then
+they will use this default key if available.
 
 Defaults to no default key.
 
@@ -477,35 +362,13 @@ sub keys {
 
 =head1 METHODS
 
-=head2 fetch
-
-    my $object = $factory->fetch();
-    my $object = $factory->fetch( $key );
-
-Returns a Curio or resource object, depending on what
-L</fetch_returns_resource> is set to.  If L</does_caching> is
-enabled then a cached object may be returned.
-
-=cut
-
-sub fetch {
-    my $self = shift;
-    my $key = $self->_process_key_arg( \@_ );
-    croak 'Too many arguments passed to fetch()' if @_;
-
-    return(
-        $self->fetch_returns_resource()
-        ? $self->_fetch_resource( $key )
-        : $self->_fetch_curio( $key )
-    );
-}
-
 =head2 fetch_curio
 
     my $curio = $factory->fetch_curio();
     my $curio = $factory->fetch_curio( $key );
 
-Just like L</fetch>, but always returns a Curio object.
+Returns a Curio object.  If L</does_caching> is enabled then
+a cached object may be returned.
 
 =cut
 
@@ -539,7 +402,7 @@ sub _fetch_curio {
     my $resource = $factory->fetch_resource();
     my $resource = $factory->fetch_resource( $key );
 
-Just like L</fetch>, but always returns a resource.  Will only work
+Like L</fetch_curio>, but always returns a resource.  Will only work
 if L</resource_method_name> is set.
 
 =cut
@@ -633,7 +496,7 @@ Declares a new key and turns L</does_keys> on if it is not already
 turned on.
 
 Arguments are optional, but if present they will be saved and used
-by L</fetch> when calling C<new()> on L</class>.
+by L</fetch_curio> when calling C<new()> on L</class>.
 
 =cut
 
@@ -697,7 +560,7 @@ sub alias_key {
     $factory->inject( $curio_object );
     $factory->inject( $key, $curio_object );
 
-Takes a curio object of your making and forces L</fetch> to
+Takes a curio object of your making and forces L</fetch_curio> to
 return the injected object (or the injected object's resource).
 This is useful for injecting mock objects in tests.
 
@@ -732,7 +595,7 @@ sub inject {
     my $curio_object = $factory->uninject( $key );
 
 Removes the previously injected curio object, restoring the
-original behavior of L</fetch>.
+original behavior of L</fetch_curio>.
 
 Returns the previously injected curio object.
 
