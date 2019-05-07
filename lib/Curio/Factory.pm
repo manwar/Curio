@@ -183,7 +183,7 @@ this argument refers to, such as:
     has chi => ( is=>'lazy', ... );
 
 This argument must be defined in order for L<fetch_resource> and
-L</registers_resources> to work, otherwise they wil have no way
+L</registers_resources> to work, otherwise they will have no way
 to know how to get at the resource object.
 
 There is no default for this argument.

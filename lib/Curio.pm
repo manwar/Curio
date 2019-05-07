@@ -139,7 +139,7 @@ To avoid the extra complexity of passing around references of shared
 resources, such as connections to services.  Often times you'll see
 code which passes a connection to a function, which then passes that
 on to another function, which then creates an object with the connection
-passed as an argument, etc.  This is what is being avoided; its a messy
+passed as an argument, etc.  This is what is being avoided; it's a messy
 way to writer code and prone to error.
 
 =item 2.
@@ -184,7 +184,7 @@ different problems.
 L<Catalyst> has its models, but that doesn't really apply since they
 are baked into the framework.  The idea is similar though.
 
-Someone started something that look vaguely similar called L<Trinket>
+Someone started something that looks vaguely similar called L<Trinket>
 (this was one of the names I was considering and found it by accident)
 but it never got any love since initial release in 2012 and is incomplete.
 

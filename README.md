@@ -109,7 +109,7 @@ The main drive behind using Curio is threefold.
 resources, such as connections to services.  Often times you'll see
 code which passes a connection to a function, which then passes that
 on to another function, which then creates an object with the connection
-passed as an argument, etc.  This is what is being avoided; its a messy
+passed as an argument, etc.  This is what is being avoided; it's a messy
 way to writer code and prone to error.
 2. To have a central place to put object creation logic.  When there is
 no central place to put this sort of logic it tends to be haphazardly
@@ -146,7 +146,7 @@ different problems.
 [Catalyst](https://metacpan.org/pod/Catalyst) has its models, but that doesn't really apply since they
 are baked into the framework.  The idea is similar though.
 
-Someone started something that look vaguely similar called [Trinket](https://metacpan.org/pod/Trinket)
+Someone started something that looks vaguely similar called [Trinket](https://metacpan.org/pod/Trinket)
 (this was one of the names I was considering and found it by accident)
 but it never got any love since initial release in 2012 and is incomplete.
 

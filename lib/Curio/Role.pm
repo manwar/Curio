@@ -10,7 +10,7 @@ Curio::Role - Role for Curio classes.
 =head1 DESCRIPTION
 
 This L<Moo::Role> provides various shortcut methods for interacting
-witht he underlying L<Curio::Factory> object.
+witht the underlying L<Curio::Factory> object.
 
 =cut
 
