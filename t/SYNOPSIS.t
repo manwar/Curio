@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+BEGIN { $ENV{PERL_STRICTURES_EXTRA} = 0 }
 use strictures 2;
 use Test2::V0;
 
