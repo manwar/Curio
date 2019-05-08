@@ -200,7 +200,7 @@ L<https://github.com/bluefeet/Curio/issues>
 
 =head1 AUTHORS
 
-    Aran Clary Deltac <bluefeet@gmail.com>
+    Aran Clary Deltac <aran@bluefeet.dev>
 
 =head1 ACKNOWLEDGEMENTS
 
