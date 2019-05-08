@@ -57,14 +57,14 @@ foreach my $test (@tests) {
     my $factory = Curio::Factory->new( $test );
 
     $factory->add_key(
-        sessions => (
+        geo_ip => (
             driver => 'Memory',
             global => 0,
         ),
     ) if $add_key;
 
     $factory->alias_key(
-        foo => 'sessions',
+        foo => 'geo_ip',
     ) if $alias_key and $add_key;
 
     ok( 1, 'made factory object' );

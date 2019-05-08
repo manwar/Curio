@@ -56,7 +56,7 @@ Create a Curio class:
     does_caching;
     cache_per_process;
     
-    add_key sessions => (
+    add_key geo_ip => (
         driver => 'Memory',
         global => 0,
     );
@@ -81,7 +81,7 @@ Then use your new Curio class elsewhere:
 
     use MyApp::Service::Cache;
     
-    my $chi = myapp_cache('sessions');
+    my $chi = myapp_cache('geo_ip');
 
 =head1 DESCRIPTION
 
@@ -166,11 +166,16 @@ your applications will be more robust and resilient to change.
 
 =head1 INTEGRATIONS
 
-Curio has not yet been integrated with any existing frameworks.  A
-L<Catalyst> model will be available quite soon though.
+=over
+
+=item *
+
+L<Catalyst::Model::Curio>
+
+=back
 
 If you don't see your framework here (L<Dancer2> I'm looking at
-you) then head down to L</SUPPORT> and open up a ticket and lets
+you) then head down to L</SUPPORT> and open up an issue and lets
 get started on making one.
 
 =head1 SEE ALSO

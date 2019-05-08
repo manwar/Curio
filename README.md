@@ -23,7 +23,7 @@ our @EXPORT = qw( myapp_cache );
 does_caching;
 cache_per_process;
 
-add_key sessions => (
+add_key geo_ip => (
     driver => 'Memory',
     global => 0,
 );
@@ -50,7 +50,7 @@ Then use your new Curio class elsewhere:
 ```perl
 use MyApp::Service::Cache;
 
-my $chi = myapp_cache('sessions');
+my $chi = myapp_cache('geo_ip');
 ```
 
 # DESCRIPTION
@@ -128,11 +128,10 @@ your applications will be more robust and resilient to change.
 
 # INTEGRATIONS
 
-Curio has not yet been integrated with any existing frameworks.  A
-[Catalyst](https://metacpan.org/pod/Catalyst) model will be available quite soon though.
+- [Catalyst::Model::Curio](https://metacpan.org/pod/Catalyst::Model::Curio)
 
 If you don't see your framework here ([Dancer2](https://metacpan.org/pod/Dancer2) I'm looking at
-you) then head down to ["SUPPORT"](#support) and open up a ticket and lets
+you) then head down to ["SUPPORT"](#support) and open up an issue and lets
 get started on making one.
 
 # SEE ALSO

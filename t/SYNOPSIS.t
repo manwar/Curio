@@ -21,12 +21,12 @@ if ($content =~ m{=head1 SYNOPSIS\n\n\S.+?:\n\n(.+?)\n\S.+?:\n\n(.+?)\n=head1}s)
     }
 }
 
-my $chi = myapp_cache('sessions');
+my $chi = myapp_cache('geo_ip');
 $chi->set('foo' => 62);
 
 is(
     $chi->get('foo'), 62,
-    'seems to work',
+    'works',
 );
 
 done_testing;
