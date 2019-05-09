@@ -56,19 +56,19 @@ my $chi = myapp_cache('geo_ip');
 # DESCRIPTION
 
 Curio is a library for creating [Moo](https://metacpan.org/pod/Moo) classes which encapsulate the
-construction and retrieval of arbitrary objects.  As a user of this
+construction and retrieval of arbitrary resources.  As a user of this
 library you've got two jobs.
 
 First, you create classes in your application which use Curio.  You'll
 have one class for each type of resource you want available to your
 application as a whole.  So, for example, you'd have a Curio class for
 your database connections, another for your graphite client, and perhaps
-a third for your AWS IAM clients.
+a third for your CRM client.
 
 Your second job is to then modify your application to use your Curio
 classes.  If your application uses an existing framework, such as
 [Catalyst](https://metacpan.org/pod/Catalyst) or [Dancer2](https://metacpan.org/pod/Dancer2), then you may want to take a look at the
-available ["INTEGRATIONS"](#integrations).  Also take a look at ["Use Curio Directly"](#use-curio-directly).
+available ["INTEGRATIONS"](#integrations).
 
 Keep in mind that Curio doesn't just have to be used for connections
 to remote services.  It can be used to make singleton classes, as a
@@ -125,24 +125,16 @@ find and change.
 There is no reason this sort of logic needs to be framework dependent,
 and once it is it makes all sorts of things more difficult, such as
 migrating frameworks and writing in-house libraries that are framework
-independent.  Yes, Curio is a framework itself, but it is a very slim
-framework which gets out of your way quickly and is designed for this
-one purpose.
+independent.  Yes, Curio is a sort framework itself, but it is a very
+slim framework which gets out of your way quickly and is designed for
+this one purpose.
 
-These challenges can be solved by Curio and, by resolving them,
+These challenges can be solved by Curio and, by solving them,
 your applications will be more robust and resilient to change.
 
-# INTEGRATIONS
+# IMPORTANT PRACTICES
 
-- [Catalyst::Model::Curio](https://metacpan.org/pod/Catalyst::Model::Curio)
-
-If you don't see your framework here ([Dancer2](https://metacpan.org/pod/Dancer2) I'm looking at
-you) then head down to ["SUPPORT"](#support) and open up an issue and lets
-get started on making one.
-
-# BEST PRACTICES
-
-## Avoid Holding onto Curio objects and Resources
+## Avoid Holding onto Curio Objects and Resources
 
 Curio is designed to make it cheap to retrieve Curio objects
 and the underlying resources.  Take advantage of this.  Don't
@@ -162,27 +154,35 @@ It is tempting to use the ["INTEGRATIONS"](#integrations) such as
 [Catalyst::Model::Curio](https://metacpan.org/pod/Catalyst::Model::Curio), and sometimes it is necessary to do so.
 Most of the time there is no need to add that extra layer of complexity.
 
-Continuing the Catalyst example, there are few reasons you can't
+Using Catalyst as an example, there are few reasons you can't
 just use your Curio classes directly from your Catalyst controllers.
 
-At ZipRecruiter, where we have massive Catalyst applications, we only
-wrap our Curio classes in Catalyst models in the few cases where other
-parts of Catalyst demand models be setup.  For the most part we bypass
-the model system completely and it makes everything much cleaner and
+At ZipRecruiter, where we have some massive Catalyst applications, we
+only use Catalyst models in the few cases where other parts of
+Catalyst demand that models be setup.  For the most part we bypass the
+model system completely and it makes everything much cleaner and
 easier to deal with.
 
-## Purpose of Key Aliases
+## Appropriate Uses of Key Aliases
 
 Key aliases are meant as a tool for migrating and merging keys.
-They are meant to be something you temporarly setup as you change
+They are meant to be something you temporarily setup as you change
 your code to use the new keys, and then once done you remove the
 aliases.
 
-It is tempting to use key aliases to provide simpler names for
-existing keys.  The problem with doing this is now you've
-introduced multiple keys for the same Curio objects which
-causes confusion and likely reduces grepability for the simpler
-names making it harder for developers to find.
+It can be tempting to use key aliases to provide simpler or alternative
+names for existing keys.  The problem with doing this is now you've
+introduced multiple keys for the same Curio class which in practice
+does cause unnecessary confusion.
+
+# INTEGRATIONS
+
+The CPAN modules listed here integrate Curio with other things
+such as web frameworks.
+
+- [Catalyst::Model::Curio](https://metacpan.org/pod/Catalyst::Model::Curio)
+
+On a related note, take a look at ["Use Curio Directly"](#use-curio-directly).
 
 # SEE ALSO
 

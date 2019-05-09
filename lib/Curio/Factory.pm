@@ -607,7 +607,7 @@ sub inject {
     return;
 }
 
-=head1 uninject
+=head2 uninject
 
     my $curio_object = $factory->uninject();
     my $curio_object = $factory->uninject( $key );
