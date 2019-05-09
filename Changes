@@ -3,6 +3,7 @@ Revision history for Perl extension Curio.
 {{$NEXT}}
 
  - Switch to the GNU General Public License version 3.
+ - Suggest a couple optional, but missing, test dependencies for permutations.t.
 
 0.01 2019-05-09T00:42:15Z
 

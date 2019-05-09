@@ -17,6 +17,9 @@ recommends 'Sub::Name' => '0.20';
 
 on test => sub {
     requires 'Test2::V0' => '0.000094';
+
+    suggests 'Algorithm::Loops' => '1.032';
     suggests 'CHI' => '0.60';
+    suggests 'List::MoreUtils' => '0.428';
     suggests 'MooX::BuildArgs' => '0.08';
 };

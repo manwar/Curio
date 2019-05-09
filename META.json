@@ -64,7 +64,9 @@
             "Test2::V0" : "0.000094"
          },
          "suggests" : {
+            "Algorithm::Loops" : "1.032",
             "CHI" : "0.60",
+            "List::MoreUtils" : "0.428",
             "MooX::BuildArgs" : "0.08"
          }
       }
