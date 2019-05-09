@@ -120,9 +120,9 @@ See L<Curio/SUPPORT>.
 
 See L<Curio/AUTHORS>.
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
 
-See L<Curio/LICENSE>.
+See L<Curio/COPYRIGHT AND LICENSE>.
 
 =cut
 
