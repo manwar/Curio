@@ -26,6 +26,7 @@ use namespace::clean;
 =head2 fetch
 
     my $curio = Some::Curio::Class->fetch();
+    my $curio = Some::Curio::Class->fetch( $key );
 
 This method proxies to L<Curio::Factory/fetch_curio>.
 

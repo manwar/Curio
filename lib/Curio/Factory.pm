@@ -24,6 +24,7 @@ object" it is referring to instances of L</class>.
 =cut
 
 use Curio::Util;
+use Package::Stash;
 use Scalar::Util qw( blessed refaddr );
 use Types::Common::String qw( NonEmptySimpleStr );
 use Types::Standard qw( Bool Map HashRef );
@@ -40,6 +41,7 @@ sub BUILD {
     my ($self) = @_;
 
     $self->_store_class_to_factory();
+    $self->_install_fast_fetch_method();
 
     return;
 }
@@ -53,6 +55,22 @@ sub _store_class_to_factory {
         if $class_to_factory{ $class };
 
     $class_to_factory{ $class } = $self;
+
+    return;
+}
+
+sub _install_fast_fetch_method {
+    my ($self) = @_;
+
+    my $stash = Package::Stash->new( $self->class() );
+
+    $stash->add_symbol(
+        '&fetch',
+        sub{
+            shift;
+            return $self->fetch_curio( @_ );
+        },
+    );
 
     return;
 }
