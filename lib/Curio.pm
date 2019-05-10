@@ -113,11 +113,7 @@ to remote services.  It can be used to make singleton classes, as a
 ready to go generic object factory, a place to put global application
 context information, etc.
 
-=head1 BEWARE OF EARLY RELEASES
-
-The first versions of Curio that are hitting CPAN are early releases
-and may see major interface changes before things settle down.  This
-notice will be removed when that point is reached.
+From here head on over to the L<Curio::Manual>.
 
 =head1 IMPORT ARGUMENTS
 
@@ -196,49 +192,6 @@ this one purpose.
 These challenges can be solved by Curio and, by solving them,
 your applications will be more robust and resilient to change.
 
-=head1 IMPORTANT PRACTICES
-
-=head2 Avoid Holding onto Curio Objects and Resources
-
-Curio is designed to make it cheap to retrieve Curio objects
-and the underlying resources.  Take advantage of this.  Don't
-pass around your resource objects or put them in attributes.
-Instead, when you need them, get the from your Curio classes.
-
-If your Curio class supports keys, then passing around the
-key that you want particular code to be using, rather than the
-Curio object or the resource, is a much better way of handling
-things.
-
-Read more of the reasoning for this in L</MOTIVATION>.
-
-=head2 Use Curio Directly
-
-It is tempting to use the L</INTEGRATIONS> such as
-L<Catalyst::Model::Curio>, and sometimes it is necessary to do so.
-Most of the time there is no need to add that extra layer of complexity.
-
-Using Catalyst as an example, there are few reasons you can't
-just use your Curio classes directly from your Catalyst controllers.
-
-At ZipRecruiter, where we have some massive Catalyst applications, we
-only use Catalyst models in the few cases where other parts of
-Catalyst demand that models be setup.  For the most part we bypass the
-model system completely and it makes everything much cleaner and
-easier to deal with.
-
-=head2 Appropriate Uses of Key Aliases
-
-Key aliases are meant as a tool for migrating and merging keys.
-They are meant to be something you temporarily setup as you change
-your code to use the new keys, and then once done you remove the
-aliases.
-
-It can be tempting to use key aliases to provide simpler or alternative
-names for existing keys.  The problem with doing this is now you've
-introduced multiple keys for the same Curio class which in practice
-does cause unnecessary confusion.
-
 =head1 AVAILABLE ROLES
 
 These roles, available on CPAN, provide a base set of functionality
@@ -267,7 +220,7 @@ L<Catalyst::Model::Curio>
 
 =back
 
-On a related note, take a look at L</Use Curio Directly>.
+On a related note, take a look at L<Curio::Manual/Use Curio Directly>.
 
 =head1 SEE ALSO
 
