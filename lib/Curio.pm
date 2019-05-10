@@ -11,15 +11,21 @@ use strictures 2;
 use namespace::clean;
 
 sub import {
+    my ($class, %args) = @_;
+
     my $target = caller;
 
     Moo->import::into( 1 );
     Curio::Declare->import::into( 1 );
     namespace::clean->import::into( 1 );
 
+    my $role = 'Curio::Role';
+    $role = $args{role} if defined $args{role};
+    $role = "Curio::Role$role" if $role =~ m{^::};
+
     Moo::Role->apply_roles_to_package(
         $target,
-        'Curio::Role',
+        $role,
     );
 
     $target->initialize();
@@ -76,6 +82,8 @@ Create a Curio class:
     sub myapp_cache {
         return __PACKAGE__->fetch( @_ )->chi();
     }
+    
+    1;
 
 Then use your new Curio class elsewhere:
 
@@ -110,6 +118,24 @@ context information, etc.
 The first versions of Curio that are hitting CPAN are early releases
 and may see major interface changes before things settle down.  This
 notice will be removed when that point is reached.
+
+=head1 IMPORT ARGUMENTS
+
+=head2 role
+
+    use Curio role => '::CHI';
+    use Curio role => 'Curio::Role::CHI';
+
+Set this to change the role that is applied to your Curio class.
+
+If the role you specify has a leading C<::> it is assumed to be
+relative to the C<Curio::Role> namespace and will have that appended
+to it.  So, if you set the role to C<::CHI> it will be automatically
+converted to C<Curio::Role::CHI>.
+
+See L</AVAILABLE ROLES> for a list of existing Curio roles.
+
+The default role is L<Curio::Role>.
 
 =head1 BOILERPLATE
 
@@ -212,6 +238,21 @@ It can be tempting to use key aliases to provide simpler or alternative
 names for existing keys.  The problem with doing this is now you've
 introduced multiple keys for the same Curio class which in practice
 does cause unnecessary confusion.
+
+=head1 AVAILABLE ROLES
+
+These roles, available on CPAN, provide a base set of functionality
+for your Curio classes to wrap around specific resource types.
+
+=over
+
+=item *
+
+L<Curio::Role::CHI>
+
+=back
+
+Roles for L<DBI> and L<DBIx::Class> are in the works.
 
 =head1 INTEGRATIONS
 

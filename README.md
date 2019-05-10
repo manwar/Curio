@@ -43,6 +43,8 @@ sub _build_chi {
 sub myapp_cache {
     return __PACKAGE__->fetch( @_ )->chi();
 }
+
+1;
 ```
 
 Then use your new Curio class elsewhere:
@@ -80,6 +82,26 @@ context information, etc.
 The first versions of Curio that are hitting CPAN are early releases
 and may see major interface changes before things settle down.  This
 notice will be removed when that point is reached.
+
+# IMPORT ARGUMENTS
+
+## role
+
+```perl
+use Curio role => '::CHI';
+use Curio role => 'Curio::Role::CHI';
+```
+
+Set this to change the role that is applied to your Curio class.
+
+If the role you specify has a leading `::` it is assumed to be
+relative to the `Curio::Role` namespace and will have that appended
+to it.  So, if you set the role to `::CHI` it will be automatically
+converted to `Curio::Role::CHI`.
+
+See ["AVAILABLE ROLES"](#available-roles) for a list of existing Curio roles.
+
+The default role is [Curio::Role](https://metacpan.org/pod/Curio::Role).
 
 # BOILERPLATE
 
@@ -174,6 +196,15 @@ It can be tempting to use key aliases to provide simpler or alternative
 names for existing keys.  The problem with doing this is now you've
 introduced multiple keys for the same Curio class which in practice
 does cause unnecessary confusion.
+
+# AVAILABLE ROLES
+
+These roles, available on CPAN, provide a base set of functionality
+for your Curio classes to wrap around specific resource types.
+
+- [Curio::Role::CHI](https://metacpan.org/pod/Curio::Role::CHI)
+
+Roles for [DBI](https://metacpan.org/pod/DBI) and [DBIx::Class](https://metacpan.org/pod/DBIx::Class) are in the works.
 
 # INTEGRATIONS
 

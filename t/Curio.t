@@ -41,6 +41,18 @@ subtest 'Curio::Role' => sub{
     can_ok( 'CC::cr', ['factory'], 'role is applied' );
 };
 
+subtest 'role' => sub{
+    package Curio::Role::Test;
+        use Moo::Role;
+        BEGIN { with 'Curio::Role' }
+        sub foo { 'bar' }
+    package CC::r;
+        use Curio role => '::Test';
+    package main;
+
+    is( CC::r->foo(), 'bar', 'custom role was applied' );
+};
+
 subtest 'initialize' => sub{
     package CC::sc1;
         use Moo;

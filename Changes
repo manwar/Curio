@@ -2,6 +2,7 @@ Revision history for Perl extension Curio.
 
 {{$NEXT}}
 
+ - Support custom Curio class roles.
  - Add the default_arguments feature.
  - Quite a few typo fixes, rewordings, and reorganizations of the
    main Curio documentation.
