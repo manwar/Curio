@@ -64,12 +64,17 @@ sub _install_fast_fetch_method {
 
     my $stash = Package::Stash->new( $self->class() );
 
-    $stash->add_symbol(
-        '&fetch',
+    my $sub = subname(
+        'fetch',
         sub{
             shift;
             return $self->fetch_curio( @_ );
         },
+    );
+
+    $stash->add_symbol(
+        '&fetch',
+        $sub,
     );
 
     return;

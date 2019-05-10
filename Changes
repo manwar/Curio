@@ -2,6 +2,9 @@ Revision history for Perl extension Curio.
 
 {{$NEXT}}
 
+ - The generated fetch() method is now named so that in error
+   messages it is named "fetch" instead of "ANON".
+
 0.02 2019-05-10T06:50:59Z
 
  - Support custom Curio class roles.
