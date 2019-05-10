@@ -361,6 +361,27 @@ has key_argument => (
     isa => NonEmptySimpleStr,
 );
 
+=head2 default_arguments
+
+    default_arguments => {
+        arg => 'value',
+        ...
+    },
+
+When set, these arguments will be used when creating new instances
+of the Curio class.
+
+Any other arguments such as those provided by L</add_key> and
+L</key_argument> will overwrite these default arguments.
+
+=cut
+
+has default_arguments => (
+    is      => 'rw',
+    isa     => HashRef,
+    default => sub{ {} },
+);
+
 =head1 ATTRIBUTES
 
 =head2 keys
@@ -495,15 +516,20 @@ sub arguments {
 sub _arguments {
     my ($self, $key) = @_;
 
-    return {} if !defined $key;
+    my $args = { %{ $self->default_arguments() } };
 
-    my %args = %{ $self->_keys->{$key} || {} };
+    return $args if !defined $key;
+
+    %$args = (
+        %$args,
+        %{ $self->_keys->{$key} || {} },
+    );
 
     if (defined $self->key_argument()) {
-        $args{ $self->key_argument() } = $key;
+        $args->{ $self->key_argument() } = $key;
     }
 
-    return \%args;
+    return $args;
 }
 
 =head2 add_key

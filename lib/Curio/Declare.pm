@@ -15,6 +15,7 @@ my %EXPORTS = (
     allow_undeclared_keys  => 'bool',
     default_key            => 'string',
     key_argument           => 'string',
+    default_arguments      => 'hashref',
     add_key                => 'method',
     alias_key              => 'method',
 );
@@ -54,6 +55,16 @@ sub _build_bool_sub {
     };
 }
 
+sub _build_hashref_sub {
+    my ($target, $sub_name) = @_;
+
+    return sub{
+        my $factory = $target->factory();
+        @_ = ( $factory, {@_} );
+        goto &{ $factory->can( $sub_name ) };
+    };
+}
+
 sub _build_method_sub {
     my ($target, $sub_name) = @_;
 
@@ -87,6 +98,11 @@ Curio::Declare - Provider of Curio's declarative interface.
     allow_undeclared_keys;
     default_key 'some_key';
     key_argument 'name_of_argument';
+    
+    default_arguments (
+        arg => 'value',
+        ...
+    );
     
     add_key some_key => (
         arg => 'value',
@@ -166,6 +182,15 @@ See L<Curio::Factory/default_key> for details.
     key_argument 'name_of_argument';
 
 See L<Curio::Factory/key_argument> for details.
+
+=head2 default_arguments
+
+    default_arguments (
+        arg => 'value',
+        ...
+    );
+
+See L<Curio::Factory/default_arguments> for details.
 
 =head2 add_key
 

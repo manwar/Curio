@@ -2,6 +2,7 @@ Revision history for Perl extension Curio.
 
 {{$NEXT}}
 
+ - Add the default_arguments feature.
  - Quite a few typo fixes, rewordings, and reorganizations of the
    main Curio documentation.
  - When a Curio class is initialized a new fetch() method is now
