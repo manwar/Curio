@@ -2,6 +2,7 @@ package Curio::Declare;
 our $VERSION = '0.02';
 
 use Package::Stash;
+use Curio::Util;
 
 use strictures 2;
 use namespace::clean;
@@ -29,6 +30,7 @@ sub import {
         my $type = $EXPORTS{ $sub_name };
         my $builder = "_build_$type\_sub";
         my $sub = __PACKAGE__->can( $builder )->( $target, $sub_name );
+        $sub = subname( $sub_name, $sub );
         $stash->add_symbol( "&$sub_name", $sub );
     }
 
