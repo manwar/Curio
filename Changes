@@ -2,6 +2,7 @@ Revision history for Perl extension Curio.
 
 {{$NEXT}}
 
+ - Avoid CPANTS test_prereq_matches_use in permutations.t.
  - Fixed a croakf bug that cause croak to just croak the number
    of arguments passed rather than the error message.
  - The generated fetch() method is now named so that in error
