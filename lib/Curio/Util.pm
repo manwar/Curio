@@ -25,7 +25,8 @@ sub croak {
 }
 
 sub croakf {
-    my $msg = sprintf( @_ );
+    my $msg = shift;
+    $msg = sprintf( $msg, @_ );
     return croak( $msg );
 }
 
