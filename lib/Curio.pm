@@ -1,5 +1,5 @@
 package Curio;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Curio::Declare qw();
 use Curio::Role qw();
