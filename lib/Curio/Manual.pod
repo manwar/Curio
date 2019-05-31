@@ -5,6 +5,15 @@
 
 Curio::Manual - The Curio developer's manual.
 
+=head1 UNDER CONSTRUCTION
+
+This document is missing a lot of content!  Right now it is mostly an
+outline.  Hopefully the L<Curio/SYNOPSIS> plus the bits of
+information in here is enough to get you started.
+
+You are welcome to reach out to me by email at L<bluefeet@gmail.com>
+and I'll get back to you right away.
+
 
 
 =head1 INTRODUCTION
@@ -19,9 +28,51 @@ Curio::Manual - The Curio developer's manual.
 
 =head1 TOPICS
 
-=head2 Custom Fetch Method
-
 =head2 Exporting the Fetch Function
+
+To get at a Curio object's resource takes a lot of typing out of the
+box:
+
+    my $chi = MyApp::Service::Cache->fetch( $key )->chi();
+
+Creating an export function that wraps this all up is a great way to
+simplify things.  In your Curio class write something like this after
+the C<use Curio> line:
+
+    use Exporter qw( import );
+    our @EXPORT = qw( myapp_cache );
+
+And make a function like this:
+
+    sub myapp_cache {
+        return __PACKAGE__->fetch( @_ )->chi();
+    }
+
+Then users of your Curio class just write:
+
+    my $chi = myapp_cache( $key );
+
+=head1 Adjusting the Boilerplate
+
+Near the top of most Curio classes is this line:
+
+    use Curio;
+
+Which is exactly the same as:
+
+    use Moo;
+    use Curio::Declare;
+    use namespace::clean;
+    with 'Curio::Role';
+    __PACKAGE__->initialize();
+
+If you're not into the declarative interface, or have some
+other reason to switch around this boilerplate, you may copy the
+above and modify to fit your needs rather than using this module
+directly.
+
+Read more about L<Moo> and L<namespace::clean> if you are not
+familiar with them.
 
 =head2 Caching Objects
 
@@ -82,17 +133,22 @@ does cause unnecessary confusion.
 
 
 
-=head1 SUPPORT
-
-See L<Curio/SUPPORT>.
-
-=head1 AUTHORS
-
-See L<Curio/AUTHORS>.
-
 =head1 COPYRIGHT AND LICENSE
 
-See L<Curio/COPYRIGHT AND LICENSE>.
+Copyright (C) 2019 Aran Clary Deltac
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see L<http://www.gnu.org/licenses/>.
 
 =cut
 

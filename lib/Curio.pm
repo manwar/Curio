@@ -105,8 +105,8 @@ a third for your CRM client.
 
 Your second job is to then modify your application to use your Curio
 classes.  If your application uses an existing framework, such as
-L<Catalyst> or L<Dancer2>, then you may want to take a look at the
-available L</INTEGRATIONS>.
+L<Catalyst>, then you may want to take a look at the available
+L</INTEGRATIONS>.
 
 Keep in mind that Curio doesn't just have to be used for connections
 to remote services.  It can be used to make singleton classes, as a
@@ -129,31 +129,9 @@ relative to the C<Curio::Role> namespace and will have that appended
 to it.  So, if you set the role to C<::CHI> it will be automatically
 converted to C<Curio::Role::CHI>.
 
-See L</AVAILABLE ROLES> for a list of existing Curio roles.
+See L</ROLES> for a list of existing Curio roles.
 
 The default role is L<Curio::Role>.
-
-=head1 BOILERPLATE
-
-Near the top of most Curio classes is this line:
-
-    use Curio;
-
-Which is exactly the same as:
-
-    use Moo;
-    use Curio::Declare;
-    use namespace::clean;
-    with 'Curio::Role';
-    __PACKAGE__->initialize();
-
-If you're not into the declarative interface, or have some
-other reason to switch around this boilerplate, you may copy the
-above and modify to fit your needs rather than using this module
-directly.
-
-Read more about L<Moo> and L<namespace::clean> if you are not
-familiar with them.
 
 =head1 MOTIVATION
 
@@ -168,7 +146,7 @@ resources, such as connections to services.  Often times you'll see
 code which passes a connection to a function, which then passes that
 on to another function, which then creates an object with the connection
 passed as an argument, etc.  This is what is being avoided; it's a messy
-way to writer code and prone to error.
+way to write code and prone to error.
 
 =item 2.
 
@@ -192,7 +170,7 @@ this one purpose.
 These challenges can be solved by Curio and, by solving them,
 your applications will be more robust and resilient to change.
 
-=head1 AVAILABLE ROLES
+=head1 ROLES
 
 These roles, available on CPAN, provide a base set of functionality
 for your Curio classes to wrap around specific resource types.
@@ -202,6 +180,10 @@ for your Curio classes to wrap around specific resource types.
 =item *
 
 L<Curio::Role::CHI>
+
+=item *
+
+L<Curio::Role::GitLab::API::v4>
 
 =back
 
