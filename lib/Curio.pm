@@ -58,9 +58,6 @@ Create a Curio class:
     
     does_caching;
     cache_per_process;
-    resource_method_name 'chi';
-    registers_resources;
-    installs_curio_method;
     
     use Exporter qw( import );
     our @EXPORT = qw( myapp_cache );
@@ -94,29 +91,18 @@ Then use your new Curio class elsewhere:
     
     my $chi = myapp_cache('geo_ip');
 
+Note: Check out L<Curio::Role::CHI>, it does most of the above for
+you.
+
+
+
 =head1 DESCRIPTION
 
-Curio is a library for creating L<Moo> classes which encapsulate the
-construction and retrieval of arbitrary resources.  As a user of this
-library you've got two jobs.
+Curio is a toolbox for building a class which holds a resource (or
+many resources) of your making.  Then, in your applications, you can
+access the resource(s) from anywhere.
 
-First, you create classes in your application which use Curio.  You'll
-have one class for each type of resource you want available to your
-application as a whole.  So, for example, you'd have a Curio class for
-your database connections, another for your graphite client, and perhaps
-a third for your CRM client.
 
-Your second job is to then modify your application to use your Curio
-classes.  If your application uses an existing framework, such as
-L<Catalyst>, then you may want to take a look at the available
-L</INTEGRATIONS>.
-
-Keep in mind that Curio doesn't just have to be used for connections
-to remote services.  It can be used to make singleton classes, as a
-ready to go generic object factory, a place to put global application
-context information, etc.
-
-From here head on over to the L<Curio::Manual>.
 
 =head1 IMPORT ARGUMENTS
 
@@ -135,6 +121,8 @@ converted to C<Curio::Role::CHI>.
 See L</ROLES> for a list of existing Curio roles.
 
 The default role is L<Curio::Role>.
+
+
 
 =head1 MOTIVATION
 
@@ -173,6 +161,142 @@ this one purpose.
 These challenges can be solved by Curio and, by solving them,
 your applications will be more robust and resilient to change.
 
+
+
+=head1 INTRODUCTION
+
+=head2 What is Curio
+
+Curio is a library for creating L<Moo> classes which encapsulate the
+construction and retrieval of arbitrary resources.  As a user of this
+library you've got two jobs.
+
+First, you create classes in your application which use Curio.  You'll
+have one class for each type of resource you want available to your
+application as a whole.  So, for example, you'd have a Curio class for
+your database connections, another for your graphite client, and perhaps
+a third for your CRM client.
+
+Your second job is to then modify your application to use your Curio
+classes.  If your application uses an existing framework, such as
+L<Catalyst>, then you may want to take a look at the available
+L</INTEGRATIONS>.
+
+Keep in mind that Curio doesn't just have to be used for connections
+to remote services.  It can be used to make singleton classes, as a
+ready to go generic object factory, a place to put global application
+context information, etc.
+
+=head1 TOPICS
+
+=head2 Exporting the Fetch Function
+
+To get at a Curio object's resource takes a lot of typing out of the
+box:
+
+    my $chi = MyApp::Service::Cache->fetch( $key )->chi();
+
+Creating an export function that wraps this all up is a great way to
+simplify things.  In your Curio class write something like this after
+the C<use Curio> line:
+
+    use Exporter qw( import );
+    our @EXPORT = qw( myapp_cache );
+
+And make a function like this:
+
+    sub myapp_cache {
+        return __PACKAGE__->fetch( @_ )->chi();
+    }
+
+Then users of your Curio class just write:
+
+    my $chi = myapp_cache( $key );
+
+=head2 Adjusting the Boilerplate
+
+Near the top of most Curio classes is this line:
+
+    use Curio;
+
+Which is exactly the same as:
+
+    use Moo;
+    use Curio::Declare;
+    use namespace::clean;
+    with 'Curio::Role';
+    __PACKAGE__->initialize();
+
+If you're not into the declarative interface, or have some
+other reason to switch around this boilerplate, you may copy the
+above and modify to fit your needs rather than using this module
+directly.
+
+Read more about L<Moo> and L<namespace::clean> if you are not
+familiar with them.
+
+=head2 Caching Objects
+
+=head2 Keys
+
+=head2 Handling Arguments
+
+=head2 Migrating and Merging Keys
+
+=head2 The Resource Registry
+
+=head2 Injecting Mock Objects
+
+=head2 Introspection
+
+
+
+
+=head1 IMPORTANT PRACTICES
+
+=head2 Avoid Holding onto Curio Objects and Resources
+
+Curio is designed to make it cheap to retrieve Curio objects
+and the underlying resources.  Take advantage of this.  Don't
+pass around your resource objects or put them in attributes.
+Instead, when you need them, get the from your Curio classes.
+
+If your Curio class supports keys, then passing around the
+key that you want particular code to be using, rather than the
+Curio object or the resource, is a much better way of handling
+things.
+
+Read more of the reasoning for this in L<Curio/MOTIVATION>.
+
+=head2 Use Curio Directly
+
+It is tempting to use the L<Curio/INTEGRATIONS> such as
+L<Catalyst::Model::Curio>, and sometimes it is necessary to do so.
+Most of the time there is no need to add that extra layer of complexity.
+
+Using Catalyst as an example, there are few reasons you can't
+just use your Curio classes directly from your Catalyst controllers.
+
+At ZipRecruiter, where we have some massive Catalyst applications, we
+only use Catalyst models in the few cases where other parts of
+Catalyst demand that models be setup.  For the most part we bypass the
+model system completely and it makes everything much cleaner and
+easier to deal with.
+
+=head2 Appropriate Uses of Key Aliases
+
+Key aliases are meant as a tool for migrating and merging keys.
+They are meant to be something you temporarily setup as you change
+your code to use the new keys, and then once done you remove the
+aliases.
+
+It can be tempting to use key aliases to provide simpler or alternative
+names for existing keys.  The problem with doing this is now you've
+introduced multiple keys for the same Curio class which in practice
+causes unnecessary confusion.
+
+
+
 =head1 ROLES
 
 These roles, available on CPAN, provide a base set of functionality
@@ -186,11 +310,17 @@ L<Curio::Role::CHI>
 
 =item *
 
+L<Curio::Role::DBIx::Class>
+
+=item *
+
+L<Curio::Role::DBIx::Connector>
+
+=item *
+
 L<Curio::Role::GitLab::API::v4>
 
 =back
-
-Roles for L<DBI> and L<DBIx::Class> are in the works.
 
 =head1 INTEGRATIONS
 
@@ -205,7 +335,9 @@ L<Catalyst::Model::Curio>
 
 =back
 
-On a related note, take a look at L<Curio::Manual/Use Curio Directly>.
+On a related note, take a look at L<Curio/Use Curio Directly>.
+
+
 
 =head1 SEE ALSO
 
@@ -224,6 +356,9 @@ but it never got any love since initial release in 2012 and is incomplete.
 
 Since Curio can do singletons, you may want to check out
 L<MooX::Singleton> and L<MooseX::Singleton>.
+
+
+
 
 =head1 SUPPORT
 

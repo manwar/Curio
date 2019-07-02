@@ -17,6 +17,9 @@ is(
     'cache set and get working',
 );
 
-is( $chi->curio->chi(), $chi, 'curio method installed and working' );
+is(
+    $chi->curio->chi(), $chi,
+    'curio method installed and working',
+);
 
 done_testing;

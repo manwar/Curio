@@ -17,11 +17,15 @@ use strictures 2;
 
 with 'MooX::BuildArgs';
 
+does_caching;
+cache_per_process;
+
 use Exporter qw( import );
 our @EXPORT = qw( myapp_cache );
 
-does_caching;
-cache_per_process;
+sub myapp_cache {
+    return __PACKAGE__->fetch( @_ )->chi();
+}
 
 add_key geo_ip => (
     driver => 'Memory',
@@ -40,10 +44,6 @@ sub _build_chi {
     return $chi;
 }
 
-sub myapp_cache {
-    return __PACKAGE__->fetch( @_ )->chi();
-}
-
 1;
 ```
 
@@ -55,29 +55,14 @@ use MyApp::Service::Cache;
 my $chi = myapp_cache('geo_ip');
 ```
 
+Note: Check out [Curio::Role::CHI](https://metacpan.org/pod/Curio::Role::CHI), it does most of the above for
+you.
+
 # DESCRIPTION
 
-Curio is a library for creating [Moo](https://metacpan.org/pod/Moo) classes which encapsulate the
-construction and retrieval of arbitrary resources.  As a user of this
-library you've got two jobs.
-
-First, you create classes in your application which use Curio.  You'll
-have one class for each type of resource you want available to your
-application as a whole.  So, for example, you'd have a Curio class for
-your database connections, another for your graphite client, and perhaps
-a third for your CRM client.
-
-Your second job is to then modify your application to use your Curio
-classes.  If your application uses an existing framework, such as
-[Catalyst](https://metacpan.org/pod/Catalyst), then you may want to take a look at the available
-["INTEGRATIONS"](#integrations).
-
-Keep in mind that Curio doesn't just have to be used for connections
-to remote services.  It can be used to make singleton classes, as a
-ready to go generic object factory, a place to put global application
-context information, etc.
-
-From here head on over to the [Curio::Manual](https://metacpan.org/pod/Curio::Manual).
+Curio is a toolbox for building a class which holds a resource (or
+many resources) of your making.  Then, in your applications, you can
+access the resource(s) from anywhere.
 
 # IMPORT ARGUMENTS
 
@@ -124,15 +109,156 @@ this one purpose.
 These challenges can be solved by Curio and, by solving them,
 your applications will be more robust and resilient to change.
 
+# INTRODUCTION
+
+## What is Curio
+
+Curio is a library for creating [Moo](https://metacpan.org/pod/Moo) classes which encapsulate the
+construction and retrieval of arbitrary resources.  As a user of this
+library you've got two jobs.
+
+First, you create classes in your application which use Curio.  You'll
+have one class for each type of resource you want available to your
+application as a whole.  So, for example, you'd have a Curio class for
+your database connections, another for your graphite client, and perhaps
+a third for your CRM client.
+
+Your second job is to then modify your application to use your Curio
+classes.  If your application uses an existing framework, such as
+[Catalyst](https://metacpan.org/pod/Catalyst), then you may want to take a look at the available
+["INTEGRATIONS"](#integrations).
+
+Keep in mind that Curio doesn't just have to be used for connections
+to remote services.  It can be used to make singleton classes, as a
+ready to go generic object factory, a place to put global application
+context information, etc.
+
+# TOPICS
+
+## Exporting the Fetch Function
+
+To get at a Curio object's resource takes a lot of typing out of the
+box:
+
+```perl
+my $chi = MyApp::Service::Cache->fetch( $key )->chi();
+```
+
+Creating an export function that wraps this all up is a great way to
+simplify things.  In your Curio class write something like this after
+the `use Curio` line:
+
+```perl
+use Exporter qw( import );
+our @EXPORT = qw( myapp_cache );
+```
+
+And make a function like this:
+
+```perl
+sub myapp_cache {
+    return __PACKAGE__->fetch( @_ )->chi();
+}
+```
+
+Then users of your Curio class just write:
+
+```perl
+my $chi = myapp_cache( $key );
+```
+
+## Adjusting the Boilerplate
+
+Near the top of most Curio classes is this line:
+
+```perl
+use Curio;
+```
+
+Which is exactly the same as:
+
+```perl
+use Moo;
+use Curio::Declare;
+use namespace::clean;
+with 'Curio::Role';
+__PACKAGE__->initialize();
+```
+
+If you're not into the declarative interface, or have some
+other reason to switch around this boilerplate, you may copy the
+above and modify to fit your needs rather than using this module
+directly.
+
+Read more about [Moo](https://metacpan.org/pod/Moo) and [namespace::clean](https://metacpan.org/pod/namespace::clean) if you are not
+familiar with them.
+
+## Caching Objects
+
+## Keys
+
+## Handling Arguments
+
+## Migrating and Merging Keys
+
+## The Resource Registry
+
+## Injecting Mock Objects
+
+## Introspection
+
+# IMPORTANT PRACTICES
+
+## Avoid Holding onto Curio Objects and Resources
+
+Curio is designed to make it cheap to retrieve Curio objects
+and the underlying resources.  Take advantage of this.  Don't
+pass around your resource objects or put them in attributes.
+Instead, when you need them, get the from your Curio classes.
+
+If your Curio class supports keys, then passing around the
+key that you want particular code to be using, rather than the
+Curio object or the resource, is a much better way of handling
+things.
+
+Read more of the reasoning for this in ["MOTIVATION" in Curio](https://metacpan.org/pod/Curio#MOTIVATION).
+
+## Use Curio Directly
+
+It is tempting to use the ["INTEGRATIONS" in Curio](https://metacpan.org/pod/Curio#INTEGRATIONS) such as
+[Catalyst::Model::Curio](https://metacpan.org/pod/Catalyst::Model::Curio), and sometimes it is necessary to do so.
+Most of the time there is no need to add that extra layer of complexity.
+
+Using Catalyst as an example, there are few reasons you can't
+just use your Curio classes directly from your Catalyst controllers.
+
+At ZipRecruiter, where we have some massive Catalyst applications, we
+only use Catalyst models in the few cases where other parts of
+Catalyst demand that models be setup.  For the most part we bypass the
+model system completely and it makes everything much cleaner and
+easier to deal with.
+
+## Appropriate Uses of Key Aliases
+
+Key aliases are meant as a tool for migrating and merging keys.
+They are meant to be something you temporarily setup as you change
+your code to use the new keys, and then once done you remove the
+aliases.
+
+It can be tempting to use key aliases to provide simpler or alternative
+names for existing keys.  The problem with doing this is now you've
+introduced multiple keys for the same Curio class which in practice
+causes unnecessary confusion.
+
 # ROLES
 
 These roles, available on CPAN, provide a base set of functionality
 for your Curio classes to wrap around specific resource types.
 
 - [Curio::Role::CHI](https://metacpan.org/pod/Curio::Role::CHI)
+- [Curio::Role::DBIx::Class](https://metacpan.org/pod/Curio::Role::DBIx::Class)
+- [Curio::Role::DBIx::Connector](https://metacpan.org/pod/Curio::Role::DBIx::Connector)
 - [Curio::Role::GitLab::API::v4](https://metacpan.org/pod/Curio::Role::GitLab::API::v4)
-
-Roles for [DBI](https://metacpan.org/pod/DBI) and [DBIx::Class](https://metacpan.org/pod/DBIx::Class) are in the works.
 
 # INTEGRATIONS
 
@@ -141,7 +267,7 @@ such as web frameworks.
 
 - [Catalyst::Model::Curio](https://metacpan.org/pod/Catalyst::Model::Curio)
 
-On a related note, take a look at ["Use Curio Directly" in Curio::Manual](https://metacpan.org/pod/Curio::Manual#Use-Curio-Directly).
+On a related note, take a look at ["Use Curio Directly" in Curio](https://metacpan.org/pod/Curio#Use-Curio-Directly).
 
 # SEE ALSO
 

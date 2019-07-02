@@ -10,6 +10,7 @@ with 'MooX::BuildArgs';
 
 does_caching;
 cache_per_process;
+
 resource_method_name 'chi';
 registers_resources;
 installs_curio_method;
