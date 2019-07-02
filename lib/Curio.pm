@@ -56,11 +56,18 @@ Create a Curio class:
     
     with 'MooX::BuildArgs';
     
+    does_caching;
+    cache_per_process;
+    resource_method_name 'chi';
+    registers_resources;
+    installs_curio_method;
+    
     use Exporter qw( import );
     our @EXPORT = qw( myapp_cache );
     
-    does_caching;
-    cache_per_process;
+    sub myapp_cache {
+        return __PACKAGE__->fetch( @_ )->chi();
+    }
     
     add_key geo_ip => (
         driver => 'Memory',
@@ -77,10 +84,6 @@ Create a Curio class:
         my $chi = CHI->new( %{ $self->build_args() } );
         $self->clear_build_args();
         return $chi;
-    }
-    
-    sub myapp_cache {
-        return __PACKAGE__->fetch( @_ )->chi();
     }
     
     1;

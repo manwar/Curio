@@ -10,6 +10,7 @@ use namespace::clean;
 my %EXPORTS = (
     resource_method_name   => 'string',
     registers_resources    => 'bool',
+    installs_curio_method  => 'bool',
     does_caching           => 'bool',
     cache_per_process      => 'bool',
     does_keys              => 'bool',
@@ -140,6 +141,14 @@ See L<Curio::Factory/resource_method_name> for details.
     registers_resources 0; # default value
 
 See L<Curio::Factory/registers_resources> for details.
+
+=head2 installs_curio_method
+
+    installs_curio_method;
+    installs_curio_method 1; # same as above
+    installs_curio_method 0; # default value
+
+See L<Curio::Factory/installs_curio_method> for details.
 
 =head2 does_caching
 

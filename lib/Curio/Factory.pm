@@ -221,9 +221,12 @@ has resource_method_name => (
 =head2 registers_resources
 
     registers_resources => 1,
+    resource_method_name => 'chi',
 
 Causes the resource of all Curio objects to be automatically
 registered so that L</find_curio> may function.
+L</resource_method_name> must be set for this to function.
+
 
 Defaults off (C<0>), meaning L</find_curio> will always return
 C<undef>.
@@ -231,6 +234,27 @@ C<undef>.
 =cut
 
 has registers_resources => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 0,
+);
+
+=head2 installs_curio_method
+
+    resource_method_name => 'chi',
+    registers_resources => 1,
+    installs_curio_method => 1,
+
+This causes a C<curio()> method to be installed in all resource
+object classes.  The method calls L</find_curio> and returns it,
+allowing for reverse lookups from resource objects to curio objects.
+
+Both L</resource_method_name> and L</registers_resources> must be
+set for this to function.
+
+=cut
+
+has installs_curio_method => (
     is      => 'rw',
     isa     => Bool,
     default => 0,
@@ -492,6 +516,18 @@ sub _create {
         if (defined($method) and $curio->can($method)) {
             my $resource = $curio->$method();
             $self->_registry->{ refaddr $resource } = $curio if ref $resource;
+
+            if ($self->installs_curio_method() and !$resource->can('curio')) {
+                my $class = blessed( $resource );
+
+                no strict 'refs';
+
+                *{"$class\::curio"} = sub{
+                    my ($resource) = @_;
+                    return undef if !blessed $resource;
+                    return $self->find_curio( $resource );
+                } if $class;
+            }
         }
     }
 
