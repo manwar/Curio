@@ -2,6 +2,8 @@ Revision history for Perl extension Curio.
 
 {{$NEXT}}
 
+ - Made the Curio::Role::factory method much faster.
+ - Renamed registers_resources to does_registry.
  - More documentation work.
  - Added installs_curio_method.
 

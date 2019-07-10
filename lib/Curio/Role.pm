@@ -28,13 +28,25 @@ use namespace::clean;
     my $curio = Some::Curio::Class->fetch();
     my $curio = Some::Curio::Class->fetch( $key );
 
-This method proxies to L<Curio::Factory/fetch_curio>.
+This proxies to L<Curio::Factory/fetch_curio>.
 
 =cut
 
-sub fetch {
+# The real fetch method is installed in the curio class by:
+# Curio::Factory::_install_fetch_method()
+sub fetch { undef }
+
+=head2 find_curio
+
+    my $curio_object = MyApp::Service::Cache->find_curio( $resource );
+
+This proxies to L<Curio::Factory/find_curio>.
+
+=cut
+
+sub find_curio {
     my $class = shift;
-    return $class->factory->fetch_curio( @_ );
+    return $class->factory->find_curio();
 }
 
 =head2 inject
@@ -42,7 +54,7 @@ sub fetch {
     MyApp::Service::Cache->inject( $curio_object );
     MyApp::Service::Cache->inject( $key, $curio_object );
 
-This method proxies to L<Curio::Factory/inject>.
+This proxies to L<Curio::Factory/inject>.
 
 =cut
 
@@ -56,29 +68,13 @@ sub inject {
     my $curio_object = MyApp::Service::Cache->uninject();
     my $curio_object = MyApp::Service::Cache->uninject( $key );
 
-This method proxies to L<Curio::Factory/uninject>.
+This proxies to L<Curio::Factory/uninject>.
 
 =cut
 
 sub uninject {
     my $class = shift;
     return $class->factory->uninject( @_ );
-}
-
-=head2 factory
-
-    my $factory = MyApp::Service::Cache->factory();
-
-Returns the class's L<Curio::Factory> object.
-
-This method may also be called on instances of the class.
-
-Calling this is equivalent to calling L<Curio::Factory/find_factory>.
-
-=cut
-
-sub factory {
-    return Curio::Factory->find_factory( shift );
 }
 
 =head2 initialize
@@ -96,12 +92,27 @@ sub initialize {
 
 =head1 CLASS ATTRIBUTES
 
+=head2 factory
+
+    my $factory = MyApp::Service::Cache->factory();
+
+Returns the class's L<Curio::Factory> object.
+
+Calling this is equivalent to calling L<Curio::Factory/find_factory>,
+but is much faster.
+
+=cut
+
+# The real factory attribute is installed in the curio class by:
+# Curio::Factory::_install_factory_method()
+sub factory { undef }
+
 =head2 keys
 
     my $keys = MyApp::Service::Cache->keys();
     foreach my $key (@$keys) { ... }
 
-This method proxies to L<Curio::Factory/keys>.
+This proxies to L<Curio::Factory/keys>.
 
 =cut
 

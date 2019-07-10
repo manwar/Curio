@@ -17,8 +17,8 @@ BEGIN {
 use Curio::Factory;
 
 my %possibles = (
+    does_registry          => [undef, 1],
     resource_method_name   => [undef, 'chi'],
-    registers_resources    => [undef, 1],
     does_caching           => [undef, 1],
     cache_per_process      => [undef, 1],
     allow_undeclared_keys  => [undef, 1],

@@ -193,19 +193,131 @@ directly.
 Read more about [Moo](https://metacpan.org/pod/Moo) and [namespace::clean](https://metacpan.org/pod/namespace::clean) if you are not
 familiar with them.
 
-## Caching Objects
+## Caching
+
+Caching is enabled with ["does\_caching" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#does_caching).
+
+```
+does_caching;
+```
+
+When enabled, all curio objects will be cached so that future fetches
+for a curio object will return the same one as before.  This option
+should almost always be set as it usually provides a huge performance
+increase.
+
+["cache\_per\_process" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#cache_per_process) extends the
+caching to handle process/thread changes gracefully.
+
+```
+cache_per_process;
+```
 
 ## Keys
+
+Curio supports fetching curio objects by key.  This is an optional
+feature and by default is turned off.  To turn it on you set
+["does\_keys" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#does_keys) or just start adding keys
+with ["add\_key" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#add_key) which will automatically turn
+on `does_keys`.
+
+When keys are enabled a curio class is able to produce different
+objects based on the key.  For example, lets say you have two
+databases, you could create two curio classes, or you could just
+enable keys.
+
+```perl
+add_key db1 => ( host => 'db1.example.com' );
+add_key db2 => ( host => 'db2.example.com' );
+```
+
+When keys are enabled calling fetch requires that you pass a key.
+
+```perl
+my $dbh1 = MyApp::Service::DB->fetch(
+    'db1', # <-- key
+)->dbh();
+```
+
+Passing a key that has not yet been declared with `add_key` will
+throw an error.  This can be changed by setting
+["allow\_undeclared\_keys" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#allow_undeclared_keys).
+
+```
+allow_undeclared_keys;
+```
+
+You can also set ["default\_key" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#default_key).
+
+```
+default_key 'db1';
+```
+
+Curio objects, by default, have no way of knowing what key was used
+to make them.  If you need to know what key was used to fetch a curio
+object you can set ["key\_argument" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#key_argument).
+
+```perl
+key_argument 'key';
+has key => ( is=>'ro' );
+```
+
+The ["default\_arguments" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#default_arguments) option can
+be useful when you are not using Moo attributes but still need to set
+defaults for arguments.
+
+```perl
+default_arguments ( username => 'dbuser' );
+```
+
+## The Registry
+
+The registry is a lookup table holding memory addresses of resource
+objects pointing at references to curio objects.  What this means
+is, if ["does\_registry" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#does_registry) is set, you can use
+["find\_curio" in Curio::Role](https://metacpan.org/pod/Curio::Role#find_curio) to retrieve the curio object for a given
+resource object.
+
+```
+does_registry;
+resource_method_name 'chi';
+```
+
+In the ["SYNOPSIS"](#synopsis) the ["resource\_method\_name" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#resource_method_name) is
+`chi` which is created by a Moo attribute.  When the curio object is
+created this resource method will be called to get the resource object
+and, along with the curio object, register them in the registry.
+
+```perl
+my $curio = MyApp::Service::Cache->find_curio( $chi );
+```
+
+Setting ["installs\_curio" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#installs_curio) will install a `curio`
+method in resource object classes.
+
+```perl
+# In your curio class:
+installs_curio;
+
+# Elsewhere:
+my $curio = $chi->curio();
+```
 
 ## Handling Arguments
 
 ## Migrating and Merging Keys
 
-## The Resource Registry
-
 ## Injecting Mock Objects
 
 ## Introspection
+
+## Custom Curio Roles
+
+## Singletons
+
+## Secrets
+
+## Configuration
 
 # IMPORTANT PRACTICES
 

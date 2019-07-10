@@ -11,8 +11,8 @@ with 'MooX::BuildArgs';
 does_caching;
 cache_per_process;
 
+does_registry;
 resource_method_name 'chi';
-registers_resources;
 installs_curio_method;
 
 use Exporter qw( import );

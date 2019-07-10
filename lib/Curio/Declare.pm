@@ -8,8 +8,8 @@ use strictures 2;
 use namespace::clean;
 
 my %EXPORTS = (
+    does_registry          => 'bool',
     resource_method_name   => 'string',
-    registers_resources    => 'bool',
     installs_curio_method  => 'bool',
     does_caching           => 'bool',
     cache_per_process      => 'bool',
@@ -91,8 +91,8 @@ Curio::Declare - Provider of Curio's declarative interface.
 
     use Curio::Declare;
     
+    does_registry;
     resource_method_name 'name_of_method';
-    registers_resources;
     
     does_caching;
     cache_per_process;
@@ -128,57 +128,45 @@ documentation for details.
 
 =head1 EXPORTED FUNCTIONS
 
+=head2 does_registry
+
+    does_registry;
+
+See L<Curio::Factory/does_registry> for details.
+
 =head2 resource_method_name
 
     resource_method_name 'name_of_method';
 
 See L<Curio::Factory/resource_method_name> for details.
 
-=head2 registers_resources
-
-    registers_resources;
-    registers_resources 1; # same as above
-    registers_resources 0; # default value
-
-See L<Curio::Factory/registers_resources> for details.
-
 =head2 installs_curio_method
 
     installs_curio_method;
-    installs_curio_method 1; # same as above
-    installs_curio_method 0; # default value
 
 See L<Curio::Factory/installs_curio_method> for details.
 
 =head2 does_caching
 
     does_caching;
-    does_caching 1; # same as above
-    does_caching 0; # default value
 
 See L<Curio::Factory/does_caching> for details.
 
 =head2 cache_per_process
 
     cache_per_process;
-    cache_per_process 1; # same as above
-    cache_per_process 0; # default value
 
 See L<Curio::Factory/cache_per_process> for details.
 
 =head2 does_keys
 
     does_keys;
-    does_keys 1; # same as above
-    does_keys 0; # default value
 
 See L<Curio::Factory/does_keys> for details.
 
 =head2 allow_undeclared_keys
 
     allow_undeclared_keys;
-    allow_undeclared_keys 1; # same as above
-    allow_undeclared_keys 0; # default value
 
 See L<Curio::Factory/allow_undeclared_keys> for details.
 
