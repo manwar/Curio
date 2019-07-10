@@ -21,5 +21,4 @@ on test => sub {
     suggests 'Algorithm::Loops' => '1.032';
     suggests 'CHI' => '0.60';
     suggests 'List::MoreUtils' => '0.428';
-    suggests 'MooX::BuildArgs' => '0.08';
 };

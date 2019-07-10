@@ -66,8 +66,7 @@
          "suggests" : {
             "Algorithm::Loops" : "1.032",
             "CHI" : "0.60",
-            "List::MoreUtils" : "0.428",
-            "MooX::BuildArgs" : "0.08"
+            "List::MoreUtils" : "0.428"
          }
       }
    },
