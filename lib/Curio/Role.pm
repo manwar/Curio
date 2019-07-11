@@ -63,6 +63,25 @@ sub inject {
     return $class->factory->inject( @_ );
 }
 
+=head2 inject_with_guard
+
+    my $guard = MyApp::Service::Cache->inject_with_guard(
+        $curio_object,
+    );
+    
+    my $guard = MyApp::Service::Cache->inject_with_guard(
+        $key, $curio_object,
+    );
+
+This proxies to L<Curio::Factory/inject_with_guard>.
+
+=cut
+
+sub inject_with_guard {
+    my $class = shift;
+    return $class->factory->inject_with_guard( @_ );
+}
+
 =head2 uninject
 
     my $curio_object = MyApp::Service::Cache->uninject();

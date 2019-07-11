@@ -23,6 +23,7 @@ object" it is referring to instances of L</class>.
 
 =cut
 
+use Curio::Guard;
 use Curio::Util;
 use Package::Stash;
 use Scalar::Util qw( blessed refaddr );
@@ -727,6 +728,32 @@ sub inject {
     $self->_injections->{$key} = $object;
 
     return;
+}
+
+=head2 inject_with_guard
+
+    my $guard = $factory->inject_with_guard(
+        $curio_object,
+    );
+    
+    my $guard = $factory->inject_with_guard(
+        $key, $curio_object,
+    );
+
+This is just like L</inject> except it returns an guard object which,
+when it leaves scope and is destroyed, will automatically L</uninject>.
+
+=cut
+
+sub inject_with_guard {
+    my $class = shift;
+
+    $class->factory->inject( @_ );
+    my $key = (@_==1) ? undef : shift( @_ );
+
+    return Curio::Guard->new(sub{
+        $class->factory->uninject( $key ? $key : () );
+    });
 }
 
 =head2 uninject

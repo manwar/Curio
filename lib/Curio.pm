@@ -320,22 +320,62 @@ Setting L<Curio::Factory/installs_curio> will install a C<curio>
 method in resource object classes.
 
     # In your curio class:
+    does_registry;
+    resource_method_name 'chi';
     installs_curio;
     
     # Elsewhere:
     my $curio = $chi->curio();
 
+=head2 Injecting Mock Objects
+
+Use L<Curio::Role/inject> to force fetch to return a custom curio
+object.
+
+    my $mock = MyApp::Service::Cache->new(
+        driver => 'Memory',
+        global => 0,
+    );
+    MyApp::Service::Cache->inject( 'geo_ip', $mock );
+    
+    my $chi = myapp_cache( 'geo_ip' );
+    
+    MyApp::Service::Cache->uninject( 'geo_ip' );
+
+Instead of having to call L<Curio::Role/uninject> directly you may
+instead use L<Curio::Role/inject_with_guard>.
+
+    my $guard = MyApp::Service::Cache->inject_with_guard(
+        'geo_ip', $mock,
+    );
+
+=head2 Singletons
+
+Creating a singleton class is super simple.
+
+    package MyApp::Context;
+    
+    use Curio;
+    
+    use Exporter qw( import );
+    our @EXPORT = qw( myapp_cache );
+    
+    sub myapp_context {
+        return __PACKAGE__->fetch( @_ );
+    }
+    
+    has user_id => ( is=>'rw' );
+    
+    # Elsewhere:
+    my $current_user_id = myapp_context()->user_id();
+
 =head2 Handling Arguments
 
 =head2 Migrating and Merging Keys
 
-=head2 Injecting Mock Objects
-
 =head2 Introspection
 
 =head2 Custom Curio Roles
-
-=head2 Singletons
 
 =head2 Secrets
 

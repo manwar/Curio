@@ -2,6 +2,7 @@ Revision history for Perl extension Curio.
 
 {{$NEXT}}
 
+ - Added inject_with_guard.
  - Made the Curio::Role::factory method much faster.
  - Renamed registers_resources to does_registry.
  - More documentation work.

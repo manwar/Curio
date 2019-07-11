@@ -297,23 +297,69 @@ method in resource object classes.
 
 ```perl
 # In your curio class:
+does_registry;
+resource_method_name 'chi';
 installs_curio;
 
 # Elsewhere:
 my $curio = $chi->curio();
 ```
 
+## Injecting Mock Objects
+
+Use ["inject" in Curio::Role](https://metacpan.org/pod/Curio::Role#inject) to force fetch to return a custom curio
+object.
+
+```perl
+my $mock = MyApp::Service::Cache->new(
+    driver => 'Memory',
+    global => 0,
+);
+MyApp::Service::Cache->inject( 'geo_ip', $mock );
+
+my $chi = myapp_cache( 'geo_ip' );
+
+MyApp::Service::Cache->uninject( 'geo_ip' );
+```
+
+Instead of having to call ["uninject" in Curio::Role](https://metacpan.org/pod/Curio::Role#uninject) directly you may
+instead use ["inject\_with\_guard" in Curio::Role](https://metacpan.org/pod/Curio::Role#inject_with_guard).
+
+```perl
+my $guard = MyApp::Service::Cache->inject_with_guard(
+    'geo_ip', $mock,
+);
+```
+
+## Singletons
+
+Creating a singleton class is super simple.
+
+```perl
+package MyApp::Context;
+
+use Curio;
+
+use Exporter qw( import );
+our @EXPORT = qw( myapp_cache );
+
+sub myapp_context {
+    return __PACKAGE__->fetch( @_ );
+}
+
+has user_id => ( is=>'rw' );
+
+# Elsewhere:
+my $current_user_id = myapp_context()->user_id();
+```
+
 ## Handling Arguments
 
 ## Migrating and Merging Keys
 
-## Injecting Mock Objects
-
 ## Introspection
 
 ## Custom Curio Roles
-
-## Singletons
 
 ## Secrets
 
