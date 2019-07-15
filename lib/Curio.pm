@@ -49,39 +49,37 @@ Create a Curio class:
     package MyApp::Service::Cache;
     
     use CHI;
-    use Types::Standard qw( InstanceOf );
+    use Types::Standard qw( InstanceOf HashRef );
+    use Type::Utils -all;
     
     use Curio;
     use strictures 2;
     
-    with 'MooX::BuildArgs';
-    
-    does_caching;
-    cache_per_process;
-    
     use Exporter qw( import );
     our @EXPORT = qw( myapp_cache );
-    
     sub myapp_cache {
         return __PACKAGE__->fetch( @_ )->chi();
     }
     
+    does_caching;
+    cache_per_process;
+    
     add_key geo_ip => (
-        driver => 'Memory',
-        global => 0,
+        chi => {
+            driver => 'Memory',
+            global => 0,
+        },
     );
+    
+    my $chi_type = declare, as InstanceOf[ 'CHI::Driver' ];
+    coerce $chi_type, from HashRef, via { CHI->new( %$_ ) };
     
     has chi => (
-        is  => 'lazy',
-        isa => InstanceOf[ 'CHI::Driver' ],
+        is       => 'ro',
+        isa      => $chi_type,
+        required => 1,
+        coerce   => 1,
     );
-    
-    sub _build_chi {
-        my ($self) = @_;
-        my $chi = CHI->new( %{ $self->build_args() } );
-        $self->clear_build_args();
-        return $chi;
-    }
     
     1;
 
@@ -91,9 +89,6 @@ Then use your new Curio class elsewhere:
     
     my $chi = myapp_cache('geo_ip');
 
-Note: Check out L<Curio::Role::CHI>, it does most of the above for
-you.
-
 
 
 =head1 DESCRIPTION
@@ -102,31 +97,31 @@ Curio is a toolbox for building a class which holds a resource (or
 many resources) of your making.  Then, in your applications, you can
 access the resource(s) from anywhere.
 
+=head1 INTRODUCTION
 
+Curio is a library for creating L<Moo> classes which encapsulate the
+construction and retrieval of arbitrary resources.  As a user of this
+library you've got two jobs.
 
-=head1 IMPORT ARGUMENTS
+First, you create classes in your application which use Curio.  You'll
+have one class for each type of resource you want available to your
+application as a whole.  So, for example, you'd have a Curio class for
+your database connections, another for your graphite client, and perhaps
+a third for your CRM client.
 
-=head2 role
+Your second job is to then modify your application to use your Curio
+classes.  If your application uses an existing framework, such as
+L<Catalyst>, then you may want to take a look at the available
+L</INTEGRATIONS>.
 
-    use Curio role => '::CHI';
-    use Curio role => 'Curio::Role::CHI';
-
-Set this to change the role that is applied to your Curio class.
-
-If the role you specify has a leading C<::> it is assumed to be
-relative to the C<Curio::Role> namespace and will have that appended
-to it.  So, if you set the role to C<::CHI> it will be automatically
-converted to C<Curio::Role::CHI>.
-
-See L</ROLES> for a list of existing Curio roles.
-
-The default role is L<Curio::Role>.
-
-
+Keep in mind that Curio doesn't just have to be used for connections
+to remote services.  It can be used to make singleton classes, as a
+ready to go generic object factory, a place to put global application
+context information, etc.
 
 =head1 MOTIVATION
 
-The main drive behind using Curio is threefold.
+The main drive behind creating Curio is threefold.
 
 =over
 
@@ -158,34 +153,48 @@ this one purpose.
 
 =back
 
-These challenges can be solved by Curio and, by solving them,
-your applications will be more robust and resilient to change.
+These challenges can be solved, and using Curio can support you in
+doing so.
 
+=head1 IMPORT ARGUMENTS
 
+=head2 role
 
-=head1 INTRODUCTION
+    use Curio role => '::CHI';
+    use Curio role => 'Curio::Role::CHI';
 
-=head2 What is Curio
+Set this to change the role that is applied to your Curio class.
 
-Curio is a library for creating L<Moo> classes which encapsulate the
-construction and retrieval of arbitrary resources.  As a user of this
-library you've got two jobs.
+If the role you specify has a leading C<::> it is assumed to be
+relative to the C<Curio::Role> namespace and will have that appended
+to it.  So, if you set the role to C<::CHI> it will be automatically
+converted to C<Curio::Role::CHI>.
 
-First, you create classes in your application which use Curio.  You'll
-have one class for each type of resource you want available to your
-application as a whole.  So, for example, you'd have a Curio class for
-your database connections, another for your graphite client, and perhaps
-a third for your CRM client.
+See L</ROLES> for a list of existing Curio roles.
 
-Your second job is to then modify your application to use your Curio
-classes.  If your application uses an existing framework, such as
-L<Catalyst>, then you may want to take a look at the available
-L</INTEGRATIONS>.
+The default role is L<Curio::Role>.
 
-Keep in mind that Curio doesn't just have to be used for connections
-to remote services.  It can be used to make singleton classes, as a
-ready to go generic object factory, a place to put global application
-context information, etc.
+=head2 BOILERPLATE
+
+Near the top of most Curio classes is this line:
+
+    use Curio;
+
+Which is exactly the same as:
+
+    use Moo;
+    use Curio::Declare;
+    use namespace::clean;
+    with 'Curio::Role';
+    __PACKAGE__->initialize();
+
+If you're not into the declarative interface, or have some
+other reason to switch around this boilerplate, you may copy the
+above and modify to fit your needs rather than using this module
+directly.
+
+Read more about L<Moo> and L<namespace::clean> if you are not
+familiar with them.
 
 
 
@@ -214,28 +223,6 @@ And make a function like this:
 Then users of your Curio class just write:
 
     my $chi = myapp_cache( $key );
-
-=head2 Adjusting the Boilerplate
-
-Near the top of most Curio classes is this line:
-
-    use Curio;
-
-Which is exactly the same as:
-
-    use Moo;
-    use Curio::Declare;
-    use namespace::clean;
-    with 'Curio::Role';
-    __PACKAGE__->initialize();
-
-If you're not into the declarative interface, or have some
-other reason to switch around this boilerplate, you may copy the
-above and modify to fit your needs rather than using this module
-directly.
-
-Read more about L<Moo> and L<namespace::clean> if you are not
-familiar with them.
 
 =head2 Caching
 
@@ -309,10 +296,10 @@ resource object.
     does_registry;
     resource_method_name 'chi';
 
-In the L</SYNOPSIS> the L<Curio::Factory/resource_method_name> is
-C<chi> which is created by a Moo attribute.  When the curio object is
-created this resource method will be called to get the resource object
-and, along with the curio object, register them in the registry.
+In the L</SYNOPSIS> L<Curio::Factory/resource_method_name> is set to
+C<chi>, which is a Moo attribute.  When the curio object is created
+this resource method will be called to get the resource object and,
+along with the curio object, register them in the registry.
 
     my $curio = MyApp::Service::Cache->find_curio( $chi );
 
@@ -348,6 +335,9 @@ instead use L<Curio::Role/inject_with_guard>.
     my $guard = MyApp::Service::Cache->inject_with_guard(
         'geo_ip', $mock,
     );
+
+When the guard object goes out of scope C<uninject> will be
+called automatically.
 
 =head2 Singletons
 

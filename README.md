@@ -10,39 +10,37 @@ Create a Curio class:
 package MyApp::Service::Cache;
 
 use CHI;
-use Types::Standard qw( InstanceOf );
+use Types::Standard qw( InstanceOf HashRef );
+use Type::Utils -all;
 
 use Curio;
 use strictures 2;
 
-with 'MooX::BuildArgs';
-
-does_caching;
-cache_per_process;
-
 use Exporter qw( import );
 our @EXPORT = qw( myapp_cache );
-
 sub myapp_cache {
     return __PACKAGE__->fetch( @_ )->chi();
 }
 
+does_caching;
+cache_per_process;
+
 add_key geo_ip => (
-    driver => 'Memory',
-    global => 0,
+    chi => {
+        driver => 'Memory',
+        global => 0,
+    },
 );
+
+my $chi_type = declare, as InstanceOf[ 'CHI::Driver' ];
+coerce $chi_type, from HashRef, via { CHI->new( %$_ ) };
 
 has chi => (
-    is  => 'lazy',
-    isa => InstanceOf[ 'CHI::Driver' ],
+    is       => 'ro',
+    isa      => $chi_type,
+    required => 1,
+    coerce   => 1,
 );
-
-sub _build_chi {
-    my ($self) = @_;
-    my $chi = CHI->new( %{ $self->build_args() } );
-    $self->clear_build_args();
-    return $chi;
-}
 
 1;
 ```
@@ -55,14 +53,58 @@ use MyApp::Service::Cache;
 my $chi = myapp_cache('geo_ip');
 ```
 
-Note: Check out [Curio::Role::CHI](https://metacpan.org/pod/Curio::Role::CHI), it does most of the above for
-you.
-
 # DESCRIPTION
 
 Curio is a toolbox for building a class which holds a resource (or
 many resources) of your making.  Then, in your applications, you can
 access the resource(s) from anywhere.
+
+# INTRODUCTION
+
+Curio is a library for creating [Moo](https://metacpan.org/pod/Moo) classes which encapsulate the
+construction and retrieval of arbitrary resources.  As a user of this
+library you've got two jobs.
+
+First, you create classes in your application which use Curio.  You'll
+have one class for each type of resource you want available to your
+application as a whole.  So, for example, you'd have a Curio class for
+your database connections, another for your graphite client, and perhaps
+a third for your CRM client.
+
+Your second job is to then modify your application to use your Curio
+classes.  If your application uses an existing framework, such as
+[Catalyst](https://metacpan.org/pod/Catalyst), then you may want to take a look at the available
+["INTEGRATIONS"](#integrations).
+
+Keep in mind that Curio doesn't just have to be used for connections
+to remote services.  It can be used to make singleton classes, as a
+ready to go generic object factory, a place to put global application
+context information, etc.
+
+# MOTIVATION
+
+The main drive behind creating Curio is threefold.
+
+1. To avoid the extra complexity of passing around references of shared
+resources, such as connections to services.  Often times you'll see
+code which passes a connection to a function, which then passes that
+on to another function, which then creates an object with the connection
+passed as an argument, etc.  This is what is being avoided; it's a messy
+way to write code and prone to error.
+2. To have a central place to put object creation logic.  When there is
+no central place to put this sort of logic it tends to be haphazardly
+copy-pasted and sprinkled all over a codebase making it difficult to
+find and change.
+3. To not be tied into any single framework as is commonly done today.
+There is no reason this sort of logic needs to be framework dependent,
+and once it is it makes all sorts of things more difficult, such as
+migrating frameworks and writing in-house libraries that are framework
+independent.  Yes, Curio is a sort framework itself, but it is a very
+slim framework which gets out of your way quickly and is designed for
+this one purpose.
+
+These challenges can be solved, and using Curio can support you in
+doing so.
 
 # IMPORT ARGUMENTS
 
@@ -84,54 +126,31 @@ See ["ROLES"](#roles) for a list of existing Curio roles.
 
 The default role is [Curio::Role](https://metacpan.org/pod/Curio::Role).
 
-# MOTIVATION
+## BOILERPLATE
 
-The main drive behind using Curio is threefold.
+Near the top of most Curio classes is this line:
 
-1. To avoid the extra complexity of passing around references of shared
-resources, such as connections to services.  Often times you'll see
-code which passes a connection to a function, which then passes that
-on to another function, which then creates an object with the connection
-passed as an argument, etc.  This is what is being avoided; it's a messy
-way to write code and prone to error.
-2. To have a central place to put object creation logic.  When there is
-no central place to put this sort of logic it tends to be haphazardly
-copy-pasted and sprinkled all over a codebase making it difficult to
-find and change.
-3. To not be tied into any single framework as is commonly done today.
-There is no reason this sort of logic needs to be framework dependent,
-and once it is it makes all sorts of things more difficult, such as
-migrating frameworks and writing in-house libraries that are framework
-independent.  Yes, Curio is a sort framework itself, but it is a very
-slim framework which gets out of your way quickly and is designed for
-this one purpose.
+```perl
+use Curio;
+```
 
-These challenges can be solved by Curio and, by solving them,
-your applications will be more robust and resilient to change.
+Which is exactly the same as:
 
-# INTRODUCTION
+```perl
+use Moo;
+use Curio::Declare;
+use namespace::clean;
+with 'Curio::Role';
+__PACKAGE__->initialize();
+```
 
-## What is Curio
+If you're not into the declarative interface, or have some
+other reason to switch around this boilerplate, you may copy the
+above and modify to fit your needs rather than using this module
+directly.
 
-Curio is a library for creating [Moo](https://metacpan.org/pod/Moo) classes which encapsulate the
-construction and retrieval of arbitrary resources.  As a user of this
-library you've got two jobs.
-
-First, you create classes in your application which use Curio.  You'll
-have one class for each type of resource you want available to your
-application as a whole.  So, for example, you'd have a Curio class for
-your database connections, another for your graphite client, and perhaps
-a third for your CRM client.
-
-Your second job is to then modify your application to use your Curio
-classes.  If your application uses an existing framework, such as
-[Catalyst](https://metacpan.org/pod/Catalyst), then you may want to take a look at the available
-["INTEGRATIONS"](#integrations).
-
-Keep in mind that Curio doesn't just have to be used for connections
-to remote services.  It can be used to make singleton classes, as a
-ready to go generic object factory, a place to put global application
-context information, etc.
+Read more about [Moo](https://metacpan.org/pod/Moo) and [namespace::clean](https://metacpan.org/pod/namespace::clean) if you are not
+familiar with them.
 
 # TOPICS
 
@@ -166,32 +185,6 @@ Then users of your Curio class just write:
 ```perl
 my $chi = myapp_cache( $key );
 ```
-
-## Adjusting the Boilerplate
-
-Near the top of most Curio classes is this line:
-
-```perl
-use Curio;
-```
-
-Which is exactly the same as:
-
-```perl
-use Moo;
-use Curio::Declare;
-use namespace::clean;
-with 'Curio::Role';
-__PACKAGE__->initialize();
-```
-
-If you're not into the declarative interface, or have some
-other reason to switch around this boilerplate, you may copy the
-above and modify to fit your needs rather than using this module
-directly.
-
-Read more about [Moo](https://metacpan.org/pod/Moo) and [namespace::clean](https://metacpan.org/pod/namespace::clean) if you are not
-familiar with them.
 
 ## Caching
 
@@ -283,10 +276,10 @@ does_registry;
 resource_method_name 'chi';
 ```
 
-In the ["SYNOPSIS"](#synopsis) the ["resource\_method\_name" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#resource_method_name) is
-`chi` which is created by a Moo attribute.  When the curio object is
-created this resource method will be called to get the resource object
-and, along with the curio object, register them in the registry.
+In the ["SYNOPSIS"](#synopsis) ["resource\_method\_name" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#resource_method_name) is set to
+`chi`, which is a Moo attribute.  When the curio object is created
+this resource method will be called to get the resource object and,
+along with the curio object, register them in the registry.
 
 ```perl
 my $curio = MyApp::Service::Cache->find_curio( $chi );
@@ -330,6 +323,9 @@ my $guard = MyApp::Service::Cache->inject_with_guard(
     'geo_ip', $mock,
 );
 ```
+
+When the guard object goes out of scope `uninject` will be
+called automatically.
 
 ## Singletons
 
