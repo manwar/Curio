@@ -27,7 +27,7 @@ add_key geo_ip => (
     },
 );
 
-my $chi_type = declare, as InstanceOf[ 'CHI::Driver' ];
+my $chi_type = declare as InstanceOf[ 'CHI::Driver' ];
 coerce $chi_type, from HashRef, via { CHI->new( %$_ ) };
 
 has chi => (
