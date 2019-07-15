@@ -3,6 +3,8 @@ BEGIN { $ENV{PERL_STRICTURES_EXTRA} = 0 }
 use strictures 2;
 use Test2::V0;
 
+use Test2::Require::Module qw( CHI );
+
 open( my $fh, '<', 'lib/Curio.pm' );
 my $content = do { local $/; <$fh> };
 close $fh;
