@@ -2,6 +2,8 @@ Revision history for Perl extension Curio.
 
 {{$NEXT}}
 
+0.04 2019-07-15T19:46:01Z
+
  - The exported function may now be overriden with a custom function.
  - Added export_resource.
  - Restored export_function_name and always_export.
