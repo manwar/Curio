@@ -169,7 +169,7 @@ See L</ROLES> for a list of existing Curio roles.
 
 The default role is L<Curio::Role>.
 
-=head2 BOILERPLATE
+=head1 BOILERPLATE
 
 Near the top of most Curio classes is this line:
 

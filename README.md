@@ -121,7 +121,7 @@ See ["ROLES"](#roles) for a list of existing Curio roles.
 
 The default role is [Curio::Role](https://metacpan.org/pod/Curio::Role).
 
-## BOILERPLATE
+# BOILERPLATE
 
 Near the top of most Curio classes is this line:
 
