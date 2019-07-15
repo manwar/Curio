@@ -28,7 +28,7 @@ use Curio::Util;
 use Package::Stash;
 use Scalar::Util qw( blessed refaddr );
 use Types::Common::String qw( NonEmptySimpleStr );
-use Types::Standard qw( Bool Map HashRef );
+use Types::Standard qw( Bool Map HashRef Undef );
 
 use Moo;
 use strictures 2;
@@ -315,6 +315,62 @@ has cache_per_process => (
     default => 0,
 );
 
+=head2 export_function_name
+
+    export_function_name => 'myapp_cache',
+
+The export function is exported when the the Curio class is
+imported, as in:
+
+    use MyApp::Service::Cache;
+    my $chi = myapp_cache( $key );
+
+See also L</always_export> and L</export_resource>.
+
+=cut
+
+has export_function_name => (
+    is  => 'rw',
+    isa => NonEmptySimpleStr | Undef,
+);
+
+=head2 always_export
+
+    always_export => 1,
+
+When enabled this causes the export function to be always exported.
+
+    use MyApp::Service::Cache;
+
+When this option is not set you must explicitly request that the
+export function be exported.
+
+    use MyApp::Service::Cache qw( myapp_cache );
+
+=cut
+
+has always_export => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 0,
+);
+
+=head2 export_resource
+
+    export_resource => 1,
+
+Rather than returning the curio object this will cause the resource
+object to be returned by the export function.  Requires that
+L</resource_method_name> be set.
+
+=cut
+
+has export_resource => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 0,
+);
+
 =head2 does_keys
 
     does_keys => 1,
@@ -374,7 +430,7 @@ Defaults to no default key.
 
 has default_key => (
     is  => 'rw',
-    isa => NonEmptySimpleStr,
+    isa => NonEmptySimpleStr | Undef,
 );
 
 =head2 key_argument
@@ -397,7 +453,7 @@ Defaults to no key argument.
 
 has key_argument => (
     is  => 'rw',
-    isa => NonEmptySimpleStr,
+    isa => NonEmptySimpleStr | Undef,
 );
 
 =head2 default_arguments

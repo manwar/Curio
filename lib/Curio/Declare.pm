@@ -13,6 +13,9 @@ my %EXPORTS = (
     installs_curio_method  => 'bool',
     does_caching           => 'bool',
     cache_per_process      => 'bool',
+    export_function_name   => 'string',
+    always_export          => 'bool',
+    export_resource        => 'bool',
     does_keys              => 'bool',
     allow_undeclared_keys  => 'bool',
     default_key            => 'string',
@@ -157,6 +160,24 @@ See L<Curio::Factory/does_caching> for details.
     cache_per_process;
 
 See L<Curio::Factory/cache_per_process> for details.
+
+=head2 export_function_name
+
+    export_function_name 'myapp_cache';
+
+See L<Curio::Factory/export_function_name> for details.
+
+=head2 always_export
+
+    always_export;
+
+See L<Curio::Factory/always_export> for details.
+
+=head2 export_resource
+
+    export_resource;
+
+See L<Curio::Factory/export_resource> for details.
 
 =head2 does_keys
 

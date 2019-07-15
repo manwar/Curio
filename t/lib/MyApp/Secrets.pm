@@ -5,10 +5,15 @@ use Types::Standard qw( HashRef );
 use Curio;
 use strictures 2;
 
-use Exporter qw( import );
-our @EXPORT = qw( myapp_secret );
-
+export_function_name 'myapp_secret';
+always_export;
+resource_method_name 'secrets';
 does_caching;
+
+sub myapp_secret {
+    my $key = pop;
+    return __PACKAGE__->factory->fetch_resource( @_ )->{ $key };
+}
 
 my $default_secrets = {
     baz => 54,
@@ -20,10 +25,5 @@ has secrets => (
     isa     => HashRef,
     default => sub{ $default_secrets },
 );
-
-sub myapp_secret {
-    my $key = pop;
-    return __PACKAGE__->fetch( @_ )->secrets->{ $key };
-}
 
 1;

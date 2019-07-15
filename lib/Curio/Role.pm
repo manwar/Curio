@@ -16,10 +16,51 @@ witht the underlying L<Curio::Factory> object.
 
 use Curio::Factory;
 use Curio::Util;
+use Package::Stash;
 
 use Moo::Role;
 use strictures 2;
 use namespace::clean;
+
+my %is_exporter_setup;
+
+sub import {
+    my ($class) = @_;
+
+    my $factory = $class->factory();
+    my $name = $factory->export_function_name();
+    return if !defined $name;
+
+    if (!$is_exporter_setup{ $class }) {
+        my $stash = Package::Stash->new( $class );
+
+        $stash->add_symbol(
+            "&$name",
+            $factory->export_resource()
+                ? subname( $name, _build_export_resource( $factory ) )
+                : subname( $name, _build_export_curio( $factory ) ),
+        ) if !$class->can($name);
+
+        $stash->add_symbol(
+            $factory->always_export() ? '@EXPORT' : '@EXPORT_OK',
+            [ $name ],
+        );
+
+        $is_exporter_setup{ $class } = 1;
+    }
+
+    goto &Exporter::import;
+}
+
+sub _build_export_curio {
+    my $factory = shift;
+    return sub{ $factory->fetch_curio( @_ ) };
+}
+
+sub _build_export_resource {
+    my $factory = shift;
+    return sub{ $factory->fetch_resource( @_ ) };
+}
 
 =head1 CLASS METHODS
 

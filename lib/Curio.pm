@@ -55,14 +55,9 @@ Create a Curio class:
     use Curio;
     use strictures 2;
     
-    use Exporter qw( import );
-    our @EXPORT = qw( myapp_cache );
-    sub myapp_cache {
-        return __PACKAGE__->fetch( @_ )->chi();
-    }
-    
     does_caching;
     cache_per_process;
+    export_function_name 'myapp_cache';
     
     add_key geo_ip => (
         chi => {
@@ -85,9 +80,9 @@ Create a Curio class:
 
 Then use your new Curio class elsewhere:
 
-    use MyApp::Service::Cache;
+    use MyApp::Service::Cache qw( myapp_cache );
     
-    my $chi = myapp_cache('geo_ip');
+    my $chi = myapp_cache('geo_ip')->chi();
 
 
 
@@ -202,27 +197,54 @@ familiar with them.
 
 =head2 Exporting the Fetch Function
 
-To get at a Curio object's resource takes a lot of typing out of the
-box:
+To get at a Curio object's resource takes a lot of typing by default.
 
     my $chi = MyApp::Service::Cache->fetch( $key )->chi();
 
 Creating an export function that wraps this all up is a great way to
-simplify things.  In your Curio class write something like this after
-the C<use Curio> line:
+simplify things.  In your Curio class you can set
+L<Curio::Factory/export_function_name> which will create a function,
+create the C<@EXPORT_OK> package variable, and add the new function
+to it.
 
-    use Exporter qw( import );
-    our @EXPORT = qw( myapp_cache );
+    # In your Curio class.
+    export_function_name 'myapp_cache';
+    
+    # Elsewhere.
+    use MyApp::Service::Cache qw( myapp_cache );
+    my $chi = myapp_cache()->chi();
 
-And make a function like this:
+If you'd like the function to be always exported (use C<@EXPORT>) then
+set L<Curio::Factory/always_export>.
 
+    # In your Curio class.
+    export_function_name 'myapp_cache';
+    always_export;
+    
+    # Elsewhere.
+    use MyApp::Service::Cache;
+    my $chi = myapp_cache()->chi();
+
+If you'd like the exported function to return the resource object
+instead of the curio object set L<Curio::Factory/export_resource>.
+
+    # In your Curio class.
+    export_function_name 'myapp_cache';
+    export_resource;
+    resource_method_name 'chi';
+    
+    # Elsewhere.
+    use MyApp::Service::Cache qw( myapp_cache );
+    my $chi = myapp_cache();
+
+The generated function can be overriden with your own custom function.
+
+    # In your Curio class.
+    export_function_name 'myapp_cache';
+    
     sub myapp_cache {
-        return __PACKAGE__->fetch( @_ )->chi();
+        return __PACKAGE__->factory->fetch_curio( @_ )->chi();
     }
-
-Then users of your Curio class just write:
-
-    my $chi = myapp_cache( $key );
 
 =head2 Caching
 
