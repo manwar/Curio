@@ -28,6 +28,8 @@ sub import {
     my ($class) = @_;
 
     my $factory = $class->factory();
+    return if !$factory;
+
     my $name = $factory->export_function_name();
     return if !defined $name;
 

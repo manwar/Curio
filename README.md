@@ -210,6 +210,9 @@ sub myapp_cache {
 }
 ```
 
+Want to do something more advanced?  Don't use any of the methods
+suggested here and just use the exporter module of your choice.
+
 ## Caching
 
 Caching is enabled with ["does\_caching" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#does_caching).
@@ -358,19 +361,146 @@ Creating a singleton class is super simple.
 ```perl
 package MyApp::Context;
 
+use Types::Common::String qw( SimpleStr );
+
 use Curio;
+use strictures 2;
 
-use Exporter qw( import );
-our @EXPORT = qw( myapp_cache );
+export_function_name 'myapp_context';
+always_export;
 
-sub myapp_context {
-    return __PACKAGE__->fetch( @_ );
+has install_dir => (
+    is  => 'lazy',
+    isa => SimpleStr,
+);
+
+sub _build_install_dir {
+    my $dir = $ENV{MYAPP_INSTALL_DIR};
+    return $dir if $dir;
+    
+    return '/myapp';
 }
 
-has user_id => ( is=>'rw' );
+has config_file => (
+    is  => 'lazy',
+    isa => SimpleStr,
+);
 
-# Elsewhere:
-my $current_user_id = myapp_context()->user_id();
+sub _build_config_file {
+    my ($self) = @_;
+    
+    my $file = $ENV{MYAPP_CONFIG_FILE};
+    return $file if $file;
+    
+    return $self->install_dir() . '/config.ini';
+}
+```
+
+See ["Configuration"](#configuration) and ["Secrets"](#secrets) for more singleton examples.
+
+## Configuration
+
+Application configuration is one of those systems which can benefit
+a lot from being wrapped up in a curio class.
+
+```perl
+package MyApp::Config;
+
+use Config::INI::Reader;
+use MyApp::Context;
+use Types::Common::String qw( SimpleStr );
+use Types::Standard qw( HashRef );
+
+use Curio;
+use strictures 2;
+
+export_function_name 'myapp_config';
+always_export;
+export_resource;
+resource_method_name 'config';
+does_caching;
+
+has file => (
+    is  => 'lazy',
+    isa => SimpleStr,
+);
+
+sub _build_file {
+    return myapp_context()->config_file();
+}
+
+has config => (
+    is  => 'lazy',
+    isa => HashRef,
+);
+
+sub _build_config {
+    my ($self) = @_;
+    
+    return Config::INI::Reader->read_file(
+        $self->file(),
+    );
+}
+```
+
+This curio-based configuration class could then be used from
+anywhere to access your application's configuration.
+
+```perl
+use MyApp::Config;
+
+print myapp_config()->{login_rate_limit};
+```
+
+See ["Singletons"](#singletons) for a working example of `MyApp::Context`.
+
+## Secrets
+
+Handling secrets requires careful planning and prior experience to
+get right.  It is very easy to leak secrets into logs, onto HTTP
+error pages, emails, and other locations.  Start off right and you
+can avoid these issues in a lot of common cases by adhering to one
+important rule: never store your secrets in objects as plain string
+values.
+
+Whenever you need a secret, request it from your secret storage.  Your
+secret storage may just be a configuration file initialy, and thats ok
+when you are just starting, but once your project starts being used by
+more than other developers and testers you'll need to consider a more
+robust solution, such as [Vault](https://www.vaultproject.io/) or
+[Kubernetes secret objects](https://kubernetes.io/docs/concepts/configuration/secret/).
+
+The important thing is that your API for accessing secrets remain
+consistant even as you transition from one secret storage to another.
+Wrapping your secret storage in a curio class can make these sorts of
+transitions run smoothly as only the code in your curio class needs to
+be changed.
+
+```perl
+package MyApp::Secrets;
+
+use MyApp::Service::Vault;
+
+use Curio;
+use strictures 2;
+
+export_function_name 'myapp_secret';
+always_export;
+does_caching;
+
+sub myapp_secret {
+    my $key = pop;
+    return myapp_vault()->secret( path=>$key )->data->{password};
+}
+```
+
+This generic interface provided by your curio class would not need
+changing if you completely moved your secret backend to a different
+system.
+
+```perl
+use MyApp::Secrets;
+my $db_password = myapp_secret('db-main-www');
 ```
 
 ## Handling Arguments
@@ -380,10 +510,6 @@ my $current_user_id = myapp_context()->user_id();
 ## Introspection
 
 ## Custom Curio Roles
-
-## Secrets
-
-## Configuration
 
 # IMPORTANT PRACTICES
 
