@@ -860,28 +860,6 @@ sub uninject {
     return $curio;
 }
 
-=head1 CLASS METHODS
-
-=head2 find_factory
-
-    my $factory = Curio::Factory->find_factory( $class );
-
-Given a Curio class this will return its factory object,
-or C<undef> otherwise.
-
-=cut
-
-sub find_factory {
-    my ($class, $curio_class) = @_;
-
-    croak 'Undefined Curio class passed to find_factory()'
-        if !defined $curio_class;
-
-    $curio_class = blessed( $curio_class ) || $curio_class;
-
-    return $class_to_factory{ $curio_class };
-}
-
 1;
 __END__
 

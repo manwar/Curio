@@ -160,9 +160,6 @@ sub initialize {
 
 Returns the class's L<Curio::Factory> object.
 
-Calling this is equivalent to calling L<Curio::Factory/find_factory>,
-but is much faster.
-
 =cut
 
 # The real factory attribute is installed in the curio class by:
