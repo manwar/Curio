@@ -181,6 +181,32 @@ has _injections => (
     default  => sub{ {} },
 );
 
+sub _set_injection {
+    my ($self, $key, $curio) = @_;
+    $key = $self->_fixup_injection_key( $key );
+    $self->_injections->{$key} = $curio;
+    return;
+}
+
+sub _get_injection {
+    my ($self, $key) = @_;
+    $key = $self->_fixup_injection_key( $key );
+    return $self->_injections->{$key};
+}
+
+sub _remove_injection {
+    my ($self, $key) = @_;
+    $key = $self->_fixup_injection_key( $key );
+    my $curio = delete $self->_injections->{$key};
+    return $curio;
+}
+
+sub _fixup_injection_key {
+    my ($self, $key) = @_;
+    $key = $undef_key if !defined $key;
+    return $key;
+}
+
 =head1 REQUIRED ARGUMENTS
 
 =head2 class
@@ -517,16 +543,17 @@ sub fetch_curio {
 sub _fetch_curio {
     my ($self, $key) = @_;
 
-    if ($self->does_caching()) {
-        my $curio = $self->_cache_get( $key );
-        return $curio if $curio;
-    }
+    my $curio;
 
-    my $curio = $self->_create( $key );
+    $curio = $self->_get_injection( $key );
+    return $curio if $curio;
 
-    if ($self->does_caching()) {
-        $self->_cache_set( $key, $curio );
-    }
+    $curio = $self->_cache_get( $key ) if $self->does_caching();
+    return $curio if $curio;
+
+    $curio = $self->_create( $key );
+
+    $self->_cache_set( $key, $curio ) if $self->does_caching();
 
     return $curio;
 }
@@ -771,17 +798,12 @@ sub inject {
     $key = $undef_key if !defined $key;
 
     croak 'No object passed to inject()'
-        if !blessed( $object );
-
-    croakf(
-        'Object of an incorrect class passed to inject(): %s (want %s)',
-        ref( $object ), $self->class(),
-    ) if !$object->isa( $self->class() );
+        if !blessed $object;
 
     croak 'Cannot inject a Curio object where one has already been injected'
-        if $self->_injections->{$key};
+        if $self->_get_injection( $key );
 
-    $self->_injections->{$key} = $object;
+    $self->_set_injection( $key, $object );
 
     return;
 }
@@ -831,11 +853,11 @@ sub uninject {
     $key = $undef_key if !defined $key;
 
     croak 'Cannot uninject a Curio object where one has not already been injected'
-        if !$self->_injections->{$key};
+        if !$self->_get_injection( $key );
 
-    my $object = delete $self->_injections->{$key};
+    my $curio = $self->_remove_injection( $key );
 
-    return $object;
+    return $curio;
 }
 
 =head1 CLASS METHODS
