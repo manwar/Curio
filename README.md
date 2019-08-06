@@ -63,8 +63,8 @@ library you've got two jobs.
 First, you create classes in your application which use Curio.  You'll
 have one class for each type of resource you want available to your
 application as a whole.  So, for example, you'd have a Curio class for
-your database connections, another for your graphite client, and perhaps
-a third for your CRM client.
+your database connections, another for your graphite client, and
+perhaps a third for your CRM client.
 
 Your second job is to then modify your application to use your Curio
 classes.  If your application uses an existing framework, such as
@@ -83,9 +83,9 @@ The main drive behind creating Curio is threefold.
 1. To avoid the extra complexity of passing around references of shared
 resources, such as connections to services.  Often times you'll see
 code which passes a connection to a function, which then passes that
-on to another function, which then creates an object with the connection
-passed as an argument, etc.  This is what is being avoided; it's a messy
-way to write code and prone to error.
+on to another function, which then creates an object with the
+connection passed as an argument, etc.  This is what is being avoided;
+it's a messy way to write code and prone to error.
 2. To have a central place to put object creation logic.  When there is
 no central place to put this sort of logic it tends to be haphazardly
 copy-pasted and sprinkled all over a codebase making it difficult to
@@ -139,13 +139,12 @@ with 'Curio::Role';
 __PACKAGE__->initialize();
 ```
 
-If you're not into the declarative interface, or have some
-other reason to switch around this boilerplate, you may copy the
-above and modify to fit your needs rather than using this module
-directly.
+If you're not into the declarative interface, or have some other
+reason to switch around this boilerplate, you may copy the above and
+modify to fit your needs rather than using this module directly.
 
-Read more about [Moo](https://metacpan.org/pod/Moo) and [namespace::clean](https://metacpan.org/pod/namespace::clean) if you are not
-familiar with them.
+Read more about [Moo](https://metacpan.org/pod/Moo) and [namespace::clean](https://metacpan.org/pod/namespace::clean) if you are not familiar
+with them.
 
 # TOPICS
 
@@ -160,8 +159,8 @@ my $chi = MyApp::Service::Cache->fetch( $key )->chi();
 Creating an export function that wraps this all up is a great way to
 simplify things.  In your Curio class you can set
 ["export\_function\_name" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#export_function_name) which will create a function,
-create the `@EXPORT_OK` package variable, and add the new function
-to it.
+create the `@EXPORT_OK` package variable, and add the new function to
+it.
 
 ```perl
 # In your Curio class.
@@ -226,8 +225,8 @@ for a curio object will return the same one as before.  This option
 should almost always be set as it usually provides a huge performance
 increase.
 
-["cache\_per\_process" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#cache_per_process) extends the
-caching to handle process/thread changes gracefully.
+["cache\_per\_process" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#cache_per_process) extends the caching to handle
+process/thread changes gracefully.
 
 ```
 cache_per_process;
@@ -237,9 +236,9 @@ cache_per_process;
 
 Curio supports fetching curio objects by key.  This is an optional
 feature and by default is turned off.  To turn it on you set
-["does\_keys" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#does_keys) or just start adding keys
-with ["add\_key" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#add_key) which will automatically turn
-on `does_keys`.
+["does\_keys" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#does_keys) or just start adding keys with
+["add\_key" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#add_key) which will automatically turn on
+`does_keys`.
 
 When keys are enabled a curio class is able to produce different
 objects based on the key.  For example, lets say you have two
@@ -273,8 +272,8 @@ You can also set ["default\_key" in Curio::Factory](https://metacpan.org/pod/Cur
 default_key 'db1';
 ```
 
-Curio objects, by default, have no way of knowing what key was used
-to make them.  If you need to know what key was used to fetch a curio
+Curio objects, by default, have no way of knowing what key was used to
+make them.  If you need to know what key was used to fetch a curio
 object you can set ["key\_argument" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#key_argument).
 
 ```perl
@@ -282,9 +281,9 @@ key_argument 'key';
 has key => ( is=>'ro' );
 ```
 
-The ["default\_arguments" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#default_arguments) option can
-be useful when you are not using Moo attributes but still need to set
-defaults for arguments.
+The ["default\_arguments" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#default_arguments) option can be useful when you
+are not using Moo attributes but still need to set defaults for
+arguments.
 
 ```perl
 default_arguments ( username => 'dbuser' );
@@ -293,8 +292,8 @@ default_arguments ( username => 'dbuser' );
 ## The Registry
 
 The registry is a lookup table holding memory addresses of resource
-objects pointing at references to curio objects.  What this means
-is, if ["does\_registry" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#does_registry) is set, you can use
+objects pointing at references to curio objects.  What this means is,
+if ["does\_registry" in Curio::Factory](https://metacpan.org/pod/Curio::Factory#does_registry) is set, you can use
 ["find\_curio" in Curio::Role](https://metacpan.org/pod/Curio::Role#find_curio) to retrieve the curio object for a given
 resource object.
 
@@ -351,8 +350,8 @@ my $guard = MyApp::Service::Cache->inject_with_guard(
 );
 ```
 
-When the guard object goes out of scope `uninject` will be
-called automatically.
+When the guard object goes out of scope `uninject` will be called
+automatically.
 
 ## Singletons
 
@@ -400,8 +399,8 @@ See ["Configuration"](#configuration) and ["Secrets"](#secrets) for more singlet
 
 ## Configuration
 
-Application configuration is one of those systems which can benefit
-a lot from being wrapped up in a curio class.
+Application configuration is one of those systems which can benefit a
+lot from being wrapped up in a curio class.
 
 ```perl
 package MyApp::Config;
@@ -443,8 +442,8 @@ sub _build_config {
 }
 ```
 
-This curio-based configuration class could then be used from
-anywhere to access your application's configuration.
+This curio-based configuration class could then be used from anywhere
+to access your application's configuration.
 
 ```perl
 use MyApp::Config;
@@ -456,12 +455,11 @@ See ["Singletons"](#singletons) for a working example of `MyApp::Context`.
 
 ## Secrets
 
-Handling secrets requires careful planning and prior experience to
-get right.  It is very easy to leak secrets into logs, onto HTTP
-error pages, emails, and other locations.  Start off right and you
-can avoid these issues in a lot of common cases by adhering to one
-important rule: never store your secrets in objects as plain string
-values.
+Handling secrets requires careful planning and prior experience to get
+right.  It is very easy to leak secrets into logs, onto HTTP error
+pages, emails, and other locations.  Start off right and you can avoid
+these issues in a lot of common cases by adhering to one important
+rule: never store your secrets in objects as plain string values.
 
 Whenever you need a secret, request it from your secret storage.  Your
 secret storage may just be a configuration file initialy, and thats ok
@@ -515,15 +513,14 @@ my $db_password = myapp_secret('db-main-www');
 
 ## Avoid Holding onto Curio Objects and Resources
 
-Curio is designed to make it cheap to retrieve Curio objects
-and the underlying resources.  Take advantage of this.  Don't
-pass around your resource objects or put them in attributes.
-Instead, when you need them, get the from your Curio classes.
+Curio is designed to make it cheap to retrieve Curio objects and the
+underlying resources.  Take advantage of this.  Don't pass around your
+resource objects or put them in attributes.  Instead, when you need
+them, get the from your Curio classes.
 
-If your Curio class supports keys, then passing around the
-key that you want particular code to be using, rather than the
-Curio object or the resource, is a much better way of handling
-things.
+If your Curio class supports keys, then passing around the key that
+you want particular code to be using, rather than the Curio object or
+the resource, is a much better way of handling things.
 
 Read more of the reasoning for this in ["MOTIVATION" in Curio](https://metacpan.org/pod/Curio#MOTIVATION).
 
@@ -531,10 +528,11 @@ Read more of the reasoning for this in ["MOTIVATION" in Curio](https://metacpan.
 
 It is tempting to use the ["INTEGRATIONS" in Curio](https://metacpan.org/pod/Curio#INTEGRATIONS) such as
 [Catalyst::Model::Curio](https://metacpan.org/pod/Catalyst::Model::Curio), and sometimes it is necessary to do so.
-Most of the time there is no need to add that extra layer of complexity.
+Most of the time there is no need to add that extra layer of
+complexity.
 
-Using Catalyst as an example, there are few reasons you can't
-just use your Curio classes directly from your Catalyst controllers.
+Using Catalyst as an example, there are few reasons you can't just use
+your Curio classes directly from your Catalyst controllers.
 
 At ZipRecruiter, where we have some massive Catalyst applications, we
 only use Catalyst models in the few cases where other parts of
@@ -544,15 +542,14 @@ easier to deal with.
 
 ## Appropriate Uses of Key Aliases
 
-Key aliases are meant as a tool for migrating and merging keys.
-They are meant to be something you temporarily setup as you change
-your code to use the new keys, and then once done you remove the
-aliases.
+Key aliases are meant as a tool for migrating and merging keys.  They
+are meant to be something you temporarily setup as you change your
+code to use the new keys, and then once done you remove the aliases.
 
-It can be tempting to use key aliases to provide simpler or alternative
-names for existing keys.  The problem with doing this is now you've
-introduced multiple keys for the same Curio class which in practice
-causes unnecessary confusion.
+It can be tempting to use key aliases to provide simpler or
+alternative names for existing keys.  The problem with doing this is
+now you've introduced multiple keys for the same Curio class which in
+practice causes unnecessary confusion.
 
 # ROLES
 
@@ -566,8 +563,8 @@ for your Curio classes to wrap around specific resource types.
 
 # INTEGRATIONS
 
-The CPAN modules listed here integrate Curio with other things
-such as web frameworks.
+The CPAN modules listed here integrate Curio with other things such as
+web frameworks.
 
 - [Catalyst::Model::Curio](https://metacpan.org/pod/Catalyst::Model::Curio)
 
@@ -586,7 +583,8 @@ are baked into the framework.  The idea is similar though.
 
 Someone started something that looks vaguely similar called [Trinket](https://metacpan.org/pod/Trinket)
 (this was one of the names I was considering and found it by accident)
-but it never got any love since initial release in 2012 and is incomplete.
+but it never got any love since initial release in 2012 and is
+incomplete.
 
 Since Curio can do singletons, you may want to check out
 [MooX::Singleton](https://metacpan.org/pod/MooX::Singleton) and [MooseX::Singleton](https://metacpan.org/pod/MooseX::Singleton).
@@ -600,10 +598,10 @@ Curio GitHub issue tracker:
 
 # ACKNOWLEDGEMENTS
 
-Thanks to [ZipRecruiter](https://www.ziprecruiter.com/)
-for encouraging their employees to contribute back to the open
-source ecosystem.  Without their dedication to quality software
-development this distribution would not exist.
+Thanks to [ZipRecruiter](https://www.ziprecruiter.com/) for
+encouraging their employees to contribute back to the open source
+ecosystem.  Without their dedication to quality software development
+this distribution would not exist.
 
 # AUTHORS
 
