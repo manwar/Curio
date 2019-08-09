@@ -505,9 +505,9 @@ has default_arguments => (
 
 =head1 ATTRIBUTES
 
-=head2 keys
+=head2 declared_keys
 
-    my $keys = $factory->keys();
+    my $keys = $factory->declared_keys();
     foreach my $key (@$keys) { ... }
 
 Returns an array ref containing all the keys declared with
@@ -515,7 +515,7 @@ L</add_key>.
 
 =cut
 
-sub keys {
+sub declared_keys {
     my ($self) = @_;
     return [ keys %{ $self->_keys() } ];
 }

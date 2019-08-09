@@ -166,18 +166,18 @@ Returns the class's L<Curio::Factory> object.
 # Curio::Factory::_install_factory_method()
 sub factory { undef }
 
-=head2 keys
+=head2 declared_keys
 
-    my $keys = MyApp::Service::Cache->keys();
+    my $keys = MyApp::Service::Cache->declared_keys();
     foreach my $key (@$keys) { ... }
 
-This proxies to L<Curio::Factory/keys>.
+This proxies to L<Curio::Factory/declared_keys>.
 
 =cut
 
-sub keys {
+sub declared_keys {
     my $class = shift;
-    return $class->factory->keys( @_ );
+    return $class->factory->declared_keys( @_ );
 }
 
 1;
