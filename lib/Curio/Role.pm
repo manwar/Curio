@@ -139,6 +139,20 @@ sub uninject {
     return $class->factory->uninject( @_ );
 }
 
+=head2 injection
+
+    my $curio_object = MyApp::Service::Cache->injection();
+    my $curio_object = MyApp::Service::Cache->injection( $key );
+
+This proxies to L<Curio::Factory/injection>.
+
+=cut
+
+sub injection {
+    my $class = shift;
+    return $class->factory->injection( @_ );
+}
+
 =head2 initialize
 
 Sets up your class's L<Curio::Factory> object and is automatically

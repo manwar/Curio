@@ -860,6 +860,24 @@ sub uninject {
     return $curio;
 }
 
+=head2 injection
+
+    my $curio_object = $factory->injection();
+    my $curio_object = $factory->injection( $key );
+
+Returns the injected curio object, or C<undef> if none has been injected.
+
+=cut
+
+sub injection {
+    my $self = shift;
+    my $key = $self->_process_key_arg( \@_ );
+
+    $key = $undef_key if !defined $key;
+
+    return $self->_get_injection( $key );
+}
+
 1;
 __END__
 
