@@ -100,23 +100,21 @@ sub _process_key_arg {
 
     my $key;
 
-    if ($self->does_keys()) {
-        if (@$args) {
-            $key = shift @$args;
-            croak "Invalid key passed to $caller_sub_name()"
-                if !NonEmptySimpleStr->check( $key );
-        }
-        elsif (defined $self->default_key()) {
-            $key = $self->default_key();
-        }
-        else {
-            croak "No key was passed to $caller_sub_name()";
-        }
+    if (@$args) {
+        $key = shift @$args;
+        croak "Invalid key passed to $caller_sub_name()"
+            if !NonEmptySimpleStr->check( $key );
+    }
+    elsif (defined $self->default_key()) {
+        $key = $self->default_key();
+    }
+    else {
+        croak "No key was passed to $caller_sub_name()";
+    }
 
-        if (!$self->allow_undeclared_keys()) {
-            croak "Undeclared key passed to $caller_sub_name()"
-                if !$self->_keys->{$key};
-        }
+    if (!$self->allow_undeclared_keys()) {
+        croak "Undeclared key passed to $caller_sub_name()"
+            if !$self->_keys->{$key};
     }
 
     $key = $self->_aliases->{$key}
@@ -392,31 +390,6 @@ L</resource_method_name> be set.
 =cut
 
 has export_resource => (
-    is      => 'rw',
-    isa     => Bool,
-    default => 0,
-);
-
-=head2 does_keys
-
-    does_keys => 1,
-
-Turning this on allows a key argument to be passed to L</fetch_curio>
-and many other methods.  Typically, though,  you don't have to
-set this as you'll be using L</add_key> which automatically
-turns this on.
-
-By enabling keys this allows L</fetch_curio>, caching, resource
-registration, injecting, and anything else dealing with
-a Curio object to deal with multiple Curio objects based on
-the passed key argument.
-
-Defaults to off (C<0>), meaning the factory will only ever
-manage a single Curio object.
-
-=cut
-
-has does_keys => (
     is      => 'rw',
     isa     => Bool,
     default => 0,
@@ -698,8 +671,7 @@ sub _arguments {
 
     $factory->add_key( $key, %arguments );
 
-Declares a new key and turns L</does_keys> on if it is not already
-turned on.
+Declares a new key.
 
 Arguments are optional, but if present they will be saved and used
 by L</fetch_curio> when calling C<new()> on L</class>.
@@ -721,8 +693,6 @@ sub add_key {
         if @args % 2 != 0;
 
     $self->_keys->{$key} = { @args };
-
-    $self->does_keys( 1 );
 
     return;
 }

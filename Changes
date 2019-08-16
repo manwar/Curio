@@ -2,6 +2,9 @@ Revision history for Perl extension Curio.
 
 {{$NEXT}}
 
+ - Always use keys.  It is easy enough to make a single-key Curio
+   class.  Supporting no-key classes is just unneeded complexity.
+
 0.07 2019-08-16T18:38:35Z
 
  - Rather than throw an exception, clear_injection() now returns undef
