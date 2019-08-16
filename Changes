@@ -2,6 +2,8 @@ Revision history for Perl extension Curio.
 
 {{$NEXT}}
 
+ - Rather than throw an exception, clear_injection() now returns undef
+   if there was not an injection to clear.
  - Added the has_injection() method.
  - Renamed uninject() to clear_injection().
 

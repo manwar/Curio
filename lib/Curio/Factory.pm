@@ -853,10 +853,11 @@ sub inject_with_guard {
     my $curio_object = $factory->clear_injection();
     my $curio_object = $factory->clear_injection( $key );
 
-Removes the previously injected curio object, restoring the
-original behavior of L</fetch_curio>.
+Removes the previously injected curio object, restoring the original
+behavior of L</fetch_curio>.
 
-Returns the previously injected curio object.
+Returns the previously injected curio object, or C<undef> if there was
+not one.
 
 =cut
 
@@ -865,9 +866,6 @@ sub clear_injection {
     my $key = $self->_process_key_arg( \@_ );
 
     $key = $undef_key if !defined $key;
-
-    croak 'Cannot clear an injection where one does not exist'
-        if !$self->_get_injection( $key );
 
     my $curio = $self->_remove_injection( $key );
 
@@ -879,7 +877,8 @@ sub clear_injection {
     my $curio_object = $factory->injection();
     my $curio_object = $factory->injection( $key );
 
-Returns the injected curio object, or C<undef> if none has been injected.
+Returns the injected curio object, or C<undef> if none has been
+injected.
 
 =cut
 
