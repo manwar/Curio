@@ -153,6 +153,20 @@ sub injection {
     return $class->factory->injection( @_ );
 }
 
+=head2 has_injection
+
+    if (MyApp::Service::Cache->has_injection()) { ... }
+    if (MyApp::Service::Cache->has_injection( $key )) { ... }
+
+This proxies to L<Curio::Factory/has_injection>.
+
+=cut
+
+sub has_injection {
+    my $class = shift;
+    return $class->factory->has_injection( @_ );
+}
+
 =head2 initialize
 
 Sets up your class's L<Curio::Factory> object and is automatically

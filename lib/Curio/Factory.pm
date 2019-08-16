@@ -892,6 +892,24 @@ sub injection {
     return $self->_get_injection( $key );
 }
 
+=head2 has_injection
+
+    if ($factory->has_injection()) { ... }
+    if ($factory->has_injection( $key )) { ... }
+
+Returns true (C<1>) if an injection is in place.
+
+=cut
+
+sub has_injection {
+    my $self = shift;
+    my $key = $self->_process_key_arg( \@_ );
+
+    $key = $undef_key if !defined $key;
+
+    return $self->_get_injection( $key ) ? 1 : 0;
+}
+
 1;
 __END__
 
