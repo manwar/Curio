@@ -832,7 +832,8 @@ sub inject {
     );
 
 This is just like L</inject> except it returns an guard object which,
-when it leaves scope and is destroyed, will automatically L</uninject>.
+when it leaves scope and is destroyed, will automatically
+L</clear_injection>.
 
 =cut
 
@@ -843,14 +844,14 @@ sub inject_with_guard {
     my $key = (@_==1) ? undef : shift( @_ );
 
     return Curio::Guard->new(sub{
-        $class->factory->uninject( $key ? $key : () );
+        $class->factory->clear_injection( $key ? $key : () );
     });
 }
 
-=head2 uninject
+=head2 clear_injection
 
-    my $curio_object = $factory->uninject();
-    my $curio_object = $factory->uninject( $key );
+    my $curio_object = $factory->clear_injection();
+    my $curio_object = $factory->clear_injection( $key );
 
 Removes the previously injected curio object, restoring the
 original behavior of L</fetch_curio>.
@@ -859,13 +860,13 @@ Returns the previously injected curio object.
 
 =cut
 
-sub uninject {
+sub clear_injection {
     my $self = shift;
     my $key = $self->_process_key_arg( \@_ );
 
     $key = $undef_key if !defined $key;
 
-    croak 'Cannot uninject a Curio object where one has not already been injected'
+    croak 'Cannot clear an injection where one does not exist'
         if !$self->_get_injection( $key );
 
     my $curio = $self->_remove_injection( $key );

@@ -350,17 +350,17 @@ object.
     
     my $chi = myapp_cache( 'geo_ip' );
     
-    MyApp::Service::Cache->uninject( 'geo_ip' );
+    MyApp::Service::Cache->clear_injection( 'geo_ip' );
 
-Instead of having to call L<Curio::Role/uninject> directly you may
-instead use L<Curio::Role/inject_with_guard>.
+Instead of having to call L<Curio::Role/clear_injection> directly you
+may instead use L<Curio::Role/inject_with_guard>.
 
     my $guard = MyApp::Service::Cache->inject_with_guard(
         'geo_ip', $mock,
     );
 
-When the guard object goes out of scope C<uninject> will be called
-automatically.
+When the guard object goes out of scope C<clear_injection> will be
+called automatically.
 
 =head2 Singletons
 

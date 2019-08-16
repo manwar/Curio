@@ -341,11 +341,11 @@ MyApp::Service::Cache->inject( 'geo_ip', $mock );
 
 my $chi = myapp_cache( 'geo_ip' );
 
-MyApp::Service::Cache->uninject( 'geo_ip' );
+MyApp::Service::Cache->clear_injection( 'geo_ip' );
 ```
 
-Instead of having to call ["uninject" in Curio::Role](https://metacpan.org/pod/Curio::Role#uninject) directly you may
-instead use ["inject\_with\_guard" in Curio::Role](https://metacpan.org/pod/Curio::Role#inject_with_guard).
+Instead of having to call ["clear\_injection" in Curio::Role](https://metacpan.org/pod/Curio::Role#clear_injection) directly you
+may instead use ["inject\_with\_guard" in Curio::Role](https://metacpan.org/pod/Curio::Role#inject_with_guard).
 
 ```perl
 my $guard = MyApp::Service::Cache->inject_with_guard(
@@ -353,8 +353,8 @@ my $guard = MyApp::Service::Cache->inject_with_guard(
 );
 ```
 
-When the guard object goes out of scope `uninject` will be called
-automatically.
+When the guard object goes out of scope `clear_injection` will be
+called automatically.
 
 ## Singletons
 

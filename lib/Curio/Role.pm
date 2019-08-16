@@ -125,18 +125,18 @@ sub inject_with_guard {
     return $class->factory->inject_with_guard( @_ );
 }
 
-=head2 uninject
+=head2 clear_injection
 
-    my $curio_object = MyApp::Service::Cache->uninject();
-    my $curio_object = MyApp::Service::Cache->uninject( $key );
+    my $curio_object = MyApp::Service::Cache->clear_injection();
+    my $curio_object = MyApp::Service::Cache->clear_injection( $key );
 
-This proxies to L<Curio::Factory/uninject>.
+This proxies to L<Curio::Factory/clear_injection>.
 
 =cut
 
-sub uninject {
+sub clear_injection {
     my $class = shift;
-    return $class->factory->uninject( @_ );
+    return $class->factory->clear_injection( @_ );
 }
 
 =head2 injection

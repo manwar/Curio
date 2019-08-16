@@ -2,6 +2,8 @@ Revision history for Perl extension Curio.
 
 {{$NEXT}}
 
+ - Renamed uninject() to clear_injection().
+
 0.06 2019-08-12T23:35:52Z
 
  - Added the create() and injection() factory methods.
