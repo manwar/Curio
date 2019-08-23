@@ -508,7 +508,7 @@ system.
 Curio is designed to make it cheap to retrieve Curio objects and the
 underlying resources.  Take advantage of this.  Don't pass around your
 resource objects or put them in attributes.  Instead, when you need
-them, get the from your Curio classes.
+them, get them from your Curio classes.
 
 If your Curio class supports keys, then passing around the key that
 you want particular code to be using, rather than the Curio object or
